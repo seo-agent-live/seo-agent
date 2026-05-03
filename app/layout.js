@@ -4,8 +4,8 @@ import "./globals.css";
 export const metadata = {
   title: "SEOAgent - AI SEO Content Generator",
   description: "Generate SEO-ready content from keyword and SERP insights.",
-  verification: {
-    google: "OhmgNJayCKJZUi",
+  other: {
+    "google-site-verification": "ycZi4ec98rDbcJNe6mPGjj2ePlQDz0wz0MW82w-G4f8",
   },
 };
 
