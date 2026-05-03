@@ -2,8 +2,11 @@ import { ClerkProvider, UserButton, SignedIn, SignedOut, SignInButton, SignUpBut
 import "./globals.css";
 
 export const metadata = {
-  title: "AI SEO Content Agent",
+  title: "SEOAgent - AI SEO Content Generator",
   description: "Generate SEO-ready content from keyword and SERP insights.",
+  verification: {
+    google: "OhmgNJayCKJZUi",
+  },
 };
 
 export default function RootLayout({ children }) {
