@@ -1,16 +1,33 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useUser } from '@clerk/nextjs'
 
 export default function SettingsPage() {
-  const [firstName, setFirstName] = useState('Alex')
-  const [lastName, setLastName] = useState('Johnson')
-  const [email, setEmail] = useState('alex@example.com')
+  const { user, isLoaded } = useUser()
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [email, setEmail] = useState('')
   const [saved, setSaved] = useState(false)
 
-  const handleSave = () => {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+  useEffect(() => {
+    if (isLoaded && user) {
+      setFirstName(user.firstName || '')
+      setLastName(user.lastName || '')
+      setEmail(user.primaryEmailAddress?.emailAddress || '')
+    }
+  }, [isLoaded, user])
+
+  const handleSave = async () => {
+    try {
+      await user.update({ firstName, lastName })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch (err) {
+      alert('Error saving: ' + err.message)
+    }
   }
+
+  if (!isLoaded) return <p style={{ color: '#94a3b8' }}>Loading...</p>
 
   return (
     <div style={{ color: "#fff", fontFamily: "Inter, sans-serif" }}>
@@ -32,9 +49,9 @@ export default function SettingsPage() {
         </div>
         <div style={{ marginBottom: "20px" }}>
           <label style={{ color: "#64748b", fontSize: "13px", display: "block", marginBottom: "8px" }}>Email</label>
-          <input value={email} onChange={e => setEmail(e.target.value)} style={{ width: "100%", padding: "10px 14px", backgroundColor: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", color: "#fff", fontSize: "14px", outline: "none", boxSizing: "border-box" }} />
+          <input value={email} disabled style={{ width: "100%", padding: "10px 14px", backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", color: "#64748b", fontSize: "14px", outline: "none", boxSizing: "border-box" }} />
         </div>
-        <button onClick={handleSave} style={{ padding: "10px 24px", backgroundColor: saved ? "#10b981" : "#6366f1", border: "none", borderRadius: "8px", color: "#fff", cursor: "pointer", fontSize: "14px", fontWeight: 600, boxShadow: "0 0 20px rgba(99,102,241,0.3)", transition: "all 0.2s" }}>
+        <button onClick={handleSave} style={{ padding: "10px 24px", backgroundColor: saved ? "#10b981" : "#6366f1", border: "none", borderRadius: "8px", color: "#fff", cursor: "pointer", fontSize: "14px", fontWeight: 600, transition: "all 0.2s" }}>
           {saved ? "✓ Saved!" : "Save Changes"}
         </button>
       </div>
@@ -60,5 +77,5 @@ export default function SettingsPage() {
         </button>
       </div>
     </div>
-  );
+  )
 }
