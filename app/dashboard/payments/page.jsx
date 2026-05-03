@@ -1,16 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export default function PaymentsPage() {
   const [loading, setLoading] = useState(false)
+  const [transactions, setTransactions] = useState([])
+  const [billingLoading, setBillingLoading] = useState(true)
 
-  const transactions = [
-    { id: 'INV-001', date: 'May 1, 2025', plan: 'Pro', amount: '$49.00', status: 'Paid' },
-    { id: 'INV-002', date: 'Apr 1, 2025', plan: 'Pro', amount: '$49.00', status: 'Paid' },
-    { id: 'INV-003', date: 'Mar 1, 2025', plan: 'Agency', amount: '$99.00', status: 'Paid' },
-    { id: 'INV-004', date: 'Feb 1, 2025', plan: 'Free', amount: '$0.00', status: 'Free' },
-  ]
+  useEffect(() => {
+    fetch('/api/billing')
+      .then(r => r.json())
+      .then(data => {
+        if (data.transactions) setTransactions(data.transactions)
+        setBillingLoading(false)
+      })
+      .catch(() => setBillingLoading(false))
+  }, [])
 
   const handleUpgrade = async (plan) => {
     setLoading(true)
@@ -97,35 +102,41 @@ export default function PaymentsPage() {
         marginBottom: '24px',
       }}>
         <h2 style={{ color: '#fff', fontSize: '18px', fontWeight: 600, margin: '0 0 20px' }}>Billing History</h2>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-          <thead>
-            <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-              {['INVOICE', 'DATE', 'PLAN', 'AMOUNT', 'STATUS'].map(h => (
-                <th key={h} style={{ color: '#94a3b8', fontWeight: 500, padding: '0 0 12px', textAlign: 'left', fontSize: '12px' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((t) => (
-              <tr key={t.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                <td style={{ padding: '14px 0', color: '#94a3b8', fontFamily: 'monospace', fontSize: '12px' }}>{t.id}</td>
-                <td style={{ padding: '14px 0', color: '#e2e8f0' }}>{t.date}</td>
-                <td style={{ padding: '14px 0', color: '#e2e8f0' }}>{t.plan}</td>
-                <td style={{ padding: '14px 0', color: '#e2e8f0' }}>{t.amount}</td>
-                <td style={{ padding: '14px 0' }}>
-                  <span style={{
-                    background: t.status === 'Paid' ? 'rgba(16,185,129,0.2)' : 'rgba(148,163,184,0.2)',
-                    color: t.status === 'Paid' ? '#10b981' : '#94a3b8',
-                    padding: '3px 10px',
-                    borderRadius: '999px',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                  }}>{t.status}</span>
-                </td>
+        {billingLoading ? (
+          <p style={{ color: '#94a3b8' }}>Loading billing history...</p>
+        ) : transactions.length === 0 ? (
+          <p style={{ color: '#94a3b8' }}>No transactions yet.</p>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                {['INVOICE', 'DATE', 'DESCRIPTION', 'AMOUNT', 'STATUS'].map(h => (
+                  <th key={h} style={{ color: '#94a3b8', fontWeight: 500, padding: '0 0 12px', textAlign: 'left', fontSize: '12px' }}>{h}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {transactions.map((t) => (
+                <tr key={t.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                  <td style={{ padding: '14px 0', color: '#94a3b8', fontFamily: 'monospace', fontSize: '12px' }}>{t.id.slice(0, 12)}...</td>
+                  <td style={{ padding: '14px 0', color: '#e2e8f0' }}>{t.date}</td>
+                  <td style={{ padding: '14px 0', color: '#e2e8f0' }}>{t.description}</td>
+                  <td style={{ padding: '14px 0', color: '#e2e8f0' }}>{t.amount}</td>
+                  <td style={{ padding: '14px 0' }}>
+                    <span style={{
+                      background: t.status === 'Paid' ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)',
+                      color: t.status === 'Paid' ? '#10b981' : '#ef4444',
+                      padding: '3px 10px',
+                      borderRadius: '999px',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                    }}>{t.status}</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
 
       <div style={{
