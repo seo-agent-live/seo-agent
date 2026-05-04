@@ -1,9 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { useUser } from '@clerk/nextjs'
+import { useUser, useClerk } from '@clerk/nextjs'
 
 export default function SettingsPage() {
   const { user, isLoaded } = useUser()
+  const { signOut } = useClerk()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -56,24 +57,12 @@ export default function SettingsPage() {
         </button>
       </div>
 
-      {/* API Keys */}
-      <div style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.08), rgba(15,23,42,0.9))", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "16px", padding: "28px", marginBottom: "24px" }}>
-        <h2 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "8px", color: "#e2e8f0" }}>API Keys</h2>
-        <p style={{ color: "#64748b", fontSize: "14px", marginBottom: "20px" }}>Managed via your environment variables. Update them in Vercel → Settings → Environment Variables</p>
-        {["GROQ_API_KEY", "SERPER_API_KEY", "STRIPE_SECRET_KEY"].map(key => (
-          <div key={key} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", backgroundColor: "rgba(0,0,0,0.2)", borderRadius: "8px", marginBottom: "8px" }}>
-            <span style={{ color: "#6366f1", fontSize: "14px", fontFamily: "monospace" }}>{key}</span>
-            <span style={{ color: "#475569", fontSize: "14px", fontFamily: "monospace" }}>••••••••••••</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Danger Zone */}
-      <div style={{ background: "linear-gradient(135deg, rgba(239,68,68,0.08), rgba(15,23,42,0.9))", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "16px", padding: "28px" }}>
-        <h2 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "8px", color: "#ef4444" }}>Danger Zone</h2>
-        <p style={{ color: "#64748b", fontSize: "14px", marginBottom: "20px" }}>Permanently delete your account and all data. This cannot be undone.</p>
-        <button style={{ padding: "10px 24px", backgroundColor: "transparent", border: "1px solid rgba(239,68,68,0.4)", borderRadius: "8px", color: "#ef4444", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>
-          Delete Account
+      {/* Sign Out */}
+      <div style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.08), rgba(15,23,42,0.9))", border: "1px solid rgba(99,102,241,0.15)", borderRadius: "16px", padding: "28px" }}>
+        <h2 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "8px", color: "#e2e8f0" }}>Sign Out</h2>
+        <p style={{ color: "#64748b", fontSize: "14px", marginBottom: "20px" }}>Sign out of your account on this device.</p>
+        <button onClick={() => signOut({ redirectUrl: '/' })} style={{ padding: "10px 24px", backgroundColor: "transparent", border: "1px solid rgba(99,102,241,0.4)", borderRadius: "8px", color: "#6366f1", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>
+          Sign Out
         </button>
       </div>
     </div>

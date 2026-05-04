@@ -79,10 +79,12 @@ export default function OnboardingPage() {
             onboardingComplete: true,
           },
         });
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        window.location.href = '/dashboard';
       } catch (e) {
         console.error('Failed to save onboarding:', e);
+        setSaving(false);
       }
-      router.push('/dashboard');
     } else {
       setCurrentStep((s) => s + 1);
       setSelected(null);
@@ -92,7 +94,7 @@ export default function OnboardingPage() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#0a0a0a',
+      background: 'linear-gradient(135deg, #1a1245 0%, #0f0c2e 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -110,8 +112,8 @@ export default function OnboardingPage() {
           animation: fadeUp 0.35s ease both;
         }
         .option-card {
-          background: #111;
-          border: 1.5px solid #222;
+          background: rgba(99, 82, 199, 0.15);
+          border: 1.5px solid rgba(99, 82, 199, 0.3);
           border-radius: 12px;
           padding: 14px 18px;
           cursor: pointer;
@@ -222,7 +224,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Options */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '8px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '8px' }}>
           {step.options.map((opt) => {
             const emoji = opt.label.split(' ')[0];
             const label = opt.label.split(' ').slice(1).join(' ');

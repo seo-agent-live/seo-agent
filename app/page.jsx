@@ -1,31 +1,45 @@
-"use client";
+'use client';
 import Link from 'next/link';
 import { useState } from 'react';
 
 const navItems = {
-  'Product': ['AI Article Generator', 'SEO Score Checker', 'Competitor Analysis', 'Keyword Research'],
-  'Solutions': ['For Freelancers', 'For Agencies', 'For E-commerce', 'For Bloggers'],
-  'Resources': ['Blog', 'Documentation', 'Case Studies', 'Support'],
+  'Product': {
+    items: [
+      { label: 'Platform Overview', href: '/product/overview' },
+      { label: 'AI Agent', href: '/product/ai-agent' },
+      { label: 'AI Search Tracking', href: '/product/ai-search-tracking' },
+      { label: 'Content Guard', href: '/product/content-guard' },
+      { label: 'Content Monitoring', href: '/product/content-monitoring' },
+      { label: 'Integrations', href: '/product/integrations' },
+    ]
+  },
+  'Solutions': {
+    items: [
+      { label: 'For Content Marketers', href: '/solutions/content-marketers' },
+      { label: 'For SEO Teams', href: '/solutions/seo-teams' },
+      { label: 'For Agencies', href: '/solutions/agencies' },
+      { label: 'For Enterprises', href: '/solutions/enterprises' },
+      { label: 'Case Studies', href: '/solutions/case-studies' },
+    ]
+  },
+  'Resources': {
+    items: [
+      { label: 'Blog', href: '/resources/blog' },
+      { label: 'SEO + GEO Guide', href: '/resources/seo-geo-guide' },
+      { label: 'Free SEO Tools', href: '/resources/free-seo-tools' },
+      { label: 'AI Visibility Checker', href: '/resources/ai-visibility-checker' },
+      { label: 'Compare', href: '/resources/compare' },
+    ]
+  },
 };
 
 export default function HomePage() {
   const [openMenu, setOpenMenu] = useState(null);
-  const [showDemo, setShowDemo] = useState(false);
 
   return (
     <main style={{ fontFamily: 'Inter, sans-serif', background: '#0f0c2e', minHeight: '100vh', color: 'white' }}>
 
-      {showDemo && (
-        <div onClick={() => setShowDemo(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: '#1a1a2e', borderRadius: '16px', padding: '40px', maxWidth: '500px', width: '90%', textAlign: 'center' }}>
-            <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '16px' }}>🎬 Demo Coming Soon</h2>
-            <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '24px' }}>We're working on a full product demo. Try the app for free in the meantime!</p>
-            <Link href="/sign-up" style={{ display: 'inline-block', padding: '12px 28px', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', borderRadius: '10px', color: 'white', textDecoration: 'none', fontWeight: '600' }}>Start Free Trial →</Link>
-            <button onClick={() => setShowDemo(false)} style={{ display: 'block', margin: '16px auto 0', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '14px' }}>Close</button>
-          </div>
-        </div>
-      )}
-
+      {/* NAVBAR */}
       <nav style={{ display: 'flex', alignItems: 'center', padding: '0 48px', height: '64px', borderBottom: '1px solid rgba(255,255,255,0.07)', background: 'rgba(15,12,46,0.97)', position: 'relative', zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '40px' }}>
           <div style={{ width: '28px', height: '28px', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', borderRadius: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', color: 'white' }}>S</div>
@@ -33,27 +47,29 @@ export default function HomePage() {
         </div>
 
         <div style={{ display: 'flex', gap: '4px', flex: 1, position: 'relative' }}>
-          {Object.keys(navItems).map(item => (
-            <div key={item} style={{ position: 'relative' }}>
-              <span onClick={() => setOpenMenu(openMenu === item ? null : item)} style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', padding: '6px 14px', borderRadius: '6px', cursor: 'pointer', display: 'block' }}>
-                {item} ▾
+          {Object.keys(navItems).map(key => (
+            <div key={key} style={{ position: 'relative' }}
+              onMouseEnter={() => setOpenMenu(key)}
+              onMouseLeave={() => setOpenMenu(null)}
+            >
+              <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', padding: '6px 14px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                {key} ▾
               </span>
-              {openMenu === item && (
-                <div style={{ position: 'absolute', top: '36px', left: 0, background: '#1a1635', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '8px', minWidth: '200px', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
-                  {navItems[item].map(subItem => (
-                    <div key={subItem} style={{ padding: '10px 14px', fontSize: '13px', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', borderRadius: '8px' }}
-                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.15)'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                      {subItem}
-                    </div>
+              {openMenu === key && (
+                <div style={{ position: 'absolute', top: '100%', left: 0, background: '#1a1740', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', padding: '8px', minWidth: '200px', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+                  {navItems[key].items.map(item => (
+                    <Link key={item.href} href={item.href} style={{ display: 'block', padding: '9px 14px', fontSize: '13px', color: 'rgba(255,255,255,0.7)', textDecoration: 'none', borderRadius: '6px', transition: 'background 0.15s' }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.06)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      {item.label}
+                    </Link>
                   ))}
                 </div>
               )}
             </div>
           ))}
-          <Link href="/pricing" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', padding: '6px 14px', borderRadius: '6px', cursor: 'pointer', textDecoration: 'none' }}>
-            Pricing
-          </Link>
+          <Link href="/pricing" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', padding: '6px 14px', borderRadius: '6px', textDecoration: 'none' }}>Pricing</Link>
         </div>
 
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -62,7 +78,8 @@ export default function HomePage() {
         </div>
       </nav>
 
-      <section onClick={() => setOpenMenu(null)} style={{ textAlign: 'center', padding: '90px 40px 60px' }}>
+      {/* HERO */}
+      <section style={{ textAlign: 'center', padding: '90px 40px 60px' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: '20px', padding: '5px 14px', fontSize: '12px', color: '#a5b4fc', marginBottom: '28px' }}>
           <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#6366f1' }} />
           Now with AI Visibility Scoring
@@ -76,7 +93,7 @@ export default function HomePage() {
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginBottom: '24px' }}>
           <Link href="/sign-up" style={{ fontSize: '15px', fontWeight: '600', color: 'white', padding: '15px 30px', borderRadius: '10px', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', textDecoration: 'none' }}>Start Your Free Trial →</Link>
-          <button onClick={() => setShowDemo(true)} style={{ fontSize: '15px', color: 'rgba(255,255,255,0.7)', padding: '15px 30px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', cursor: 'pointer', fontFamily: 'inherit' }}>Watch demo</button>
+          <button style={{ fontSize: '15px', color: 'rgba(255,255,255,0.7)', padding: '15px 30px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', cursor: 'pointer', fontFamily: 'inherit' }}>Watch demo</button>
         </div>
         <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)', marginBottom: '10px' }}>
           Trusted by 2,000+ content & marketing teams · 7-day free trial · No credit card required
@@ -88,7 +105,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section onClick={() => setOpenMenu(null)} style={{ padding: '60px 48px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+      {/* FEATURES */}
+      <section style={{ padding: '60px 48px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
         <p style={{ textAlign: 'center', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', marginBottom: '10px' }}>Everything you need</p>
         <h2 style={{ textAlign: 'center', fontSize: '32px', fontWeight: '700', letterSpacing: '-0.5px', marginBottom: '8px' }}>The full SEO stack, powered by AI</h2>
         <p style={{ textAlign: 'center', fontSize: '15px', color: 'rgba(255,255,255,0.4)', marginBottom: '40px' }}>From research to publishing — SEOAgent handles the entire workflow.</p>
