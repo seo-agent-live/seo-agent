@@ -1,6 +1,6 @@
 import DashboardSidebar from '@/components/DashboardSidebar';
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function DashboardLayout({ children }) {
   return (
     <div className="flex h-screen bg-[#0a0a0f] overflow-hidden">
       <DashboardSidebar />
