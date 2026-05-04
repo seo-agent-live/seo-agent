@@ -1,12 +1,10 @@
-import DashboardSidebar from '@/components/Sidebar';
+import DashboardSidebar from '@/components/DashboardSidebar';
 
-export default function DashboardLayout({ children }) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-[#0a0a0f] overflow-hidden">
       <DashboardSidebar />
-      <main className="flex-1 overflow-auto">
-        {children}
-      </main>
+      <main className="flex-1 overflow-y-auto">{children}</main>
     </div>
   );
 }

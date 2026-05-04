@@ -1,185 +1,122 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+"use client";
 import Link from 'next/link';
+import { useState } from 'react';
 
-const features = [
-  { icon: '⚡', title: 'AI Article Generator', desc: 'Turn one keyword into long-form, SERP-informed content in under 60 seconds. Human-readable, conversion-focused, ready to publish.' },
-  { icon: '📊', title: 'SEO Score Checker', desc: 'Instant keyword coverage, readability, and structure analysis before you hit publish. Never guess if a page is optimised again.' },
-  { icon: '🔍', title: 'Competitor Analysis', desc: 'Pull live insights from the top 10 results for any keyword. See exactly what angles are winning and why.' },
-  { icon: '🗺️', title: 'Google Search Console Sync', desc: 'Connect your GSC account and track real impressions, clicks, and ranking changes — all inside SEOAgent.' },
-];
+const navItems = {
+  'Product': ['AI Article Generator', 'SEO Score Checker', 'Competitor Analysis', 'Keyword Research'],
+  'Solutions': ['For Freelancers', 'For Agencies', 'For E-commerce', 'For Bloggers'],
+  'Resources': ['Blog', 'Documentation', 'Case Studies', 'Support'],
+};
 
-const stats = [
-  { value: '10x', label: 'Faster content production' },
-  { value: '94%', label: 'Average SEO score on first draft' },
-  { value: '3min', label: 'From keyword to full article' },
-  { value: '2,000+', label: 'Content & marketing teams' },
-];
-
-const testimonials = [
-  { quote: 'SEOAgent feels like content marketing cheat codes.', name: 'Brendan H.', role: 'ActiveCampaign', initials: 'BH' },
-  { quote: 'We went from 2 articles a week to 14. Our organic traffic doubled in 90 days.', name: 'Sarah K.', role: 'Head of Content, Flowdesk', initials: 'SK' },
-  { quote: "The competitor analysis alone is worth the price. I know exactly what to write before I start.", name: 'Marcus T.', role: 'Founder, Rankwise', initials: 'MT' },
-];
-
-export default function LandingPage() {
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', onScroll);
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+export default function HomePage() {
+  const [openMenu, setOpenMenu] = useState(null);
+  const [showDemo, setShowDemo] = useState(false);
 
   return (
-    <div style={{ background: '#0a0b1a', color: '#e0e0f0', fontFamily: "'DM Sans', sans-serif", overflowX: 'hidden' }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Syne:wght@700;800;900&display=swap');
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes pulse-ring { 0%{transform:scale(0.95);opacity:0.6} 70%{transform:scale(1.15);opacity:0} 100%{transform:scale(1.15);opacity:0} }
-        .fade-1{animation:fadeUp 0.5s 0.0s ease both}
-        .fade-2{animation:fadeUp 0.5s 0.1s ease both}
-        .fade-3{animation:fadeUp 0.5s 0.2s ease both}
-        .fade-4{animation:fadeUp 0.5s 0.3s ease both}
-        .nav-link{color:#8888aa;text-decoration:none;font-size:14px;font-weight:500;transition:color 0.15s}
-        .nav-link:hover{color:#e0e0f0}
-        .btn-primary{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:none;display:inline-block;transition:opacity 0.15s,transform 0.12s;box-shadow:0 0 30px rgba(124,58,237,0.4)}
-        .btn-primary:hover{opacity:0.9;transform:translateY(-1px)}
-        .btn-secondary{background:rgba(255,255,255,0.06);color:#cccce0;border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:13px 24px;font-size:15px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;text-decoration:none;display:inline-block;transition:background 0.15s,transform 0.12s}
-        .btn-secondary:hover{background:rgba(255,255,255,0.1);transform:translateY(-1px)}
-        .feature-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:28px 24px;transition:border-color 0.2s,transform 0.2s,background 0.2s}
-        .feature-card:hover{border-color:rgba(124,58,237,0.4);background:rgba(124,58,237,0.05);transform:translateY(-3px)}
-        .stat-card{text-align:center;padding:28px 20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px}
-        .testimonial-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:28px 24px;display:flex;flex-direction:column;gap:20px}
-        .purple-text{background:linear-gradient(135deg,#a78bfa,#7c3aed);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-        .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-        .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-        .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-        @media(max-width:900px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:1fr}}
-        @media(max-width:600px){.grid-2,.grid-4{grid-template-columns:1fr}.hero-btns{flex-direction:column;align-items:center}}
-      `}</style>
+    <main style={{ fontFamily: 'Inter, sans-serif', background: '#0f0c2e', minHeight: '100vh', color: 'white' }}>
 
-      {/* NAV */}
-      <nav style={{
-        position:'sticky',top:0,zIndex:100,padding:'0 32px',height:'64px',
-        display:'flex',alignItems:'center',justifyContent:'space-between',
-        background:scrolled?'rgba(10,11,26,0.92)':'transparent',
-        backdropFilter:scrolled?'blur(12px)':'none',
-        borderBottom:scrolled?'1px solid rgba(255,255,255,0.06)':'1px solid transparent',
-        transition:'all 0.3s ease',
-      }}>
-        <div style={{display:'flex',alignItems:'center',gap:'8px'}}>
-          <div style={{width:'32px',height:'32px',background:'linear-gradient(135deg,#7c3aed,#6d28d9)',borderRadius:'8px',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:800,fontSize:'14px',fontFamily:"'Syne',sans-serif"}}>S</div>
-          <span style={{fontFamily:"'Syne',sans-serif",fontSize:'17px',fontWeight:800,color:'#f0f0ff',letterSpacing:'-0.3px'}}>SEOAgent</span>
+      {/* DEMO MODAL */}
+      {showDemo && (
+        <div onClick={() => setShowDemo(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#1a1a2e', borderRadius: '16px', padding: '40px', maxWidth: '500px', width: '90%', textAlign: 'center' }}>
+            <h2 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '16px' }}>🎬 Demo Coming Soon</h2>
+            <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '24px' }}>We're working on a full product demo. Try the app for free in the meantime!</p>
+            <Link href="/sign-up" style={{ display: 'inline-block', padding: '12px 28px', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', borderRadius: '10px', color: 'white', textDecoration: 'none', fontWeight: '600' }}>Start Free Trial →</Link>
+            <button onClick={() => setShowDemo(false)} style={{ display: 'block', margin: '16px auto 0', background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '14px' }}>Close</button>
+          </div>
         </div>
-        <div style={{display:'flex',alignItems:'center',gap:'28px'}}>
-          <Link href="/pricing" className="nav-link">Pricing</Link>
-          <Link href="/dashboard" className="nav-link">Dashboard</Link>
-          <Link href="/sign-in" className="nav-link">Log in</Link>
-          <Link href="/sign-up" className="btn-primary" style={{padding:'10px 20px',fontSize:'13px'}}>Start Free Trial →</Link>
+      )}
+
+      {/* NAVBAR */}
+      <nav style={{ display: 'flex', alignItems: 'center', padding: '0 48px', height: '64px', borderBottom: '1px solid rgba(255,255,255,0.07)', background: 'rgba(15,12,46,0.97)', position: 'relative', zIndex: 100 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '40px' }}>
+          <div style={{ width: '28px', height: '28px', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', borderRadius: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', color: 'white' }}>S</div>
+          <span style={{ fontSize: '15px', fontWeight: '700', letterSpacing: '-0.3px' }}>SEOAgent</span>
+        </div>
+
+        <div style={{ display: 'flex', gap: '4px', flex: 1, position: 'relative' }}>
+          {Object.keys(navItems).map(item => (
+            <div key={item} style={{ position: 'relative' }}>
+              <span
+                onClick={() => setOpenMenu(openMenu === item ? null : item)}
+                style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', padding: '6px 14px', borderRadius: '6px', cursor: 'pointer', display: 'block' }}
+              >
+                {item} ▾
+              </span>
+              {openMenu === item && (
+                <div style={{ position: 'absolute', top: '36px', left: 0, background: '#1a1635', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '8px', minWidth: '200px', boxShadow: '0 20px 40px rgba(0,0,0,0.4)' }}>
+                  {navItems[item].map(subItem => (
+                    <div key={subItem} style={{ padding: '10px 14px', fontSize: '13px', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', borderRadius: '8px' }}
+                      onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.15)'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      {subItem}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+
+          <Link href="/pricing" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', padding: '6px 14px', borderRadius: '6px', cursor: 'pointer', textDecoration: 'none' }}>
+            Pricing
+          </Link>
+        </div>
+
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <Link href="/sign-in" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', padding: '7px 14px' }}>Log in</Link>
+          <Link href="/sign-up" style={{ fontSize: '13px', fontWeight: '600', color: 'white', padding: '9px 20px', borderRadius: '8px', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', textDecoration: 'none' }}>Start Free Trial →</Link>
         </div>
       </nav>
 
       {/* HERO */}
-      <section style={{padding:'clamp(80px,12vw,140px) 24px clamp(80px,10vw,120px)',textAlign:'center',position:'relative',overflow:'hidden'}}>
-        <div style={{position:'absolute',top:'-20%',left:'50%',transform:'translateX(-50%)',width:'800px',height:'600px',background:'radial-gradient(ellipse,rgba(124,58,237,0.15) 0%,transparent 65%)',pointerEvents:'none'}}/>
-        <div style={{position:'relative',maxWidth:'800px',margin:'0 auto'}}>
-          <div className="fade-1" style={{display:'inline-flex',alignItems:'center',gap:'8px',background:'rgba(124,58,237,0.15)',border:'1px solid rgba(124,58,237,0.3)',color:'#a78bfa',fontSize:'13px',fontWeight:600,padding:'6px 16px',borderRadius:'99px',marginBottom:'28px'}}>
-            <span style={{width:'6px',height:'6px',borderRadius:'50%',background:'#a78bfa',display:'inline-block',position:'relative'}}>
-              <span style={{position:'absolute',inset:'-3px',borderRadius:'50%',border:'1px solid #a78bfa',animation:'pulse-ring 2s ease infinite'}}/>
-            </span>
-            Now with AI Visibility Scoring
-          </div>
-          <h1 className="fade-2" style={{fontFamily:"'Syne',sans-serif",fontSize:'clamp(42px,7vw,80px)',fontWeight:900,lineHeight:1.05,letterSpacing:'-2.5px',color:'#f0f0ff',marginBottom:'24px'}}>
-            Rank on Google.<br/><span className="purple-text">Dominate with AI.</span>
-          </h1>
-          <p className="fade-3" style={{fontSize:'clamp(15px,2vw,18px)',color:'#7777aa',lineHeight:1.65,maxWidth:'540px',margin:'0 auto 40px'}}>
-            Research live SERPs, analyze competitor angles, and publish conversion-focused content faster than ever. One agent. Unlimited results.
-          </p>
-          <div className="fade-4 hero-btns" style={{display:'flex',gap:'12px',justifyContent:'center',flexWrap:'wrap'}}>
-            <Link href="/sign-up" className="btn-primary">Start Your Free Trial →</Link>
-            <Link href="/pricing" className="btn-secondary">View pricing</Link>
-          </div>
-          <p className="fade-4" style={{color:'#444466',fontSize:'13px',marginTop:'16px'}}>Trusted by 2,000+ content & marketing teams · 7-day free trial · No credit card required</p>
-          <div className="fade-4" style={{display:'inline-flex',alignItems:'center',gap:'10px',marginTop:'20px',background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'99px',padding:'8px 16px'}}>
-            <div style={{width:'28px',height:'28px',borderRadius:'50%',background:'linear-gradient(135deg,#7c3aed,#ec4899)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:'11px',fontWeight:700}}>BH</div>
-            <span style={{color:'#8888aa',fontSize:'13px'}}><em>"SEOAgent feels like content marketing cheat codes."</em> <span style={{color:'#555577'}}>— Brendan H., ActiveCampaign</span></span>
-          </div>
+      <section onClick={() => setOpenMenu(null)} style={{ textAlign: 'center', padding: '90px 40px 60px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: '20px', padding: '5px 14px', fontSize: '12px', color: '#a5b4fc', marginBottom: '28px' }}>
+          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#6366f1' }} />
+          Now with AI Visibility Scoring
         </div>
-      </section>
-
-      {/* STATS */}
-      <section style={{padding:'0 24px 100px',maxWidth:'1000px',margin:'0 auto'}}>
-        <div className="grid-4">
-          {stats.map((s) => (
-            <div key={s.label} className="stat-card">
-              <div style={{fontFamily:"'Syne',sans-serif",fontSize:'36px',fontWeight:800,background:'linear-gradient(135deg,#a78bfa,#7c3aed)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text',letterSpacing:'-1px',marginBottom:'6px'}}>{s.value}</div>
-              <div style={{color:'#555577',fontSize:'13px',lineHeight:1.4}}>{s.label}</div>
-            </div>
-          ))}
+        <h1 style={{ fontSize: '62px', fontWeight: '800', lineHeight: '1.1', letterSpacing: '-2px', marginBottom: '12px' }}>
+          Rank on Google.<br />
+          <span style={{ color: '#7c6af7' }}>Dominate with AI.</span>
+        </h1>
+        <p style={{ fontSize: '18px', color: 'rgba(255,255,255,0.5)', maxWidth: '540px', margin: '0 auto 40px', lineHeight: '1.7', fontWeight: '300' }}>
+          Research live SERPs, analyze competitor angles, and publish conversion-focused content faster than ever. One agent. Unlimited results.
+        </p>
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginBottom: '24px' }}>
+          <Link href="/sign-up" style={{ fontSize: '15px', fontWeight: '600', color: 'white', padding: '15px 30px', borderRadius: '10px', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', textDecoration: 'none' }}>Start Your Free Trial →</Link>
+          <button onClick={() => setShowDemo(true)} style={{ fontSize: '15px', color: 'rgba(255,255,255,0.7)', padding: '15px 30px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)', cursor: 'pointer', fontFamily: 'inherit' }}>Watch demo</button>
+        </div>
+        <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.3)', marginBottom: '10px' }}>
+          Trusted by 2,000+ content & marketing teams · 7-day free trial · No credit card required
+        </p>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}>
+          <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg,#6366f1,#ec4899)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', fontWeight: '600', color: 'white' }}>BH</div>
+          <em>"SEOAgent feels like content marketing cheat codes."</em>
+          <span style={{ fontWeight: '500', color: 'rgba(255,255,255,0.6)' }}>— Brendan H., ActiveCampaign</span>
         </div>
       </section>
 
       {/* FEATURES */}
-      <section style={{padding:'0 24px 100px',maxWidth:'1000px',margin:'0 auto'}}>
-        <div style={{textAlign:'center',marginBottom:'48px'}}>
-          <div style={{color:'#a78bfa',fontSize:'12px',fontWeight:600,letterSpacing:'0.8px',textTransform:'uppercase',marginBottom:'14px'}}>Everything you need</div>
-          <h2 style={{fontFamily:"'Syne',sans-serif",fontSize:'clamp(26px,4vw,40px)',fontWeight:800,color:'#f0f0ff',letterSpacing:'-1px'}}>One tool. The whole SEO workflow.</h2>
-        </div>
-        <div className="grid-2">
-          {features.map((f) => (
-            <div key={f.title} className="feature-card">
-              <div style={{fontSize:'26px',marginBottom:'16px',width:'48px',height:'48px',background:'rgba(124,58,237,0.15)',borderRadius:'12px',display:'flex',alignItems:'center',justifyContent:'center'}}>{f.icon}</div>
-              <h3 style={{fontFamily:"'Syne',sans-serif",fontSize:'17px',fontWeight:700,color:'#f0f0ff',marginBottom:'10px'}}>{f.title}</h3>
-              <p style={{color:'#555577',fontSize:'14px',lineHeight:1.65}}>{f.desc}</p>
+      <section onClick={() => setOpenMenu(null)} style={{ padding: '60px 48px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <p style={{ textAlign: 'center', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', marginBottom: '10px' }}>Everything you need</p>
+        <h2 style={{ textAlign: 'center', fontSize: '32px', fontWeight: '700', letterSpacing: '-0.5px', marginBottom: '8px' }}>The full SEO stack, powered by AI</h2>
+        <p style={{ textAlign: 'center', fontSize: '15px', color: 'rgba(255,255,255,0.4)', marginBottom: '40px' }}>From research to publishing — SEOAgent handles the entire workflow.</p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', maxWidth: '960px', margin: '0 auto' }}>
+          {[
+            { icon: '✍️', color: 'rgba(99,102,241,0.15)', title: 'AI Article Generator', desc: 'Turn one keyword into long-form, human-readable, SERP-informed content in seconds.', href: '/dashboard/writer' },
+            { icon: '📊', color: 'rgba(16,185,129,0.15)', title: 'SEO Score Checker', desc: 'Review keyword coverage, structure, and readability before you publish anything.', href: '/dashboard/analytics' },
+            { icon: '🔍', color: 'rgba(236,72,153,0.15)', title: 'Competitor Analysis', desc: 'Extract top competitor insights from live search results in seconds.', href: '/dashboard/competitors' },
+          ].map(f => (
+            <div key={f.title} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '24px' }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: f.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', marginBottom: '14px' }}>{f.icon}</div>
+              <h3 style={{ fontSize: '15px', fontWeight: '600', marginBottom: '8px' }}>{f.title}</h3>
+              <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', lineHeight: '1.6', marginBottom: '14px' }}>{f.desc}</p>
+              <Link href={f.href} style={{ fontSize: '12px', color: '#8b5cf6', textDecoration: 'none' }}>Explore →</Link>
             </div>
           ))}
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
-      <section style={{padding:'0 24px 100px',maxWidth:'1000px',margin:'0 auto'}}>
-        <div style={{textAlign:'center',marginBottom:'48px'}}>
-          <h2 style={{fontFamily:"'Syne',sans-serif",fontSize:'clamp(26px,4vw,40px)',fontWeight:800,color:'#f0f0ff',letterSpacing:'-1px'}}>Trusted by content teams everywhere</h2>
-        </div>
-        <div className="grid-3">
-          {testimonials.map((t) => (
-            <div key={t.name} className="testimonial-card">
-              <p style={{color:'#7777aa',fontSize:'14px',lineHeight:1.7,fontStyle:'italic'}}>"{t.quote}"</p>
-              <div style={{display:'flex',alignItems:'center',gap:'12px'}}>
-                <div style={{width:'38px',height:'38px',borderRadius:'50%',background:'linear-gradient(135deg,#7c3aed,#ec4899)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:'12px',fontWeight:700,flexShrink:0}}>{t.initials}</div>
-                <div>
-                  <div style={{fontSize:'13px',fontWeight:600,color:'#d0d0f0'}}>{t.name}</div>
-                  <div style={{fontSize:'12px',color:'#444466'}}>{t.role}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section style={{padding:'0 24px 100px',maxWidth:'1000px',margin:'0 auto'}}>
-        <div style={{background:'linear-gradient(135deg,rgba(124,58,237,0.2),rgba(99,102,241,0.1))',border:'1px solid rgba(124,58,237,0.3)',borderRadius:'20px',padding:'clamp(48px,6vw,72px) 40px',textAlign:'center',position:'relative',overflow:'hidden'}}>
-          <div style={{position:'absolute',top:'-60px',left:'50%',transform:'translateX(-50%)',width:'400px',height:'200px',background:'radial-gradient(ellipse,rgba(124,58,237,0.2) 0%,transparent 70%)',pointerEvents:'none'}}/>
-          <h2 style={{fontFamily:"'Syne',sans-serif",fontSize:'clamp(26px,4vw,42px)',fontWeight:800,color:'#f0f0ff',letterSpacing:'-1px',marginBottom:'16px',position:'relative'}}>Ready to rank faster?</h2>
-          <p style={{color:'#7777aa',fontSize:'15px',maxWidth:'400px',margin:'0 auto 32px',lineHeight:1.6,position:'relative'}}>Join thousands of marketers using SEOAgent to scale their organic growth.</p>
-          <Link href="/sign-up" className="btn-primary" style={{position:'relative'}}>Start Your Free Trial →</Link>
-          <p style={{color:'#333355',fontSize:'12px',marginTop:'14px'}}>No credit card required · Cancel anytime</p>
-        </div>
-      </section>
-
-      {/* FOOTER */}
-      <footer style={{borderTop:'1px solid rgba(255,255,255,0.06)',padding:'32px 24px',display:'flex',justifyContent:'space-between',alignItems:'center',flexWrap:'wrap',gap:'16px',maxWidth:'1000px',margin:'0 auto'}}>
-        <div style={{fontFamily:"'Syne',sans-serif",fontWeight:800,fontSize:'16px',color:'#a78bfa'}}>SEOAgent</div>
-        <div style={{display:'flex',gap:'24px',flexWrap:'wrap'}}>
-          {['Pricing','Privacy','Terms','Contact'].map((l) => (
-            <Link key={l} href={`/${l.toLowerCase()}`} className="nav-link" style={{fontSize:'13px'}}>{l}</Link>
-          ))}
-        </div>
-        <div style={{color:'#333355',fontSize:'12px'}}>© {new Date().getFullYear()} SEOAgent</div>
-      </footer>
-    </div>
+    </main>
   );
 }
