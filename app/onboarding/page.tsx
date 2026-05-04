@@ -1,151 +1,272 @@
-"use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+'use client';
 
-const questions = [
+import { useState } from 'react';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+
+const steps = [
   {
-    id: 1,
-    question: "Which of these describes your business best?",
-    options: ["Affiliate Marketer", "Professional Services", "Tech Company", "E-commerce", "Blogger", "Freelancer", "Marketing / SEO Agency", "Local Business", "Other"],
+    id: 'niche',
+    question: "What's your content niche?",
+    subtitle: "We'll tailor your SEO strategy around this.",
+    options: [
+      { value: 'ecommerce', label: '🛍️ eCommerce', desc: 'Product pages, category content' },
+      { value: 'saas', label: '⚙️ SaaS / Tech', desc: 'Software, tools, B2B' },
+      { value: 'blog', label: '✍️ Blog / Media', desc: 'Editorial, news, personal brand' },
+      { value: 'agency', label: '🏢 Agency', desc: 'Managing clients & campaigns' },
+      { value: 'local', label: '📍 Local Business', desc: 'Location-based SEO' },
+      { value: 'other', label: '🌐 Other', desc: 'Something else entirely' },
+    ],
   },
   {
-    id: 2,
-    question: "What is your main goal with SEO?",
-    options: ["Get more traffic", "Generate leads", "Increase sales", "Build brand awareness", "Rank for keywords", "Other"],
+    id: 'goal',
+    question: "What's your primary goal?",
+    subtitle: 'Focus your efforts where they matter most.',
+    options: [
+      { value: 'traffic', label: '📈 Drive organic traffic', desc: 'More visitors from Google' },
+      { value: 'leads', label: '🎯 Generate leads', desc: 'Turn searchers into customers' },
+      { value: 'rankings', label: '🏆 Rank for keywords', desc: 'Climb to page one' },
+      { value: 'content', label: '📝 Scale content output', desc: 'Publish faster, more consistently' },
+    ],
   },
   {
-    id: 3,
-    question: "How many websites do you manage?",
-    options: ["Just 1", "2-5", "6-10", "10+"],
+    id: 'frequency',
+    question: 'How often do you publish?',
+    subtitle: "We'll set your defaults accordingly.",
+    options: [
+      { value: 'daily', label: '🔥 Daily', desc: 'High-volume content machine' },
+      { value: 'weekly', label: '📅 A few times a week', desc: 'Consistent cadence' },
+      { value: 'monthly', label: '🗓️ A few times a month', desc: 'Quality over quantity' },
+      { value: 'rarely', label: '🌱 Just starting out', desc: 'Building the habit' },
+    ],
   },
   {
-    id: 4,
-    question: "What is your current SEO experience?",
-    options: ["Complete beginner", "Some experience", "Intermediate", "Advanced", "Expert"],
-  },
-  {
-    id: 5,
-    question: "How did you hear about SEOAgent?",
-    options: ["Google Search", "Social Media", "Friend / Referral", "YouTube", "Other"],
+    id: 'team',
+    question: "Who's using SEOAgent?",
+    subtitle: "So we can set up the right experience.",
+    options: [
+      { value: 'solo', label: '🧑 Just me', desc: 'Solo creator or founder' },
+      { value: 'small', label: '👥 Small team (2–5)', desc: 'Startup or small crew' },
+      { value: 'medium', label: '🏗️ Medium team (6–20)', desc: 'Growing operation' },
+      { value: 'agency', label: '🏢 Agency / Enterprise', desc: '20+ users or client accounts' },
+    ],
   },
 ];
 
 export default function OnboardingPage() {
+  const { user } = useUser();
   const router = useRouter();
-  const [current, setCurrent] = useState(0);
-  const [answers, setAnswers] = useState<string[]>([]);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [selected, setSelected] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  const handleNext = () => {
+  const step = steps[currentStep];
+  const isLast = currentStep === steps.length - 1;
+  const progressWidth = `${((currentStep + 1) / steps.length) * 100}%`;
+
+  async function handleNext() {
     if (!selected) return;
-    const newAnswers = [...answers, selected];
+    const newAnswers = { ...answers, [step.id]: selected };
     setAnswers(newAnswers);
-    setSelected(null);
-    if (current + 1 < questions.length) {
-      setCurrent(current + 1);
-    } else {
-      router.push("/dashboard");
-    }
-  };
 
-  const q = questions[current];
+    if (isLast) {
+      setSaving(true);
+      try {
+        await user?.update({
+          unsafeMetadata: {
+            onboarding: newAnswers,
+            onboardingComplete: true,
+          },
+        });
+      } catch (e) {
+        console.error('Failed to save onboarding:', e);
+      }
+      router.push('/dashboard');
+    } else {
+      setCurrentStep((s) => s + 1);
+      setSelected(null);
+    }
+  }
 
   return (
     <div style={{
-      minHeight: "100vh",
-      backgroundColor: "#0f0f0f",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: "20px",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+      minHeight: '100vh',
+      background: '#0a0a0a',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: "'DM Sans', sans-serif",
+      padding: '24px',
     }}>
-      <div style={{
-        backgroundColor: "#1a1a1a",
-        borderRadius: "20px",
-        padding: "40px",
-        width: "100%",
-        maxWidth: "640px",
-        boxShadow: "0 25px 50px rgba(0,0,0,0.5)"
-      }}>
-        {/* Progress */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-          <div style={{ display: "flex", gap: "6px", flex: 1 }}>
-            {questions.map((_, i) => (
-              <div key={i} style={{
-                height: "4px",
-                flex: 1,
-                borderRadius: "99px",
-                backgroundColor: i <= current ? "#8b5cf6" : "#333"
-              }} />
-            ))}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600&family=Syne:wght@700;800&display=swap');
+
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .onb-wrap {
+          animation: fadeUp 0.35s ease both;
+        }
+        .option-card {
+          background: #111;
+          border: 1.5px solid #222;
+          border-radius: 12px;
+          padding: 14px 18px;
+          cursor: pointer;
+          transition: border-color 0.15s, background 0.15s, transform 0.12s;
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          text-align: left;
+          width: 100%;
+        }
+        .option-card:hover {
+          border-color: #3a3a3a;
+          background: #161616;
+          transform: translateY(-1px);
+        }
+        .option-card.selected {
+          border-color: #00e5a0;
+          background: #071a11;
+        }
+        .next-btn {
+          background: #00e5a0;
+          color: #0a0a0a;
+          border: none;
+          border-radius: 10px;
+          padding: 14px 32px;
+          font-family: 'DM Sans', sans-serif;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: opacity 0.15s, transform 0.12s;
+          width: 100%;
+          margin-top: 12px;
+        }
+        .next-btn:disabled {
+          opacity: 0.25;
+          cursor: not-allowed;
+          transform: none;
+        }
+        .next-btn:not(:disabled):hover {
+          opacity: 0.88;
+          transform: translateY(-1px);
+        }
+        .skip-btn {
+          background: none;
+          border: none;
+          color: #333;
+          font-size: 13px;
+          cursor: pointer;
+          font-family: 'DM Sans', sans-serif;
+          transition: color 0.15s;
+        }
+        .skip-btn:hover {
+          color: #555;
+        }
+      `}</style>
+
+      <div className="onb-wrap" style={{ width: '100%', maxWidth: '500px' }}>
+
+        {/* Logo */}
+        <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+          <div style={{
+            fontFamily: "'Syne', sans-serif",
+            fontSize: '22px',
+            fontWeight: 800,
+            color: '#00e5a0',
+            letterSpacing: '-0.5px',
+            marginBottom: '6px',
+          }}>
+            SEOAgent
           </div>
-          <span style={{ color: "#888", fontSize: "14px", marginLeft: "16px", whiteSpace: "nowrap" }}>
-            {current + 1} of {questions.length}
-          </span>
+          <div style={{ color: '#444', fontSize: '13px' }}>
+            Step {currentStep + 1} of {steps.length}
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div style={{
+          height: '3px',
+          background: '#1c1c1c',
+          borderRadius: '99px',
+          marginBottom: '36px',
+          overflow: 'hidden',
+        }}>
+          <div style={{
+            height: '100%',
+            width: progressWidth,
+            background: '#00e5a0',
+            borderRadius: '99px',
+            transition: 'width 0.4s ease',
+          }} />
         </div>
 
         {/* Question */}
-        <h2 style={{
-          color: "#ffffff",
-          fontSize: "24px",
-          fontWeight: "700",
-          marginBottom: "32px",
-          lineHeight: "1.3"
-        }}>
-          {q.question}
-        </h2>
+        <div style={{ marginBottom: '24px' }}>
+          <h1 style={{
+            fontFamily: "'Syne', sans-serif",
+            fontSize: '26px',
+            fontWeight: 800,
+            color: '#f0f0f0',
+            margin: '0 0 8px 0',
+            lineHeight: 1.2,
+          }}>
+            {step.question}
+          </h1>
+          <p style={{ color: '#555', fontSize: '14px', margin: 0 }}>
+            {step.subtitle}
+          </p>
+        </div>
 
         {/* Options */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "12px",
-          marginBottom: "32px"
-        }}>
-          {q.options.map((option) => (
-            <button
-              key={option}
-              onClick={() => setSelected(option)}
-              style={{
-                padding: "16px",
-                borderRadius: "12px",
-                border: selected === option ? "2px solid #8b5cf6" : "2px solid #333",
-                backgroundColor: selected === option ? "rgba(139,92,246,0.15)" : "#252525",
-                color: selected === option ? "#ffffff" : "#aaaaaa",
-                fontSize: "14px",
-                fontWeight: "500",
-                textAlign: "left",
-                cursor: "pointer",
-                transition: "all 0.2s",
-              }}
-            >
-              <span style={{ marginRight: "8px" }}>○</span>
-              {option}
-            </button>
-          ))}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '8px' }}>
+          {step.options.map((opt) => {
+            const emoji = opt.label.split(' ')[0];
+            const label = opt.label.split(' ').slice(1).join(' ');
+            return (
+              <button
+                key={opt.value}
+                className={`option-card${selected === opt.value ? ' selected' : ''}`}
+                onClick={() => setSelected(opt.value)}
+              >
+                <span style={{ fontSize: '22px', lineHeight: 1, minWidth: '28px' }}>{emoji}</span>
+                <div>
+                  <div style={{
+                    color: selected === opt.value ? '#00e5a0' : '#d0d0d0',
+                    fontWeight: 600,
+                    fontSize: '14px',
+                    transition: 'color 0.15s',
+                  }}>
+                    {label}
+                  </div>
+                  <div style={{ color: '#555', fontSize: '12px', marginTop: '2px' }}>
+                    {opt.desc}
+                  </div>
+                </div>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Next Button */}
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <button
-            onClick={handleNext}
-            disabled={!selected}
-            style={{
-              padding: "14px 32px",
-              backgroundColor: selected ? "#8b5cf6" : "#444",
-              color: "#ffffff",
-              border: "none",
-              borderRadius: "12px",
-              fontSize: "16px",
-              fontWeight: "600",
-              cursor: selected ? "pointer" : "not-allowed",
-              transition: "all 0.2s"
-            }}
-          >
-            {current + 1 === questions.length ? "Finish →" : "Next →"}
+        {/* Next button */}
+        <button
+          className="next-btn"
+          onClick={handleNext}
+          disabled={!selected || saving}
+        >
+          {saving ? 'Saving...' : isLast ? '🚀 Go to Dashboard' : 'Continue →'}
+        </button>
+
+        {/* Skip */}
+        <div style={{ textAlign: 'center', marginTop: '16px' }}>
+          <button className="skip-btn" onClick={() => router.push('/dashboard')}>
+            Skip for now
           </button>
         </div>
+
       </div>
     </div>
   );
