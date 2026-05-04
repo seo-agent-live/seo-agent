@@ -39,8 +39,8 @@ const plans = [
       'Google Search Console sync',
       'Email support',
     ],
-    monthlyPriceId: 'price_pro_monthly', // Replace with your Stripe Price ID
-    annualPriceId: 'price_pro_annual',   // Replace with your Stripe Price ID
+    monthlyPriceId: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || '',
+    annualPriceId: process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID || '',
   },
   {
     name: 'Agency',
@@ -58,8 +58,8 @@ const plans = [
       'Analytics dashboard',
       'Priority support',
     ],
-    monthlyPriceId: 'price_agency_monthly', // Replace with your Stripe Price ID
-    annualPriceId: 'price_agency_annual',   // Replace with your Stripe Price ID
+    monthlyPriceId: process.env.NEXT_PUBLIC_STRIPE_AGENCY_PRICE_ID || '',
+    annualPriceId: process.env.NEXT_PUBLIC_STRIPE_AGENCY_PRICE_ID || '',
   },
 ];
 
@@ -130,14 +130,8 @@ export default function PricingPage() {
           font-family: 'DM Sans', sans-serif;
           transition: background 0.2s, color 0.2s;
         }
-        .toggle-opt.active {
-          background: #00e5a0;
-          color: #0a0a0a;
-        }
-        .toggle-opt:not(.active) {
-          background: transparent;
-          color: #555;
-        }
+        .toggle-opt.active { background: #00e5a0; color: #0a0a0a; }
+        .toggle-opt:not(.active) { background: transparent; color: #555; }
 
         .plan-card {
           background: #111;
@@ -146,22 +140,13 @@ export default function PricingPage() {
           padding: 32px 28px;
           display: flex;
           flex-direction: column;
-          gap: 0;
           transition: border-color 0.2s, transform 0.2s;
           flex: 1;
           min-width: 0;
         }
-        .plan-card:hover {
-          border-color: #2a2a2a;
-          transform: translateY(-2px);
-        }
-        .plan-card.highlight {
-          border-color: #00e5a0;
-          background: #0b1a13;
-        }
-        .plan-card.highlight:hover {
-          border-color: #00e5a0;
-        }
+        .plan-card:hover { border-color: #2a2a2a; transform: translateY(-2px); }
+        .plan-card.highlight { border-color: #00e5a0; background: #0b1a13; }
+        .plan-card.highlight:hover { border-color: #00e5a0; }
 
         .plan-btn {
           width: 100%;
@@ -175,23 +160,10 @@ export default function PricingPage() {
           border: none;
           margin-top: auto;
         }
-        .plan-btn.primary {
-          background: #00e5a0;
-          color: #0a0a0a;
-        }
-        .plan-btn.secondary {
-          background: transparent;
-          color: #888;
-          border: 1.5px solid #222;
-        }
-        .plan-btn:hover:not(:disabled) {
-          opacity: 0.85;
-          transform: translateY(-1px);
-        }
-        .plan-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
+        .plan-btn.primary { background: #00e5a0; color: #0a0a0a; }
+        .plan-btn.secondary { background: transparent; color: #888; border: 1.5px solid #222; }
+        .plan-btn:hover:not(:disabled) { opacity: 0.85; transform: translateY(-1px); }
+        .plan-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .feature-item {
           display: flex;
@@ -202,164 +174,72 @@ export default function PricingPage() {
           padding: 5px 0;
         }
         .check {
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
+          width: 16px; height: 16px; border-radius: 50%;
           background: #0d2419;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-          margin-top: 1px;
+          display: flex; align-items: center; justify-content: center;
+          flex-shrink: 0; margin-top: 1px;
         }
-        .check svg { display: block; }
-
         .badge {
           display: inline-block;
-          background: #00e5a0;
-          color: #0a2015;
-          font-size: 11px;
-          font-weight: 600;
-          padding: 3px 10px;
-          border-radius: 99px;
-          margin-bottom: 12px;
-          letter-spacing: 0.3px;
+          background: #00e5a0; color: #0a2015;
+          font-size: 11px; font-weight: 600;
+          padding: 3px 10px; border-radius: 99px;
+          margin-bottom: 12px; letter-spacing: 0.3px;
         }
-
         .savings-pill {
           display: inline-block;
-          background: #0d2419;
-          color: #00e5a0;
-          font-size: 11px;
-          font-weight: 600;
-          padding: 3px 10px;
-          border-radius: 99px;
-          margin-left: 8px;
-          vertical-align: middle;
+          background: #0d2419; color: #00e5a0;
+          font-size: 11px; font-weight: 600;
+          padding: 3px 10px; border-radius: 99px;
+          margin-left: 8px; vertical-align: middle;
         }
-
-        @media (max-width: 768px) {
-          .cards-grid { flex-direction: column !important; }
-        }
+        @media (max-width: 768px) { .cards-grid { flex-direction: column !important; } }
       `}</style>
 
       <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-
-        {/* Hero */}
         <div className="pricing-hero" style={{ textAlign: 'center', marginBottom: '48px' }}>
           <div style={{
-            display: 'inline-block',
-            background: '#0d2419',
-            color: '#00e5a0',
-            fontSize: '12px',
-            fontWeight: 600,
-            padding: '5px 14px',
-            borderRadius: '99px',
-            marginBottom: '20px',
-            letterSpacing: '0.5px',
-            textTransform: 'uppercase',
-          }}>
-            Pricing
-          </div>
+            display: 'inline-block', background: '#0d2419', color: '#00e5a0',
+            fontSize: '12px', fontWeight: 600, padding: '5px 14px',
+            borderRadius: '99px', marginBottom: '20px', letterSpacing: '0.5px', textTransform: 'uppercase',
+          }}>Pricing</div>
           <h1 style={{
-            fontFamily: "'Syne', sans-serif",
-            fontSize: 'clamp(32px, 5vw, 52px)',
-            fontWeight: 800,
-            color: '#f0f0f0',
-            margin: '0 0 16px 0',
-            lineHeight: 1.1,
-            letterSpacing: '-1px',
-          }}>
-            Simple, transparent pricing
-          </h1>
-          <p style={{
-            color: '#555',
-            fontSize: '16px',
-            maxWidth: '440px',
-            margin: '0 auto 32px',
-            lineHeight: 1.6,
-          }}>
+            fontFamily: "'Syne', sans-serif", fontSize: 'clamp(32px, 5vw, 52px)',
+            fontWeight: 800, color: '#f0f0f0', margin: '0 0 16px 0', lineHeight: 1.1, letterSpacing: '-1px',
+          }}>Simple, transparent pricing</h1>
+          <p style={{ color: '#555', fontSize: '16px', maxWidth: '440px', margin: '0 auto 32px', lineHeight: 1.6 }}>
             Start free. Upgrade when you need more. No hidden fees.
           </p>
-
-          {/* Toggle */}
           <div className="toggle-wrap">
-            <button
-              className={`toggle-opt${!annual ? ' active' : ''}`}
-              onClick={() => setAnnual(false)}
-            >
-              Monthly
-            </button>
-            <button
-              className={`toggle-opt${annual ? ' active' : ''}`}
-              onClick={() => setAnnual(true)}
-            >
-              Annual
-              <span className="savings-pill">Save 20%</span>
+            <button className={`toggle-opt${!annual ? ' active' : ''}`} onClick={() => setAnnual(false)}>Monthly</button>
+            <button className={`toggle-opt${annual ? ' active' : ''}`} onClick={() => setAnnual(true)}>
+              Annual<span className="savings-pill">Save 20%</span>
             </button>
           </div>
         </div>
 
-        {/* Cards */}
-        <div className="pricing-cards cards-grid" style={{
-          display: 'flex',
-          gap: '16px',
-          alignItems: 'stretch',
-        }}>
+        <div className="pricing-cards cards-grid" style={{ display: 'flex', gap: '16px', alignItems: 'stretch' }}>
           {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`plan-card${plan.highlight ? ' highlight' : ''}`}
-            >
+            <div key={plan.name} className={`plan-card${plan.highlight ? ' highlight' : ''}`}>
               {plan.badge && <div className="badge">{plan.badge}</div>}
-
-              <div style={{
-                fontFamily: "'Syne', sans-serif",
-                fontSize: '20px',
-                fontWeight: 800,
-                color: '#f0f0f0',
-                marginBottom: '6px',
-              }}>
+              <div style={{ fontFamily: "'Syne', sans-serif", fontSize: '20px', fontWeight: 800, color: '#f0f0f0', marginBottom: '6px' }}>
                 {plan.name}
               </div>
-
               <div style={{ marginBottom: '20px' }}>
-                <span style={{
-                  fontFamily: "'Syne', sans-serif",
-                  fontSize: '40px',
-                  fontWeight: 800,
-                  color: plan.highlight ? '#00e5a0' : '#f0f0f0',
-                  letterSpacing: '-1px',
-                }}>
+                <span style={{ fontFamily: "'Syne', sans-serif", fontSize: '40px', fontWeight: 800, color: plan.highlight ? '#00e5a0' : '#f0f0f0', letterSpacing: '-1px' }}>
                   ${annual ? plan.annualPrice : plan.monthlyPrice}
                 </span>
                 {(annual ? plan.annualPrice : plan.monthlyPrice) > 0 && (
                   <span style={{ color: '#444', fontSize: '14px', marginLeft: '4px' }}>/mo</span>
                 )}
                 {annual && plan.annualPrice > 0 && (
-                  <div style={{ color: '#444', fontSize: '12px', marginTop: '4px' }}>
-                    billed annually
-                  </div>
+                  <div style={{ color: '#444', fontSize: '12px', marginTop: '4px' }}>billed annually</div>
                 )}
               </div>
-
-              <p style={{
-                color: '#555',
-                fontSize: '13px',
-                lineHeight: 1.55,
-                marginBottom: '24px',
-                minHeight: '40px',
-              }}>
+              <p style={{ color: '#555', fontSize: '13px', lineHeight: 1.55, marginBottom: '24px', minHeight: '40px' }}>
                 {plan.description}
               </p>
-
-              <div style={{
-                borderTop: '1px solid #1a1a1a',
-                paddingTop: '20px',
-                marginBottom: '28px',
-                display: 'flex',
-                flexDirection: 'column',
-              }}>
+              <div style={{ borderTop: '1px solid #1a1a1a', paddingTop: '20px', marginBottom: '28px', display: 'flex', flexDirection: 'column' }}>
                 {plan.features.map((f) => (
                   <div key={f} className="feature-item">
                     <div className="check">
@@ -371,7 +251,6 @@ export default function PricingPage() {
                   </div>
                 ))}
               </div>
-
               <button
                 className={`plan-btn${plan.highlight ? ' primary' : ' secondary'}`}
                 onClick={() => handleCheckout(plan)}
@@ -383,16 +262,9 @@ export default function PricingPage() {
           ))}
         </div>
 
-        {/* Footer note */}
-        <p style={{
-          textAlign: 'center',
-          color: '#333',
-          fontSize: '13px',
-          marginTop: '40px',
-        }}>
+        <p style={{ textAlign: 'center', color: '#333', fontSize: '13px', marginTop: '40px' }}>
           All plans include a 14-day money-back guarantee. No questions asked.
         </p>
-
       </div>
     </div>
   );
