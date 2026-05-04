@@ -15,7 +15,6 @@ export default function HomePage() {
   return (
     <main style={{ fontFamily: 'Inter, sans-serif', background: '#0f0c2e', minHeight: '100vh', color: 'white' }}>
 
-      {/* DEMO MODAL */}
       {showDemo && (
         <div onClick={() => setShowDemo(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div onClick={e => e.stopPropagation()} style={{ background: '#1a1a2e', borderRadius: '16px', padding: '40px', maxWidth: '500px', width: '90%', textAlign: 'center' }}>
@@ -27,7 +26,6 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* NAVBAR */}
       <nav style={{ display: 'flex', alignItems: 'center', padding: '0 48px', height: '64px', borderBottom: '1px solid rgba(255,255,255,0.07)', background: 'rgba(15,12,46,0.97)', position: 'relative', zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '40px' }}>
           <div style={{ width: '28px', height: '28px', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', borderRadius: '7px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: '700', color: 'white' }}>S</div>
@@ -37,10 +35,7 @@ export default function HomePage() {
         <div style={{ display: 'flex', gap: '4px', flex: 1, position: 'relative' }}>
           {Object.keys(navItems).map(item => (
             <div key={item} style={{ position: 'relative' }}>
-              <span
-                onClick={() => setOpenMenu(openMenu === item ? null : item)}
-                style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', padding: '6px 14px', borderRadius: '6px', cursor: 'pointer', display: 'block' }}
-              >
+              <span onClick={() => setOpenMenu(openMenu === item ? null : item)} style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', padding: '6px 14px', borderRadius: '6px', cursor: 'pointer', display: 'block' }}>
                 {item} ▾
               </span>
               {openMenu === item && (
@@ -48,8 +43,7 @@ export default function HomePage() {
                   {navItems[item].map(subItem => (
                     <div key={subItem} style={{ padding: '10px 14px', fontSize: '13px', color: 'rgba(255,255,255,0.7)', cursor: 'pointer', borderRadius: '8px' }}
                       onMouseEnter={e => e.currentTarget.style.background = 'rgba(99,102,241,0.15)'}
-                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-                    >
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                       {subItem}
                     </div>
                   ))}
@@ -57,7 +51,6 @@ export default function HomePage() {
               )}
             </div>
           ))}
-
           <Link href="/pricing" style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', padding: '6px 14px', borderRadius: '6px', cursor: 'pointer', textDecoration: 'none' }}>
             Pricing
           </Link>
@@ -69,7 +62,6 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* HERO */}
       <section onClick={() => setOpenMenu(null)} style={{ textAlign: 'center', padding: '90px 40px 60px' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.3)', borderRadius: '20px', padding: '5px 14px', fontSize: '12px', color: '#a5b4fc', marginBottom: '28px' }}>
           <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#6366f1' }} />
@@ -96,7 +88,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FEATURES */}
       <section onClick={() => setOpenMenu(null)} style={{ padding: '60px 48px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
         <p style={{ textAlign: 'center', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)', marginBottom: '10px' }}>Everything you need</p>
         <h2 style={{ textAlign: 'center', fontSize: '32px', fontWeight: '700', letterSpacing: '-0.5px', marginBottom: '8px' }}>The full SEO stack, powered by AI</h2>
