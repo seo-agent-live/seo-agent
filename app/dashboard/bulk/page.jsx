@@ -1,0 +1,1 @@
+export default function Page() { return <div style={{color:"white",padding:"40px"}}><h1>Bulk Generate</h1></div> }

@@ -1,0 +1,1 @@
+export default function Page() { return <div style={{color:"white",padding:"40px"}}><h1>Site Audit</h1></div> }
