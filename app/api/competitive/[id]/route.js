@@ -9,21 +9,21 @@ function getSupabase() {
   );
 }
 
-// GET /api/competitive — list saved analyses
-export async function GET() {
+// DELETE /api/competitive/[id]
+export async function DELETE(req, { params }) {
   try {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const supabase = getSupabase();
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('competitive_analyses')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .delete()
+      .eq('id', params.id)
+      .eq('user_id', userId);
 
     if (error) throw error;
-    return NextResponse.json({ analyses: data ?? [] });
+    return NextResponse.json({ success: true });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }

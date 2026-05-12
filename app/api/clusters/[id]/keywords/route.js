@@ -9,21 +9,29 @@ function getSupabase() {
   );
 }
 
-// GET /api/competitive — list saved analyses
-export async function GET() {
+// POST /api/clusters/[id]/keywords — add keyword to cluster
+export async function POST(req, { params }) {
   try {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+    const { keyword, intent } = await req.json();
+    if (!keyword?.trim()) return NextResponse.json({ error: 'Keyword required' }, { status: 400 });
+
     const supabase = getSupabase();
     const { data, error } = await supabase
-      .from('competitive_analyses')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .from('cluster_keywords')
+      .insert({
+        cluster_id: params.id,
+        user_id: userId,
+        keyword: keyword.trim().toLowerCase(),
+        intent: intent ?? null,
+      })
+      .select()
+      .single();
 
     if (error) throw error;
-    return NextResponse.json({ analyses: data ?? [] });
+    return NextResponse.json({ keyword: data });
   } catch (e) {
     return NextResponse.json({ error: e.message }, { status: 500 });
   }
