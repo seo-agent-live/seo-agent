@@ -100,9 +100,8 @@ export default function DashboardSidebar() {
         <span style={{ fontSize: '13px' }}>⌕</span>
         <span style={{ flex: 1 }}>Search...</span>
         <kbd style={{
-          fontSize: '10px', color: '#2A3F6A', background: '#2A3F6A',
+          fontSize: '10px', color: '#7B8DB0', background: '#2A3F6A',
           padding: '2px 5px', borderRadius: '4px', fontFamily: 'monospace',
-          color: '#7B8DB0',
         }}>⌘K</kbd>
       </div>
 
