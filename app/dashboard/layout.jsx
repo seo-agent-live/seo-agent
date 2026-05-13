@@ -2,9 +2,9 @@ import DashboardSidebar from '@/components/Sidebar';
 
 export default function DashboardLayout({ children }) {
   return (
-    <div className="flex h-screen bg-[#0a0a0f] overflow-hidden">
+    <div style={{ display: 'flex', height: '100vh', background: '#1C2B4A' }}>
       <DashboardSidebar />
-      <main className="flex-1 overflow-y-auto">
+      <main style={{ flex: 1, overflowY: 'auto' }}>
         {children}
       </main>
     </div>

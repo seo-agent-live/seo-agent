@@ -4,19 +4,19 @@ import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Plus, ArrowUpRight, FileText } from 'lucide-react';
+import { FileText, Plus, ArrowUpRight } from 'lucide-react';
 
-const statusColors = {
-  Published: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', dot: 'bg-emerald-400' },
-  Draft:     { bg: 'bg-indigo-500/15',  text: 'text-indigo-400',  dot: 'bg-indigo-400'  },
-  Review:    { bg: 'bg-amber-400/15',   text: 'text-amber-400',   dot: 'bg-amber-400'   },
+const statusStyles = {
+  Published: { background: 'rgba(29,184,160,0.15)', color: '#1DB8A0', dot: '#1DB8A0' },
+  Draft:     { background: 'rgba(79,124,255,0.15)',  color: '#4F7CFF',  dot: '#4F7CFF'  },
+  Review:    { background: 'rgba(245,158,11,0.15)',  color: '#f59e0b',  dot: '#f59e0b'  },
 };
 
 const quickActions = [
-  { label: 'New Article',         emoji: '✍️', href: '/dashboard/writer' },
-  { label: 'Research Keywords',   emoji: '🔍', href: '/dashboard/keywords' },
-  { label: 'Analyze Competitors', emoji: '📊', href: '/dashboard/competitors' },
-  { label: 'Site Audit',          emoji: '🌐', href: '/dashboard/audit' },
+  { label: 'New Article',         icon: '✍️', href: '/dashboard/writer',      accent: 'rgba(79,124,255,0.15)',   iconColor: '#4F7CFF' },
+  { label: 'Research Keywords',   icon: '🔍', href: '/dashboard/keywords',    accent: 'rgba(29,184,160,0.15)',   iconColor: '#1DB8A0' },
+  { label: 'Analyze Competitors', icon: '📊', href: '/dashboard/competitors', accent: 'rgba(245,158,11,0.15)',   iconColor: '#f59e0b' },
+  { label: 'Site Audit',          icon: '🌐', href: '/dashboard/audit',       accent: 'rgba(239,68,68,0.12)',    iconColor: '#ef4444' },
 ];
 
 export default function DashboardPage() {
@@ -25,10 +25,9 @@ export default function DashboardPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const firstName =
-    user?.firstName ||
-    user?.emailAddresses?.[0]?.emailAddress?.split('@')[0] ||
-    'there';
+  const firstName = user?.firstName
+    || user?.emailAddresses?.[0]?.emailAddress?.split('@')[0]
+    || 'there';
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
@@ -42,18 +41,13 @@ export default function DashboardPage() {
           fetch('/api/analytics/keywords'),
           fetch('/api/competitive'),
         ]);
-
         const articles    = articlesRes.ok    ? await articlesRes.json()    : {};
         const keywords    = keywordsRes.ok    ? await keywordsRes.json()    : {};
         const competitors = competitorsRes.ok ? await competitorsRes.json() : {};
 
-        // Count competitor gap opportunities from saved analyses
         const analyses = competitors.analyses ?? [];
-        const competitorGaps = analyses.length * 5; // estimate 5 gaps per analysis
-
+        const competitorGaps = analyses.length * 5;
         const avgScore = articles.avgSeoScore ?? 0;
-        const healthLabel = avgScore >= 80 ? 'Good standing' : avgScore >= 50 ? 'Needs work' : 'Poor health';
-        const healthIssues = avgScore >= 80 ? 1 : avgScore >= 50 ? 3 : 6;
 
         setData({
           totalArticles:        articles.total         ?? 0,
@@ -64,9 +58,8 @@ export default function DashboardPage() {
           newKeywordsThisWeek:  keywords.thisWeek       ?? 0,
           competitorGaps,
           recentArticles:       articles.recent         ?? [],
-          healthScore:          avgScore,
-          healthLabel,
-          healthIssues,
+          healthLabel:          avgScore >= 80 ? 'Good standing' : avgScore >= 50 ? 'Needs work' : 'Poor health',
+          healthIssues:         avgScore >= 80 ? 1 : avgScore >= 50 ? 3 : 6,
         });
       } catch (e) {
         console.error('Dashboard load error:', e);
@@ -78,218 +71,237 @@ export default function DashboardPage() {
   }, []);
 
   const stats = [
-    {
-      label: 'ARTICLES GENERATED',
-      value: data?.totalArticles ?? 0,
-      sub: `+${data?.articlesThisWeek ?? 0} this week`,
-      subColor: 'text-emerald-400',
-    },
-    {
-      label: 'AVG SEO SCORE',
-      value: data?.avgSeoScore ?? 0,
-      sub: `+${data?.seoScoreChange ?? 0}pts from last week`,
-      subColor: 'text-emerald-400',
-    },
-    {
-      label: 'KEYWORDS TRACKED',
-      value: data?.keywordsTracked ?? 0,
-      sub: `+${data?.newKeywordsThisWeek ?? 0} new this week`,
-      subColor: 'text-emerald-400',
-    },
-    {
-      label: 'COMPETITOR GAPS',
-      value: data?.competitorGaps ?? 0,
-      sub: `${data?.competitorGaps ?? 0 > 0 ? data?.competitorGaps : 0} new opportunities`,
-      subColor: 'text-red-400',
-    },
+    { label: 'Articles Generated', value: data?.totalArticles ?? 0,    sub: `+${data?.articlesThisWeek ?? 0} this week`,         color: '#4F7CFF',  subColor: '#1DB8A0' },
+    { label: 'Avg SEO Score',      value: data?.avgSeoScore ?? 0,       sub: `+${data?.seoScoreChange ?? 0}pts from last week`,   color: '#1DB8A0',  subColor: '#1DB8A0' },
+    { label: 'Keywords Tracked',   value: data?.keywordsTracked ?? 0,   sub: `+${data?.newKeywordsThisWeek ?? 0} new this week`,  color: '#E8EDF8',  subColor: '#1DB8A0' },
+    { label: 'Competitor Gaps',    value: data?.competitorGaps ?? 0,    sub: `${data?.competitorGaps ?? 0} new opportunities`,    color: '#f59e0b',  subColor: '#f59e0b' },
   ];
 
-  // Health ring
-  const score = data?.healthScore ?? 0;
-  const r = 28, circ = 2 * Math.PI * r;
+  // Health ring calc
+  const score = data?.avgSeoScore ?? 0;
+  const r = 27, circ = 2 * Math.PI * r;
   const dash = (score / 100) * circ;
-  const ringColor = score >= 80 ? '#6366f1' : score >= 50 ? '#f59e0b' : '#ef4444';
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-[#0d0d14] text-white">
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#1C2B4A', color: '#E8EDF8' }}>
 
       {/* Top bar */}
-      <header className="flex items-center justify-between px-8 py-4 border-b border-white/[0.06] shrink-0">
-        <p className="text-xs text-white/30">
-          <span className="text-white/50">SEOAgent</span>
-          <span className="mx-1.5 text-white/20">/</span>
+      <header style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '13px 24px', borderBottom: '1px solid #2A3F6A',
+        background: '#1C2B4A', flexShrink: 0,
+      }}>
+        <p style={{ fontSize: '12px', color: '#7B8DB0', margin: 0 }}>
+          <span style={{ color: '#E8EDF8' }}>RankFlow</span>
+          <span style={{ margin: '0 6px', color: '#2A3F6A' }}>/</span>
           Dashboard
         </p>
-        <div className="flex items-center gap-2">
+        <div style={{ display: 'flex', gap: '8px' }}>
           <button
             onClick={() => router.push('/dashboard/library')}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-white/[0.1] bg-white/[0.04] hover:bg-white/[0.07] text-white/60 text-xs font-medium transition-colors"
-          >
+            style={{
+              padding: '6px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '500',
+              background: 'transparent', border: '1px solid #2A3F6A', color: '#7B8DB0', cursor: 'pointer',
+            }}>
             Import
           </button>
           <button
             onClick={() => router.push('/dashboard/writer')}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white text-[#0d0d14] text-xs font-semibold hover:bg-white/90 transition-colors"
-          >
-            <Plus size={13} /> New Article
+            style={{
+              padding: '6px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '500',
+              background: '#4F7CFF', border: 'none', color: '#fff', cursor: 'pointer',
+            }}>
+            + New Article
           </button>
         </div>
       </header>
 
-      <main className="flex-1 px-8 py-8 overflow-y-auto space-y-6">
+      <main style={{ flex: 1, padding: '24px', overflowY: 'auto' }}>
 
         {/* Greeting */}
-        <div>
-          <h1 className="text-2xl font-bold text-white/90 tracking-tight mb-1">
+        <div style={{ marginBottom: '20px' }}>
+          <h1 style={{ fontSize: '22px', fontWeight: '500', color: '#E8EDF8', marginBottom: '4px' }}>
             {greeting}, {firstName} {emoji}
           </h1>
-          <p className="text-sm text-white/35">Here's your SEO performance overview for the past 7 days.</p>
+          <p style={{ fontSize: '13px', color: '#7B8DB0', margin: 0 }}>
+            Here's your SEO performance overview for the past 7 days.
+          </p>
         </div>
 
         {/* Quick actions */}
-        <div className="grid grid-cols-4 gap-3">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '10px', marginBottom: '18px' }}>
           {quickActions.map(a => (
-            <button key={a.label} onClick={() => router.push(a.href)}
-              className="flex items-center gap-3 px-4 py-3.5 rounded-xl bg-white/[0.03] border border-white/[0.07] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all text-left">
-              <span className="text-xl">{a.emoji}</span>
-              <span className="text-sm font-medium text-white/70">{a.label}</span>
-            </button>
+            <div key={a.label} onClick={() => router.push(a.href)} style={{
+              background: '#213354', border: '1px solid #2A3F6A', borderRadius: '10px',
+              padding: '13px 12px', display: 'flex', alignItems: 'center', gap: '10px',
+              cursor: 'pointer', transition: 'border-color 0.15s',
+            }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = '#4F7CFF'}
+              onMouseLeave={e => e.currentTarget.style.borderColor = '#2A3F6A'}>
+              <div style={{
+                width: '32px', height: '32px', borderRadius: '8px', display: 'flex',
+                alignItems: 'center', justifyContent: 'center', fontSize: '16px',
+                background: a.accent, flexShrink: 0,
+              }}>
+                {a.icon}
+              </div>
+              <span style={{ fontSize: '12px', fontWeight: '500', color: '#E8EDF8', lineHeight: '1.3' }}>
+                {a.label}
+              </span>
+            </div>
           ))}
         </div>
 
         {/* Stat cards */}
-        <div className="grid grid-cols-4 gap-4">
-          {stats.map((s) => (
-            <div key={s.label}
-              className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-5 hover:border-white/[0.12] transition-colors">
-              <p className="text-[10px] font-semibold tracking-widest text-white/30 uppercase mb-4">{s.label}</p>
-              {loading ? (
-                <div className="h-8 w-20 rounded-md bg-white/[0.06] animate-pulse mb-2" />
-              ) : (
-                <p className="text-3xl font-bold text-white/90 tracking-tight mb-1.5">{s.value}</p>
-              )}
-              {loading ? (
-                <div className="h-3 w-28 rounded bg-white/[0.04] animate-pulse" />
-              ) : (
-                <p className={`text-xs font-medium ${s.subColor}`}>{s.sub}</p>
-              )}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '10px', marginBottom: '18px' }}>
+          {stats.map(s => (
+            <div key={s.label} style={{
+              background: '#213354', border: '1px solid #2A3F6A',
+              borderRadius: '10px', padding: '16px',
+            }}>
+              <p style={{ fontSize: '10px', fontWeight: '500', letterSpacing: '0.07em', textTransform: 'uppercase', color: '#7B8DB0', marginBottom: '10px' }}>
+                {s.label}
+              </p>
+              {loading
+                ? <div style={{ height: '36px', width: '60px', borderRadius: '6px', background: '#2A3F6A', marginBottom: '8px' }} />
+                : <p style={{ fontSize: '28px', fontWeight: '500', color: s.color, marginBottom: '4px' }}>{s.value}</p>
+              }
+              {loading
+                ? <div style={{ height: '12px', width: '100px', borderRadius: '4px', background: '#2A3F6A' }} />
+                : <p style={{ fontSize: '12px', color: s.subColor, margin: 0 }}>{s.sub}</p>
+              }
             </div>
           ))}
         </div>
 
-        {/* Bottom: Recent Articles + SEO Health */}
-        <div className="grid grid-cols-3 gap-6">
+        {/* Bottom row */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 272px', gap: '14px' }}>
 
-          {/* Recent Articles — 2/3 width */}
-          <div className="col-span-2 bg-white/[0.03] border border-white/[0.07] rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
-              <h2 className="text-sm font-semibold text-white/80">Recent Articles</h2>
-              <Link href="/dashboard/library"
-                className="text-xs text-white/40 hover:text-white/70 transition-colors flex items-center gap-1">
-                View all <ArrowUpRight size={12} />
+          {/* Recent articles */}
+          <div style={{ background: '#213354', border: '1px solid #2A3F6A', borderRadius: '10px', overflow: 'hidden' }}>
+            <div style={{ padding: '13px 18px', borderBottom: '1px solid #2A3F6A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ fontSize: '13px', fontWeight: '500', color: '#E8EDF8' }}>Recent Articles</span>
+              <Link href="/dashboard/library" style={{ fontSize: '12px', color: '#4F7CFF', textDecoration: 'none' }}>
+                View all →
               </Link>
             </div>
 
             {loading ? (
-              <div className="p-6 space-y-4">
+              <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {[...Array(4)].map((_, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <div className="h-3 flex-1 rounded bg-white/[0.06] animate-pulse" />
-                    <div className="h-3 w-8 rounded bg-white/[0.06] animate-pulse" />
-                    <div className="h-5 w-16 rounded-full bg-white/[0.06] animate-pulse" />
-                  </div>
+                  <div key={i} style={{ height: '16px', borderRadius: '4px', background: '#2A3F6A', width: `${70 + i * 5}%` }} />
                 ))}
               </div>
             ) : data?.recentArticles?.length > 0 ? (
-              <div className="divide-y divide-white/[0.04]">
-                {data.recentArticles.map((article) => {
-                  const sc = statusColors[article.status] ?? statusColors.Draft;
-                  return (
-                    <div key={article.id}
-                      className="flex items-center gap-4 px-6 py-3.5 hover:bg-white/[0.02] transition-colors cursor-pointer group"
-                      onClick={() => router.push(`/dashboard/writer?id=${article.id}`)}>
-                      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${sc.dot}`} />
-                      <span className="flex-1 text-[13px] text-white/70 group-hover:text-white/90 transition-colors truncate">
-                        {article.title}
-                      </span>
-                      <span className="text-xs text-white/30 w-6 text-right shrink-0">{article.seoScore}</span>
-                      <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full shrink-0 ${sc.bg} ${sc.text}`}>
-                        {article.status}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+              data.recentArticles.map(article => {
+                const st = statusStyles[article.status] ?? statusStyles.Draft;
+                return (
+                  <div key={article.id}
+                    onClick={() => router.push(`/dashboard/writer?id=${article.id}`)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '11px',
+                      padding: '11px 18px', borderBottom: '1px solid #2A3F6A',
+                      cursor: 'pointer',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'rgba(79,124,255,0.05)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                    <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: st.dot, flexShrink: 0 }} />
+                    <span style={{ flex: 1, fontSize: '12.5px', color: '#E8EDF8', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {article.title}
+                    </span>
+                    <span style={{ fontSize: '13px', fontWeight: '500', color: '#7B8DB0', width: '26px', textAlign: 'right', flexShrink: 0 }}>
+                      {article.seoScore}
+                    </span>
+                    <span style={{
+                      fontSize: '11px', fontWeight: '500', padding: '3px 8px', borderRadius: '20px',
+                      background: st.background, color: st.color, flexShrink: 0,
+                    }}>
+                      {article.status}
+                    </span>
+                  </div>
+                );
+              })
             ) : (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <FileText size={18} className="text-white/20 mb-3" />
-                <p className="text-sm text-white/40 mb-1">No articles yet</p>
-                <button onClick={() => router.push('/dashboard/writer')}
-                  className="flex items-center gap-1.5 px-4 py-2 mt-2 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 text-xs font-semibold transition-colors">
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px', textAlign: 'center' }}>
+                <FileText size={20} color="#2A3F6A" style={{ marginBottom: '10px' }} />
+                <p style={{ fontSize: '13px', color: '#7B8DB0', marginBottom: '12px' }}>No articles yet</p>
+                <button onClick={() => router.push('/dashboard/writer')} style={{
+                  display: 'flex', alignItems: 'center', gap: '6px', padding: '7px 14px',
+                  borderRadius: '8px', background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.3)',
+                  color: '#4F7CFF', fontSize: '12px', fontWeight: '500', cursor: 'pointer',
+                }}>
                   <Plus size={13} /> New Article
                 </button>
               </div>
             )}
           </div>
 
-          {/* SEO Health — 1/3 width */}
-          <div className="space-y-4">
-            <div className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-5">
-              <h2 className="text-sm font-semibold text-white/80 mb-4">Overall SEO Health</h2>
-              {loading ? (
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 rounded-full bg-white/[0.06] animate-pulse" />
-                  <div className="space-y-2">
-                    <div className="h-4 w-24 rounded bg-white/[0.06] animate-pulse" />
-                    <div className="h-3 w-32 rounded bg-white/[0.04] animate-pulse" />
+          {/* Right column */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+
+            {/* SEO Health */}
+            <div style={{ background: '#213354', border: '1px solid #2A3F6A', borderRadius: '10px', padding: '16px' }}>
+              <p style={{ fontSize: '13px', fontWeight: '500', color: '#E8EDF8', marginBottom: 0 }}>Overall SEO Health</p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', margin: '12px 0 14px' }}>
+                {/* Ring */}
+                <div style={{ position: 'relative', width: '66px', height: '66px', flexShrink: 0 }}>
+                  <svg width="66" height="66" viewBox="0 0 66 66" style={{ transform: 'rotate(-90deg)' }}>
+                    <circle cx="33" cy="33" r={r} fill="none" stroke="#2A3F6A" strokeWidth="6" />
+                    <circle cx="33" cy="33" r={r} fill="none" stroke="#4F7CFF" strokeWidth="6"
+                      strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" />
+                  </svg>
+                  <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: '500', color: '#4F7CFF' }}>
+                    {loading ? '—' : score}
                   </div>
                 </div>
-              ) : (
-                <>
-                  <div className="flex items-center gap-4 mb-4">
-                    {/* Mini ring */}
-                    <div className="relative w-16 h-16 shrink-0 flex items-center justify-center">
-                      <svg width="64" height="64" className="-rotate-90">
-                        <circle cx="32" cy="32" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="6" />
-                        <circle cx="32" cy="32" r={r} fill="none" stroke={ringColor} strokeWidth="6"
-                          strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" />
-                      </svg>
-                      <span className="absolute text-sm font-bold text-white/90">{score}</span>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-white/80">{data?.healthLabel}</p>
-                      <p className="text-xs text-white/35 mt-0.5">{data?.healthIssues} items need attention</p>
-                    </div>
-                  </div>
-                  <button onClick={() => router.push('/dashboard/audit')}
-                    className="w-full py-2.5 rounded-lg bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 text-xs font-semibold transition-colors">
-                    View Full Report →
-                  </button>
-                </>
-              )}
+                <div>
+                  <p style={{ fontSize: '13px', fontWeight: '500', color: '#E8EDF8', margin: '0 0 3px' }}>
+                    {loading ? '...' : data?.healthLabel}
+                  </p>
+                  <p style={{ fontSize: '12px', color: '#7B8DB0', margin: 0 }}>
+                    {loading ? '' : `${data?.healthIssues} items need attention`}
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => router.push('/dashboard/audit')} style={{
+                width: '100%', padding: '9px', background: 'rgba(79,124,255,0.12)',
+                border: '1px solid rgba(79,124,255,0.3)', borderRadius: '8px',
+                color: '#4F7CFF', fontSize: '12px', fontWeight: '500', cursor: 'pointer',
+              }}>
+                View Full Report →
+              </button>
             </div>
 
             {/* Top Keywords */}
-            <div className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-5">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-semibold text-white/80">Top Keywords</h2>
-                <Link href="/dashboard/keywords" className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
-                  See all
-                </Link>
+            <div style={{ background: '#213354', border: '1px solid #2A3F6A', borderRadius: '10px', overflow: 'hidden' }}>
+              <div style={{ padding: '13px 16px', borderBottom: '1px solid #2A3F6A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '13px', fontWeight: '500', color: '#E8EDF8' }}>Top Keywords</span>
+                <Link href="/dashboard/keywords" style={{ fontSize: '12px', color: '#4F7CFF', textDecoration: 'none' }}>See all</Link>
               </div>
               {loading ? (
-                <div className="space-y-2">
+                <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {[...Array(3)].map((_, i) => (
-                    <div key={i} className="h-6 rounded bg-white/[0.06] animate-pulse" />
+                    <div key={i} style={{ height: '14px', borderRadius: '4px', background: '#2A3F6A' }} />
                   ))}
                 </div>
               ) : (data?.keywordsTracked ?? 0) === 0 ? (
-                <p className="text-xs text-white/25 text-center py-3">No keywords tracked yet</p>
+                <div style={{ padding: '20px 16px', textAlign: 'center' }}>
+                  <p style={{ fontSize: '12px', color: '#7B8DB0', margin: '0 0 8px' }}>No keywords yet</p>
+                  <Link href="/dashboard/keywords" style={{ fontSize: '12px', color: '#4F7CFF', textDecoration: 'none' }}>
+                    + Track keywords
+                  </Link>
+                </div>
               ) : (
-                <p className="text-xs text-white/40 text-center py-3">
-                  {data?.keywordsTracked} keywords tracked →{' '}
-                  <Link href="/dashboard/keywords" className="text-indigo-400 hover:underline">View all</Link>
-                </p>
+                <div style={{ padding: '8px 0' }}>
+                  <div style={{ padding: '8px 16px', fontSize: '12px', color: '#7B8DB0', textAlign: 'center' }}>
+                    {data?.keywordsTracked} keywords tracked
+                  </div>
+                  <div style={{ padding: '0 16px 8px', textAlign: 'center' }}>
+                    <Link href="/dashboard/keywords" style={{ fontSize: '12px', color: '#4F7CFF', textDecoration: 'none' }}>
+                      View all keywords →
+                    </Link>
+                  </div>
+                </div>
               )}
             </div>
           </div>
