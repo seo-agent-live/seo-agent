@@ -202,13 +202,13 @@ function PublishModal({ article, platform, connection, onClose, onPublished }) {
     }
   };
 
-  const inputStyle = {
+  const inputStyle: React.CSSProperties = {
     width: '100%', padding: '10px 12px', background: '#0D1117',
     border: '1px solid #21262D', borderRadius: '8px', color: '#E8EDF8',
     fontSize: '13px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
   };
 
-  const labelStyle = {
+  const labelStyle: React.CSSProperties = {
     fontSize: '11px', fontWeight: '600', color: '#8B949E',
     textTransform: 'uppercase', letterSpacing: '0.07em',
     display: 'block', marginBottom: '6px',
@@ -265,11 +265,11 @@ function PublishModal({ article, platform, connection, onClose, onPublished }) {
             {publishAs === 'scheduled' && (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
                 <div>
-                  <label style={labelStyle}>Date</label>
+                  <label style={labelStyle as React.CSSProperties}>Date</label>
                   <input type="date" value={scheduledDate} onChange={e => setScheduledDate(e.target.value)} style={inputStyle} />
                 </div>
                 <div>
-                  <label style={labelStyle}>Time</label>
+                  <label style={labelStyle as React.CSSProperties}>Time</label>
                   <input type="time" value={scheduledTime} onChange={e => setScheduledTime(e.target.value)} style={inputStyle} />
                 </div>
               </div>
