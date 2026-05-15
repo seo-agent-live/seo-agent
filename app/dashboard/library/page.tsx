@@ -28,8 +28,8 @@ export default function LibraryPage() {
     let result = [...articles];
     if (search) result = result.filter(a => a.title?.toLowerCase().includes(search.toLowerCase()) || a.content?.toLowerCase().includes(search.toLowerCase()));
     if (statusFilter !== 'All') result = result.filter(a => a.status === statusFilter);
-    if (sortBy === 'newest') result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    if (sortBy === 'oldest') result.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    if (sortBy === 'newest') result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    if (sortBy === 'oldest') result.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
     if (sortBy === 'title') result.sort((a, b) => a.title?.localeCompare(b.title));
     setFiltered(result);
   }, [articles, search, statusFilter, sortBy]);
