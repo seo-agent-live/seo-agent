@@ -14,8 +14,8 @@ const GOALS = ['Generate leads', 'Drive signups', 'Sell a product', 'Promote an 
 const TONES = ['Professional', 'Friendly', 'Bold & Direct', 'Minimalist', 'Luxury'];
 
 const card = { background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' };
-const inp  = { width: '100%', padding: '10px 12px', background: '#0D1117', border: '1px solid #21262D', borderRadius: '8px', color: '#E8EDF8', fontSize: '13px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' };
-const lbl  = { fontSize: '11px', fontWeight: '600', color: '#8B949E', textTransform: 'uppercase', letterSpacing: '0.07em', display: 'block', marginBottom: '6px' };
+const inp: React.CSSProperties  = { width: '100%', padding: '10px 12px', background: '#0D1117', border: '1px solid #21262D', borderRadius: '8px', color: '#E8EDF8', fontSize: '13px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' };
+const lbl: React.CSSProperties  = { fontSize: '11px', fontWeight: '600', color: '#8B949E', textTransform: 'uppercase', letterSpacing: '0.07em', display: 'block', marginBottom: '6px' };
 
 const PAGES_KEY = 'rankflow_landing_pages';
 
