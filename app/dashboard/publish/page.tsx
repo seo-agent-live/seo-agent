@@ -93,7 +93,7 @@ function ConnectionModal({ platform, onClose, onConnect }) {
     onClose();
   };
 
-  const inputStyle = {
+  const inputStyle: React.CSSProperties = {
     width: '100%', padding: '10px 12px', background: '#0D1117',
     border: '1px solid #21262D', borderRadius: '8px', color: '#E8EDF8',
     fontSize: '13px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
@@ -122,7 +122,7 @@ function ConnectionModal({ platform, onClose, onConnect }) {
               placeholder={field.placeholder}
               value={fields[field.key] || ''}
               onChange={e => setFields(f => ({ ...f, [field.key]: e.target.value }))}
-              style={inputStyle}
+              style={inputStyle as React.CSSProperties}
             />
           </div>
         ))}
