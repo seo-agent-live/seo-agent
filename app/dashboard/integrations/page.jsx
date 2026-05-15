@@ -1,256 +1,404 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
-const integrationsList = [
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
+
+const INTEGRATIONS_CATALOG = [
   {
-    id: 'wordpress',
-    name: 'WordPress',
-    desc: 'Publish articles directly to your WordPress site.',
+    type: 'wordpress',
+    label: 'WordPress',
+    desc: 'Auto-publish articles directly to your WordPress site.',
     icon: '🌐',
-    color: 'rgba(33,150,243,0.15)',
-    border: 'rgba(33,150,243,0.3)',
+    color: '#3b82f6',
     fields: [
-      { key: 'url', label: 'WordPress URL', placeholder: 'https://yoursite.com', type: 'text' },
-      { key: 'username', label: 'Username', placeholder: 'admin', type: 'text' },
-      { key: 'password', label: 'Application Password', placeholder: 'xxxx xxxx xxxx xxxx', type: 'password' },
+      { key: 'site_url',  label: 'Site URL',       placeholder: 'https://yoursite.com' },
+      { key: 'username',  label: 'Username',        placeholder: 'admin' },
+      { key: 'app_password', label: 'App Password', placeholder: 'xxxx xxxx xxxx xxxx', type: 'password' },
     ],
   },
   {
-    id: 'webflow',
-    name: 'Webflow',
-    desc: 'Publish content to your Webflow CMS collections.',
-    icon: '🎨',
-    color: 'rgba(99,102,241,0.15)',
-    border: 'rgba(99,102,241,0.3)',
+    type: 'openai',
+    label: 'OpenAI',
+    desc: 'Use your own OpenAI API key for content generation.',
+    icon: '🤖',
+    color: '#10b981',
     fields: [
-      { key: 'apiKey', label: 'Webflow API Key', placeholder: 'Enter your Webflow API key', type: 'password' },
-      { key: 'siteId', label: 'Site ID', placeholder: 'Enter your Webflow Site ID', type: 'text' },
-      { key: 'collectionId', label: 'Collection ID', placeholder: 'Enter your CMS Collection ID', type: 'text' },
+      { key: 'api_key', label: 'API Key', placeholder: 'sk-...', type: 'password' },
     ],
   },
   {
-    id: 'google_search_console',
-    name: 'Google Search Console',
-    desc: 'Track your keyword rankings and search performance.',
+    type: 'serper',
+    label: 'Serper',
+    desc: 'Power SEO research with real-time Google search data.',
+    icon: '🔍',
+    color: '#f59e0b',
+    fields: [
+      { key: 'api_key', label: 'API Key', placeholder: 'Your Serper API key', type: 'password' },
+    ],
+  },
+  {
+    type: 'zapier',
+    label: 'Zapier',
+    desc: 'Trigger Zaps when articles are generated or published.',
+    icon: '⚡',
+    color: '#f97316',
+    fields: [
+      { key: 'webhook_url', label: 'Webhook URL', placeholder: 'https://hooks.zapier.com/...' },
+    ],
+  },
+  {
+    type: 'google_search_console',
+    label: 'Google Search Console',
+    desc: 'Track impressions, clicks and rankings for your content.',
     icon: '📊',
-    color: 'rgba(16,185,129,0.15)',
-    border: 'rgba(16,185,129,0.3)',
+    color: '#6366f1',
     fields: [
-      { key: 'siteUrl', label: 'Site URL', placeholder: 'https://yoursite.com', type: 'text' },
-      { key: 'apiKey', label: 'API Key', placeholder: 'Enter your Google API key', type: 'password' },
+      { key: 'site_url',     label: 'Site URL',         placeholder: 'https://yoursite.com' },
+      { key: 'client_email', label: 'Service Account Email', placeholder: 'you@project.iam.gserviceaccount.com' },
+      { key: 'private_key',  label: 'Private Key',      placeholder: '-----BEGIN PRIVATE KEY-----', type: 'password' },
+    ],
+  },
+  {
+    type: 'slack',
+    label: 'Slack',
+    desc: 'Get notified in Slack when articles are ready.',
+    icon: '💬',
+    color: '#8b5cf6',
+    fields: [
+      { key: 'webhook_url', label: 'Webhook URL', placeholder: 'https://hooks.slack.com/services/...' },
     ],
   },
 ];
 
 export default function IntegrationsPage() {
   const [integrations, setIntegrations] = useState({});
-  const [selected, setSelected] = useState(null);
-  const [config, setConfig] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [testing, setTesting] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const [testResult, setTestResult] = useState(null);
+  const [loading, setLoading]           = useState(true);
+  const [openModal, setOpenModal]       = useState(null); // type string
+  const [formValues, setFormValues]     = useState({});
+  const [saving, setSaving]             = useState(false);
+  const [disconnecting, setDisconnecting] = useState(null);
+  const [toast, setToast]               = useState(null);
 
-  useEffect(() => {
-    fetchIntegrations();
-  }, []);
-
-  const fetchIntegrations = async () => {
-    try {
-      const res = await fetch('/api/integrations/list');
-      const data = await res.json();
-      const map = {};
-      (data.integrations || []).forEach(i => { map[i.type] = i; });
-      setIntegrations(map);
-    } catch (err) {
-      console.error(err);
-    }
+  const showToast = (msg, ok = true) => {
+    setToast({ msg, ok });
+    setTimeout(() => setToast(null), 3000);
   };
 
-  const handleConnect = async () => {
-    if (!selected) return;
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
-    try {
-      const res = await fetch('/api/integrations/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: selected.id, config, connected: true }),
-      });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setSuccess(`${selected.name} connected successfully!`);
-      setTimeout(() => setSuccess(null), 3000);
-      fetchIntegrations();
-      setSelected(null);
-    } catch (err) {
-      setError(err.message);
-    } finally {
+  useEffect(() => {
+    async function load() {
+      const { data } = await supabase
+        .from('integrations')
+        .select('id, type, config, connected, created_at');
+      if (data) {
+        const map = {};
+        data.forEach(r => { map[r.type] = r; });
+        setIntegrations(map);
+      }
       setLoading(false);
     }
+    load();
+  }, []);
+
+  const openConnect = (type) => {
+    const existing = integrations[type];
+    setFormValues(existing?.config ?? {});
+    setOpenModal(type);
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    const existing = integrations[openModal];
+    let error;
+
+    if (existing) {
+      ({ error } = await supabase
+        .from('integrations')
+        .update({ config: formValues, connected: true })
+        .eq('id', existing.id));
+    } else {
+      ({ error } = await supabase
+        .from('integrations')
+        .insert({ type: openModal, config: formValues, connected: true }));
+    }
+
+    if (!error) {
+      // Refresh
+      const { data } = await supabase.from('integrations').select('id, type, config, connected, created_at');
+      if (data) {
+        const map = {};
+        data.forEach(r => { map[r.type] = r; });
+        setIntegrations(map);
+      }
+      showToast(`${INTEGRATIONS_CATALOG.find(i => i.type === openModal)?.label} connected!`);
+      setOpenModal(null);
+    } else {
+      showToast('Failed to save. Try again.', false);
+    }
+    setSaving(false);
   };
 
   const handleDisconnect = async (type) => {
-    try {
-      await fetch('/api/integrations/disconnect', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type }),
-      });
-      setSuccess('Integration disconnected.');
-      setTimeout(() => setSuccess(null), 2000);
-      fetchIntegrations();
-    } catch (err) {
-      setError(err.message);
+    setDisconnecting(type);
+    const existing = integrations[type];
+    if (existing) {
+      await supabase.from('integrations').update({ connected: false, config: {} }).eq('id', existing.id);
+      setIntegrations(prev => ({ ...prev, [type]: { ...prev[type], connected: false, config: {} } }));
+      showToast(`${INTEGRATIONS_CATALOG.find(i => i.type === type)?.label} disconnected.`, false);
     }
+    setDisconnecting(null);
   };
 
-  const handleTest = async () => {
-    if (!selected) return;
-    setTesting(true);
-    setTestResult(null);
-    try {
-      const res = await fetch('/api/integrations/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: selected.id, config }),
-      });
-      const data = await res.json();
-      setTestResult(data);
-    } catch (err) {
-      setTestResult({ success: false, message: err.message });
-    } finally {
-      setTesting(false);
-    }
-  };
-
-  const handleEdit = (integration) => {
-    const def = integrationsList.find(i => i.id === integration.type);
-    setSelected(def);
-    setConfig(integration.config || {});
-    setTestResult(null);
-  };
+  const catalog = INTEGRATIONS_CATALOG;
+  const connectedCount = Object.values(integrations).filter(i => i.connected).length;
+  const modal = catalog.find(c => c.type === openModal);
 
   return (
-    <div style={{ color: '#fff', fontFamily: 'Inter, sans-serif', maxWidth: '900px' }}>
-      <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px', background: 'linear-gradient(135deg, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-        Integrations
-      </h1>
-      <p style={{ color: '#64748b', marginBottom: '32px', fontSize: '15px' }}>
-        Connect SEOAgent to your favorite tools and platforms.
-      </p>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        .int-root {
+          min-height: 100vh; background: #0d0f14; color: #e2e8f0;
+          font-family: 'Inter', sans-serif; padding: 32px 32px 64px; position: relative;
+        }
+        .int-root::before {
+          content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+          background-image: linear-gradient(rgba(124,111,255,0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(124,111,255,0.03) 1px, transparent 1px);
+          background-size: 40px 40px;
+        }
+        .inner { position: relative; z-index: 1; max-width: 1000px; }
 
-      {error && <div style={{ padding: '12px 16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '8px', color: '#ef4444', fontSize: '13px', marginBottom: '16px' }}>{error}</div>}
-      {success && <div style={{ padding: '12px 16px', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '8px', color: '#10b981', fontSize: '13px', marginBottom: '16px' }}>{success}</div>}
+        .int-card {
+          background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);
+          border-radius: 14px; padding: 20px 22px;
+          display: flex; align-items: center; gap: 16px;
+          transition: border-color 0.2s, background 0.2s;
+        }
+        .int-card:hover { background: rgba(255,255,255,0.038); border-color: rgba(124,111,255,0.18); }
+        .int-card.connected { border-color: rgba(52,211,153,0.2); }
 
-      {!selected ? (
-        <div>
+        .connect-btn {
+          padding: 8px 18px; border-radius: 8px; border: 1px solid rgba(124,111,255,0.3);
+          background: rgba(124,111,255,0.12); color: #a78bfa; font-size: 12px; font-weight: 600;
+          cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap;
+        }
+        .connect-btn:hover { background: rgba(124,111,255,0.22); }
+
+        .disconnect-btn {
+          padding: 8px 18px; border-radius: 8px; border: 1px solid rgba(248,113,113,0.2);
+          background: rgba(248,113,113,0.08); color: #f87171; font-size: 12px; font-weight: 600;
+          cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap;
+        }
+        .disconnect-btn:hover { background: rgba(248,113,113,0.18); }
+        .disconnect-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Modal */
+        .overlay {
+          position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50;
+          display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .modal {
+          background: #13151c; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px;
+          padding: 28px; width: 100%; max-width: 460px;
+          display: flex; flex-direction: column; gap: 18px;
+        }
+        .modal-input {
+          width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 9px; padding: 11px 14px; color: #f1f5f9; font-size: 13px;
+          font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .modal-input:focus { border-color: rgba(124,111,255,0.5); box-shadow: 0 0 0 3px rgba(124,111,255,0.08); }
+        .modal-input::placeholder { color: #334155; }
+
+        .save-btn {
+          padding: 11px; background: #7c6fff; border: none; border-radius: 10px;
+          color: #fff; font-size: 14px; font-weight: 600; cursor: pointer;
+          font-family: 'Inter', sans-serif; transition: background 0.15s;
+        }
+        .save-btn:hover:not(:disabled) { background: #6d5ff0; }
+        .save-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+        .cancel-btn {
+          padding: 11px; background: transparent; border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 10px; color: #475569; font-size: 14px; font-weight: 600;
+          cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s;
+        }
+        .cancel-btn:hover { background: rgba(255,255,255,0.04); color: #94a3b8; }
+
+        /* Toast */
+        .toast {
+          position: fixed; bottom: 28px; right: 28px; z-index: 100;
+          padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500;
+          font-family: 'Inter', sans-serif; pointer-events: none;
+          animation: fadeUp 0.25s ease;
+        }
+
+        @keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:1} }
+        .skeleton { background: rgba(255,255,255,0.06); border-radius: 8px; animation: shimmer 1.5s ease infinite; }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .fade-up { animation: fadeUp 0.25s ease; }
+      `}</style>
+
+      <div className="int-root">
+        <div className="inner">
+
+          {/* Header */}
+          <div style={{ marginBottom: '28px' }}>
+            <h1 style={{ fontSize: '26px', fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.5px', marginBottom: '5px' }}>
+              Integrations
+            </h1>
+            <p style={{ fontSize: '14px', color: '#475569' }}>
+              Connect your tools to automate your SEO workflow.
+            </p>
+          </div>
+
           {/* Stats */}
-          <div style={{ display: 'flex', gap: '16px', marginBottom: '32px' }}>
-            <div style={{ padding: '16px 24px', background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)', borderRadius: '12px', textAlign: 'center' }}>
-              <div style={{ fontSize: '24px', fontWeight: 700, color: '#6366f1' }}>{Object.values(integrations).filter(i => i.connected).length}</div>
-              <div style={{ fontSize: '12px', color: '#64748b' }}>Connected</div>
-            </div>
-            <div style={{ padding: '16px 24px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '12px', textAlign: 'center' }}>
-              <div style={{ fontSize: '24px', fontWeight: 700, color: '#94a3b8' }}>{integrationsList.length - Object.values(integrations).filter(i => i.connected).length}</div>
-              <div style={{ fontSize: '12px', color: '#64748b' }}>Available</div>
-            </div>
-          </div>
-
-          {/* Integrations Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-            {integrationsList.map(integration => {
-              const saved = integrations[integration.id];
-              const isConnected = saved?.connected;
-              return (
-                <div key={integration.id} style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${isConnected ? integration.border : 'rgba(255,255,255,0.07)'}`, borderRadius: '16px', position: 'relative' }}>
-                  {isConnected && (
-                    <div style={{ position: 'absolute', top: '12px', right: '12px', width: '8px', height: '8px', borderRadius: '50%', background: '#10b981' }} />
-                  )}
-                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: integration.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', marginBottom: '14px' }}>{integration.icon}</div>
-                  <h3 style={{ fontSize: '16px', fontWeight: 600, color: '#e2e8f0', marginBottom: '6px' }}>{integration.name}</h3>
-                  <p style={{ fontSize: '13px', color: '#64748b', lineHeight: '1.6', marginBottom: '16px' }}>{integration.desc}</p>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      onClick={() => {
-                        setSelected(integration);
-                        setConfig(saved?.config || {});
-                        setTestResult(null);
-                        setError(null);
-                      }}
-                      style={{ flex: 1, padding: '9px', background: isConnected ? 'rgba(99,102,241,0.15)' : 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: isConnected ? '1px solid rgba(99,102,241,0.3)' : 'none', borderRadius: '8px', color: isConnected ? '#a5b4fc' : '#fff', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}
-                    >
-                      {isConnected ? '⚙️ Configure' : '+ Connect'}
-                    </button>
-                    {isConnected && (
-                      <button
-                        onClick={() => handleDisconnect(integration.id)}
-                        style={{ padding: '9px 12px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '8px', color: '#ef4444', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit' }}
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-                  {isConnected && (
-                    <div style={{ marginTop: '10px', fontSize: '12px', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                      <span>●</span> Connected
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ) : (
-        <div>
-          {/* Back */}
-          <button onClick={() => { setSelected(null); setTestResult(null); setError(null); }} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#94a3b8', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit', marginBottom: '24px' }}>
-            ← Back to Integrations
-          </button>
-
-          {/* Config Form */}
-          <div style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(15,23,42,0.9))', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '16px', padding: '28px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '24px' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: selected.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px' }}>{selected.icon}</div>
-              <div>
-                <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#e2e8f0', margin: 0 }}>{selected.name}</h2>
-                <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>{selected.desc}</p>
-              </div>
-            </div>
-
-            {selected.fields.map(field => (
-              <div key={field.key} style={{ marginBottom: '16px' }}>
-                <label style={{ color: '#94a3b8', fontSize: '13px', display: 'block', marginBottom: '8px', fontWeight: 600 }}>{field.label}</label>
-                <input
-                  value={config[field.key] || ''}
-                  onChange={e => setConfig(prev => ({ ...prev, [field.key]: e.target.value }))}
-                  placeholder={field.placeholder}
-                  type={field.type}
-                  style={{ width: '100%', padding: '12px 16px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '14px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
-                />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '24px' }}>
+            {[
+              { label: 'Available',  value: catalog.length,   color: '#7c6fff' },
+              { label: 'Connected',  value: connectedCount,   color: '#34d399' },
+              { label: 'Not Connected', value: catalog.length - connectedCount, color: '#475569' },
+            ].map((s, i) => (
+              <div key={i} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 22px' }}>
+                <div style={{ fontSize: '11px', color: '#475569', marginBottom: '8px', fontWeight: 500 }}>{s.label}</div>
+                {loading
+                  ? <div className="skeleton" style={{ width: '40px', height: '26px' }} />
+                  : <div style={{ fontSize: '26px', fontWeight: 700, color: s.color, letterSpacing: '-0.5px' }}>{s.value}</div>
+                }
               </div>
             ))}
+          </div>
 
-            {/* Test Result */}
-            {testResult && (
-              <div style={{ padding: '12px 16px', background: testResult.success ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${testResult.success ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)'}`, borderRadius: '8px', color: testResult.success ? '#10b981' : '#ef4444', fontSize: '13px', marginBottom: '16px' }}>
-                {testResult.success ? '✅ ' : '❌ '}{testResult.message}
+          {/* Integration Cards */}
+          {loading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {[1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: '84px', borderRadius: '14px' }} />)}
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {catalog.map(item => {
+                const record = integrations[item.type];
+                const isConnected = record?.connected === true;
+                return (
+                  <div className={`int-card fade-up ${isConnected ? 'connected' : ''}`} key={item.type}>
+
+                    {/* Icon */}
+                    <div style={{
+                      width: '46px', height: '46px', borderRadius: '12px', flexShrink: 0,
+                      background: `${item.color}18`, border: `1px solid ${item.color}30`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px',
+                    }}>
+                      {item.icon}
+                    </div>
+
+                    {/* Info */}
+                    <div style={{ flex: 1, overflow: 'hidden' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
+                        <span style={{ fontSize: '14px', fontWeight: 600, color: '#f1f5f9' }}>{item.label}</span>
+                        {isConnected && (
+                          <span style={{ fontSize: '10px', fontWeight: 700, padding: '2px 7px', borderRadius: '5px', background: 'rgba(52,211,153,0.12)', color: '#34d399' }}>
+                            Connected
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#475569', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {isConnected && record?.config && Object.values(record.config)[0]
+                          ? `Configured · ${new Date(record.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`
+                          : item.desc}
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                      {isConnected && (
+                        <button className="connect-btn" onClick={() => openConnect(item.type)}>
+                          Edit
+                        </button>
+                      )}
+                      {isConnected ? (
+                        <button
+                          className="disconnect-btn"
+                          disabled={disconnecting === item.type}
+                          onClick={() => handleDisconnect(item.type)}
+                        >
+                          {disconnecting === item.type ? '…' : 'Disconnect'}
+                        </button>
+                      ) : (
+                        <button className="connect-btn" onClick={() => openConnect(item.type)}>
+                          Connect
+                        </button>
+                      )}
+                    </div>
+
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* Modal */}
+      {openModal && modal && (
+        <div className="overlay" onClick={e => e.target === e.currentTarget && setOpenModal(null)}>
+          <div className="modal fade-up">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{
+                width: '42px', height: '42px', borderRadius: '11px', flexShrink: 0,
+                background: `${modal.color}18`, border: `1px solid ${modal.color}30`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px',
+              }}>
+                {modal.icon}
               </div>
-            )}
+              <div>
+                <div style={{ fontSize: '16px', fontWeight: 700, color: '#f1f5f9' }}>Connect {modal.label}</div>
+                <div style={{ fontSize: '12px', color: '#475569' }}>{modal.desc}</div>
+              </div>
+            </div>
 
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button onClick={handleConnect} disabled={loading} style={{ flex: 1, padding: '12px', background: loading ? 'rgba(99,102,241,0.4)' : 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', borderRadius: '10px', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
-                {loading ? 'Saving...' : '💾 Save Connection'}
-              </button>
-              <button onClick={handleTest} disabled={testing} style={{ padding: '12px 20px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#94a3b8', fontSize: '14px', cursor: testing ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
-                {testing ? 'Testing...' : '🔌 Test'}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {modal.fields.map(f => (
+                <div key={f.key}>
+                  <label style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 500, display: 'block', marginBottom: '6px' }}>
+                    {f.label}
+                  </label>
+                  <input
+                    className="modal-input"
+                    type={f.type ?? 'text'}
+                    placeholder={f.placeholder}
+                    value={formValues[f.key] ?? ''}
+                    onChange={e => setFormValues(prev => ({ ...prev, [f.key]: e.target.value }))}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button className="cancel-btn" style={{ flex: 1 }} onClick={() => setOpenModal(null)}>Cancel</button>
+              <button className="save-btn" style={{ flex: 2 }} onClick={handleSave} disabled={saving}>
+                {saving ? 'Saving…' : 'Save & Connect'}
               </button>
             </div>
           </div>
         </div>
       )}
-    </div>
+
+      {/* Toast */}
+      {toast && (
+        <div className="toast" style={{
+          background: toast.ok ? 'rgba(52,211,153,0.15)' : 'rgba(248,113,113,0.15)',
+          border: `1px solid ${toast.ok ? 'rgba(52,211,153,0.3)' : 'rgba(248,113,113,0.3)'}`,
+          color: toast.ok ? '#34d399' : '#f87171',
+        }}>
+          {toast.ok ? '✓' : '✗'} {toast.msg}
+        </div>
+      )}
+    </>
   );
 }

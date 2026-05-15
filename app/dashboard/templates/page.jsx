@@ -1,234 +1,219 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { FileText, Loader2, Sparkles, Clock, ChevronRight, Search } from 'lucide-react';
 
-const templates = [
-  {
-    id: 'blog-post',
-    icon: '✍️',
-    category: 'Blog',
-    title: 'Blog Post',
-    desc: 'Full SEO-optimized blog post with intro, body, and conclusion.',
-    color: 'rgba(99,102,241,0.15)',
-    border: 'rgba(99,102,241,0.3)',
-    fields: [
-      { id: 'keyword', label: 'Target Keyword', placeholder: 'e.g. best SEO tools' },
-      { id: 'audience', label: 'Target Audience', placeholder: 'e.g. small business owners' },
-    ],
-    prompt: (f) => `Write a full SEO-optimized blog post targeting the keyword "${f.keyword}" for an audience of ${f.audience}. Include H1, H2s, intro, body sections, and conclusion.`,
-  },
-  {
-    id: 'product-page',
-    icon: '🛍️',
-    category: 'eCommerce',
-    title: 'Product Page',
-    desc: 'Compelling product description optimized for conversions and SEO.',
-    color: 'rgba(16,185,129,0.15)',
-    border: 'rgba(16,185,129,0.3)',
-    fields: [
-      { id: 'product', label: 'Product Name', placeholder: 'e.g. Wireless Noise Cancelling Headphones' },
-      { id: 'features', label: 'Key Features', placeholder: 'e.g. 30hr battery, ANC, foldable' },
-    ],
-    prompt: (f) => `Write an SEO-optimized product page description for "${f.product}". Key features: ${f.features}. Include a compelling headline, benefits-focused description, and bullet points.`,
-  },
-  {
-    id: 'landing-page',
-    icon: '🚀',
-    category: 'Marketing',
-    title: 'Landing Page Copy',
-    desc: 'High-converting landing page copy with headline, benefits, and CTA.',
-    color: 'rgba(236,72,153,0.15)',
-    border: 'rgba(236,72,153,0.3)',
-    fields: [
-      { id: 'product', label: 'Product/Service', placeholder: 'e.g. SEO automation tool' },
-      { id: 'benefit', label: 'Main Benefit', placeholder: 'e.g. rank on Google in 30 days' },
-    ],
-    prompt: (f) => `Write high-converting landing page copy for "${f.product}". Main benefit: ${f.benefit}. Include: hero headline, subheadline, 3 key benefits, social proof section, and strong CTA.`,
-  },
-  {
-    id: 'meta-description',
-    icon: '🔍',
-    category: 'SEO',
-    title: 'Meta Description',
-    desc: 'Click-worthy meta descriptions under 160 characters.',
-    color: 'rgba(245,158,11,0.15)',
-    border: 'rgba(245,158,11,0.3)',
-    fields: [
-      { id: 'page', label: 'Page Topic', placeholder: 'e.g. guide to keyword research' },
-      { id: 'keyword', label: 'Target Keyword', placeholder: 'e.g. keyword research' },
-    ],
-    prompt: (f) => `Write 5 compelling meta descriptions for a page about "${f.page}" targeting the keyword "${f.keyword}". Each must be under 160 characters and include a call to action.`,
-  },
-  {
-    id: 'social-media',
-    icon: '📱',
-    category: 'Social',
-    title: 'Social Media Post',
-    desc: 'Engaging social media posts for Twitter, LinkedIn, and Instagram.',
-    color: 'rgba(59,130,246,0.15)',
-    border: 'rgba(59,130,246,0.3)',
-    fields: [
-      { id: 'topic', label: 'Topic', placeholder: 'e.g. new blog post about SEO tips' },
-      { id: 'platform', label: 'Platform', placeholder: 'e.g. Twitter, LinkedIn, Instagram' },
-    ],
-    prompt: (f) => `Write 3 engaging social media posts for ${f.platform} about "${f.topic}". Include relevant hashtags and a call to action for each.`,
-  },
-  {
-    id: 'email',
-    icon: '📧',
-    category: 'Email',
-    title: 'Email Newsletter',
-    desc: 'Engaging email newsletter with subject line and body copy.',
-    color: 'rgba(139,92,246,0.15)',
-    border: 'rgba(139,92,246,0.3)',
-    fields: [
-      { id: 'topic', label: 'Email Topic', placeholder: 'e.g. monthly SEO tips roundup' },
-      { id: 'audience', label: 'Audience', placeholder: 'e.g. marketing professionals' },
-    ],
-    prompt: (f) => `Write an engaging email newsletter about "${f.topic}" for ${f.audience}. Include: 3 subject line options, preheader text, intro, main content sections, and CTA.`,
-  },
-];
+const S = {
+  bg: '#0d1117',
+  card: 'rgba(255,255,255,0.025)',
+  border: 'rgba(255,255,255,0.07)',
+  accent: '#7c6fff',
+  text: '#f1f5f9',
+  muted: '#475569',
+};
+
+const card = { background: S.card, border: `1px solid ${S.border}`, borderRadius: '12px' };
+const inp  = { background: 'rgba(255,255,255,0.04)', border: `1px solid ${S.border}`, borderRadius: '8px', padding: '10px 14px', fontSize: '13px', color: S.text, outline: 'none', width: '100%' };
+const btnP = (disabled) => ({ background: disabled ? 'rgba(124,111,255,0.4)' : S.accent, border: 'none', borderRadius: '8px', padding: '10px 20px', fontSize: '13px', fontWeight: '500', color: '#fff', cursor: disabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '6px' });
+
+const CATEGORIES = ['All', 'Blog Post', 'Landing Page', 'Product Review', 'How-To Guide', 'Listicle', 'Case Study', 'Email'];
 
 export default function TemplatesPage() {
-  const [selected, setSelected] = useState(null);
-  const [fields, setFields] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
-  const [copied, setCopied] = useState(false);
-  const [filter, setFilter] = useState('All');
+  const router = useRouter();
+  const [templates, setTemplates]   = useState([]);
+  const [loading, setLoading]       = useState(true);
+  const [search, setSearch]         = useState('');
+  const [category, setCategory]     = useState('All');
+  const [selected, setSelected]     = useState(null);
+  const [generating, setGenerating] = useState(false);
+  const [topic, setTopic]           = useState('');
+  const [result, setResult]         = useState('');
+  const [error, setError]           = useState('');
 
-  const categories = ['All', ...new Set(templates.map(t => t.category))];
-  const filtered = filter === 'All' ? templates : templates.filter(t => t.category === filter);
+  useEffect(() => { fetchTemplates(); }, []);
 
-  const handleSelect = (template) => {
-    setSelected(template);
-    setFields({});
-    setResult(null);
-    setError(null);
-  };
-
-  const handleGenerate = async () => {
-    if (!selected) return;
+  async function fetchTemplates() {
     setLoading(true);
-    setError(null);
-    setResult(null);
-
     try {
-      const res = await fetch('/api/templates', {
+      const r = await fetch('/api/templates');
+      const d = await r.json();
+      setTemplates(d.templates ?? []);
+    } catch { setError('Failed to load templates.'); }
+    finally { setLoading(false); }
+  }
+
+  async function generateFromTemplate() {
+    if (!selected || !topic.trim()) return;
+    setGenerating(true); setResult(''); setError('');
+    try {
+      const r = await fetch('/api/templates', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: selected.prompt(fields) }),
+        body: JSON.stringify({ templateId: selected.id, topic: topic.trim() }),
       });
-      const data = await res.json();
-      if (data.error) throw new Error(data.error);
-      setResult(data.content);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error);
+      setResult(d.content ?? '');
+    } catch (e) { setError(e.message); }
+    finally { setGenerating(false); }
+  }
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(result);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+  async function saveToLibrary() {
+    if (!result) return;
+    try {
+      await fetch('/api/articles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: topic, content: result, status: 'Draft' }),
+      });
+      router.push('/dashboard/library');
+    } catch { setError('Failed to save article.'); }
+  }
+
+  const filtered = templates.filter(t => {
+    const matchSearch = t.name?.toLowerCase().includes(search.toLowerCase()) || t.description?.toLowerCase().includes(search.toLowerCase());
+    const matchCat = category === 'All' || t.category === category;
+    return matchSearch && matchCat;
+  });
 
   return (
-    <div style={{ color: '#fff', fontFamily: 'Inter, sans-serif', maxWidth: '900px' }}>
-      <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px', background: 'linear-gradient(135deg, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-        Content Templates
-      </h1>
-      <p style={{ color: '#64748b', marginBottom: '32px', fontSize: '15px' }}>
-        Choose a template and generate content in seconds.
-      </p>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '100vh', background: S.bg, color: S.text }}>
+      <header style={{ display: 'flex', alignItems: 'center', padding: '12px 24px', borderBottom: `1px solid ${S.border}`, flexShrink: 0 }}>
+        <p style={{ fontSize: '12px', color: S.muted, margin: 0 }}>
+          <span style={{ color: S.text }}>RankFlow</span>
+          <span style={{ margin: '0 6px', color: S.border }}>/</span>
+          Content Templates
+        </p>
+      </header>
 
-      {!selected ? (
+      <main style={{ flex: 1, padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <div>
-          {/* Category Filter */}
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
-            {categories.map(cat => (
-              <button key={cat} onClick={() => setFilter(cat)} style={{ padding: '7px 16px', borderRadius: '8px', border: '1px solid', borderColor: filter === cat ? '#6366f1' : 'rgba(255,255,255,0.1)', background: filter === cat ? 'rgba(99,102,241,0.2)' : 'rgba(255,255,255,0.03)', color: filter === cat ? '#a5b4fc' : '#64748b', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
-                {cat}
+          <h1 style={{ fontSize: '22px', fontWeight: '600', color: S.text, marginBottom: '4px' }}>Content Templates</h1>
+          <p style={{ fontSize: '13px', color: S.muted, margin: 0 }}>Pick a template and generate SEO-optimized content instantly with AI.</p>
+        </div>
+
+        {error && <div style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', fontSize: '12px', padding: '10px 14px', borderRadius: '8px' }}>{error}</div>}
+
+        {/* If a template is selected, show generator */}
+        {selected ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <button onClick={() => { setSelected(null); setResult(''); setTopic(''); }}
+                style={{ background: 'none', border: `1px solid ${S.border}`, borderRadius: '8px', padding: '6px 12px', fontSize: '12px', color: S.muted, cursor: 'pointer' }}>
+                ← Back
               </button>
-            ))}
-          </div>
-
-          {/* Templates Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
-            {filtered.map(t => (
-              <div key={t.id} onClick={() => handleSelect(t)} style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', border: `1px solid ${t.border}`, borderRadius: '14px', cursor: 'pointer', transition: 'transform 0.2s' }}
-                onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
-                onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
-              >
-                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: t.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', marginBottom: '12px' }}>{t.icon}</div>
-                <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>{t.category}</div>
-                <h3 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '8px', color: '#e2e8f0' }}>{t.title}</h3>
-                <p style={{ fontSize: '13px', color: '#64748b', lineHeight: '1.6', margin: 0 }}>{t.desc}</p>
+              <div style={{ padding: '4px 10px', borderRadius: '20px', background: 'rgba(124,111,255,0.15)', color: S.accent, fontSize: '11px', fontWeight: '500' }}>
+                {selected.name}
               </div>
-            ))}
-          </div>
-        </div>
-      ) : (
-        <div>
-          {/* Back button */}
-          <button onClick={() => { setSelected(null); setResult(null); }} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: '#94a3b8', fontSize: '13px', cursor: 'pointer', fontFamily: 'inherit', marginBottom: '24px' }}>
-            ← Back to Templates
-          </button>
+            </div>
 
-          {/* Template Form */}
-          <div style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(15,23,42,0.9))', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '16px', padding: '28px', marginBottom: '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
-              <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: selected.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>{selected.icon}</div>
+            <div style={{ ...card, padding: '20px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Sparkles size={16} color={S.accent} />
+                <h2 style={{ fontSize: '14px', fontWeight: '600', color: S.text, margin: 0 }}>Generate with AI</h2>
+              </div>
+              <p style={{ fontSize: '12px', color: S.muted, margin: 0 }}>{selected.description}</p>
               <div>
-                <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#e2e8f0', margin: 0 }}>{selected.title}</h2>
-                <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>{selected.desc}</p>
+                <label style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '.07em', color: S.muted, display: 'block', marginBottom: '6px' }}>Your Topic</label>
+                <input value={topic} onChange={e => setTopic(e.target.value)} onKeyDown={e => e.key === 'Enter' && generateFromTemplate()}
+                  placeholder={selected.placeholder ?? 'Enter your topic or keyword...'}
+                  style={inp} />
               </div>
+              <button onClick={generateFromTemplate} disabled={generating || !topic.trim()} style={btnP(generating || !topic.trim())}>
+                {generating ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                {generating ? 'Generating...' : 'Generate Content'}
+              </button>
             </div>
 
-            {selected.fields.map(field => (
-              <div key={field.id} style={{ marginBottom: '16px' }}>
-                <label style={{ color: '#94a3b8', fontSize: '13px', display: 'block', marginBottom: '8px', fontWeight: 600 }}>{field.label}</label>
-                <input
-                  value={fields[field.id] || ''}
-                  onChange={e => setFields(prev => ({ ...prev, [field.id]: e.target.value }))}
-                  placeholder={field.placeholder}
-                  style={{ width: '100%', padding: '12px 16px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '14px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }}
-                />
+            {generating && (
+              <div style={{ ...card, padding: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                <Loader2 size={20} color={S.accent} className="animate-spin" />
+                <span style={{ fontSize: '13px', color: S.muted }}>Generating your content...</span>
               </div>
-            ))}
+            )}
 
-            <button onClick={handleGenerate} disabled={loading || selected.fields.some(f => !fields[f.id]?.trim())} style={{ width: '100%', padding: '14px', background: loading ? 'rgba(99,102,241,0.4)' : 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', borderRadius: '10px', color: '#fff', fontSize: '15px', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
-              {loading ? '⚡ Generating...' : '⚡ Generate Content'}
-            </button>
+            {result && (
+              <div style={{ ...card, overflow: 'hidden' }}>
+                <div style={{ padding: '14px 18px', borderBottom: `1px solid ${S.border}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <h3 style={{ fontSize: '13px', fontWeight: '600', color: S.text, margin: 0 }}>Generated Content</h3>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={() => navigator.clipboard.writeText(result)}
+                      style={{ padding: '5px 12px', background: 'none', border: `1px solid ${S.border}`, borderRadius: '6px', fontSize: '11px', color: S.muted, cursor: 'pointer' }}>
+                      Copy
+                    </button>
+                    <button onClick={saveToLibrary}
+                      style={{ padding: '5px 12px', background: 'rgba(124,111,255,0.15)', border: '1px solid rgba(124,111,255,0.2)', borderRadius: '6px', fontSize: '11px', color: S.accent, cursor: 'pointer', fontWeight: '500' }}>
+                      Save to Library
+                    </button>
+                  </div>
+                </div>
+                <div style={{ padding: '20px', maxHeight: '400px', overflowY: 'auto' }}>
+                  <pre style={{ fontSize: '13px', color: S.text, lineHeight: '1.7', whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>{result}</pre>
+                </div>
+              </div>
+            )}
           </div>
-
-          {/* Error */}
-          {error && (
-            <div style={{ padding: '16px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '10px', color: '#ef4444', fontSize: '14px', marginBottom: '24px' }}>
-              {error}
+        ) : (
+          <>
+            {/* Search + filter */}
+            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.04)', border: `1px solid ${S.border}`, borderRadius: '8px', padding: '8px 12px' }}>
+                <Search size={13} color={S.muted} />
+                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search templates..."
+                  style={{ flex: 1, background: 'none', border: 'none', fontSize: '13px', color: S.text, outline: 'none' }} />
+              </div>
             </div>
-          )}
 
-          {/* Result */}
-          {result && !loading && (
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <h2 style={{ fontSize: '18px', fontWeight: 600, color: '#e2e8f0', margin: 0 }}>Generated Content</h2>
-                <button onClick={handleCopy} style={{ padding: '8px 16px', background: copied ? 'rgba(16,185,129,0.2)' : 'rgba(99,102,241,0.2)', border: '1px solid', borderColor: copied ? 'rgba(16,185,129,0.4)' : 'rgba(99,102,241,0.4)', borderRadius: '8px', color: copied ? '#10b981' : '#a5b4fc', fontSize: '13px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
-                  {copied ? '✓ Copied!' : 'Copy'}
+            {/* Categories */}
+            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+              {CATEGORIES.map(cat => (
+                <button key={cat} onClick={() => setCategory(cat)}
+                  style={{ padding: '5px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '500', border: 'none', cursor: 'pointer', background: category === cat ? 'rgba(124,111,255,0.2)' : 'rgba(255,255,255,0.04)', color: category === cat ? S.accent : S.muted }}>
+                  {cat}
                 </button>
-              </div>
-              <div style={{ padding: '28px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px' }}>
-                <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#cbd5e1', margin: 0, lineHeight: '1.8' }}>
-                  {result}
-                </pre>
-              </div>
+              ))}
             </div>
-          )}
-        </div>
-      )}
+
+            {/* Templates grid */}
+            {loading ? (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '14px' }}>
+                {[...Array(6)].map((_, i) => <div key={i} style={{ height: '130px', borderRadius: '12px', background: S.card }} />)}
+              </div>
+            ) : filtered.length === 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px', textAlign: 'center' }}>
+                <FileText size={28} color={S.muted} style={{ marginBottom: '10px' }} />
+                <p style={{ fontSize: '14px', color: S.muted }}>No templates found</p>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '14px' }}>
+                {filtered.map(t => (
+                  <div key={t.id} onClick={() => setSelected(t)}
+                    style={{ ...card, padding: '18px', cursor: 'pointer', transition: 'border-color 0.15s' }}
+                    onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(124,111,255,0.3)'}
+                    onMouseLeave={e => e.currentTarget.style.borderColor = S.border}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '10px' }}>
+                      <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(124,111,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px' }}>
+                        {t.icon ?? '📄'}
+                      </div>
+                      <ChevronRight size={14} color={S.muted} />
+                    </div>
+                    <p style={{ fontSize: '13px', fontWeight: '600', color: S.text, margin: '0 0 4px' }}>{t.name}</p>
+                    <p style={{ fontSize: '12px', color: S.muted, margin: '0 0 10px', lineHeight: '1.5' }}>{t.description}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ fontSize: '10px', fontWeight: '500', padding: '2px 7px', borderRadius: '20px', background: 'rgba(124,111,255,0.12)', color: S.accent }}>{t.category ?? 'General'}</span>
+                      {t.estimatedTime && (
+                        <span style={{ fontSize: '11px', color: S.muted, display: 'flex', alignItems: 'center', gap: '3px' }}>
+                          <Clock size={10} /> {t.estimatedTime}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </main>
     </div>
   );
 }
