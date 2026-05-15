@@ -75,7 +75,7 @@ const INTEGRATIONS_CATALOG = [
 ];
 
 export default function IntegrationsPage() {
-  const [integrations, setIntegrations] = useState({});
+  const [integrations, setIntegrations] = useState<Record<string, any>>({});
   const [loading, setLoading]           = useState(true);
   const [openModal, setOpenModal]       = useState(null); // type string
   const [formValues, setFormValues]     = useState({});
