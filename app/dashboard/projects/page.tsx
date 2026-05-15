@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const PROJECTS_KEY = 'rankflow_projects';
 const ARTICLES_KEY = 'rankflow_articles';
@@ -7,9 +7,9 @@ const ARTICLES_KEY = 'rankflow_articles';
 const STATUSES = ['Active', 'Paused', 'Completed'];
 const COLORS   = ['#4F7CFF', '#1DB8A0', '#F59E0B', '#E24B4A', '#A78BFA', '#D35486'];
 
-const card = { background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' };
-const inp  = { width: '100%', padding: '10px 12px', background: '#0D1117', border: '1px solid #21262D', borderRadius: '8px', color: '#E8EDF8', fontSize: '13px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' };
-const lbl  = { fontSize: '11px', fontWeight: '600', color: '#8B949E', textTransform: 'uppercase', letterSpacing: '0.07em', display: 'block', marginBottom: '6px' };
+const card: React.CSSProperties = { background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' };
+const inp: React.CSSProperties = { width: '100%', padding: '10px 12px', background: '#0D1117', border: '1px solid #21262D', borderRadius: '8px', color: '#E8EDF8', fontSize: '13px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' };
+const lbl: React.CSSProperties = { fontSize: '11px', fontWeight: '600', color: '#8B949E', textTransform: 'uppercase', letterSpacing: '0.07em', display: 'block', marginBottom: '6px' };
 
 function Modal({ onClose, children }) {
   return (
@@ -159,11 +159,11 @@ export default function ProjectsPage() {
 
           <div style={{ marginBottom: '14px' }}>
             <label style={lbl}>Project Name *</label>
-            <input className="pr-input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder='e.g. "My SaaS Blog"' style={inp} />
+            <input className="pr-input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder='e.g. "My SaaS Blog"' style={inp as React.CSSProperties} />
           </div>
           <div style={{ marginBottom: '14px' }}>
             <label style={lbl}>Website Domain</label>
-            <input className="pr-input" value={form.domain} onChange={e => setForm(f => ({ ...f, domain: e.target.value }))} placeholder='e.g. "mysite.com"' style={inp} />
+            <input className="pr-input" value={form.domain} onChange={e => setForm(f => ({ ...f, domain: e.target.value }))} placeholder='e.g. "mysite.com"' style={inp as React.CSSProperties} />
           </div>
           <div style={{ marginBottom: '14px' }}>
             <label style={lbl}>Description</label>
