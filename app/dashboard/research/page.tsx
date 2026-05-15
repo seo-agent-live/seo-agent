@@ -387,7 +387,7 @@ export default function ResearchPage() {
             className="research-input"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSearch()}
+            onKeyDown={e => e.key === 'Enter' && handleSearch(query)}
             placeholder={currentMode?.placeholder}
             style={{
               flex: 1, padding: '11px 16px',
