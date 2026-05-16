@@ -380,7 +380,7 @@ export default function SiteAuditPage() {
                       {auditResult.score >= 80 ? 'Excellent' : auditResult.score >= 60 ? 'Needs Work' : 'Poor'}
                     </div>
                     <div style={{ fontSize: '12px', color: '#334155', lineHeight: 1.6 }}>
-                      {auditResult.checks && Object.values(auditResult.checks).filter(c => c.pass).length} / {AUDIT_CHECKS.length} checks passed
+                      {auditResult.checks && Object.values(auditResult.checks).filter((c: any) => (c as any).pass).length} / {AUDIT_CHECKS.length} checks passed
                     </div>
                   </div>
                 </div>
