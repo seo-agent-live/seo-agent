@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -50,11 +50,7 @@ function Field({ label, desc, children }: { label: string; desc?: string; childr
 }
 
 export default function SettingsPage() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
+ 
   const [tab, setTab]           = useState('General');
   const [settings, setSettings] = useState(DEFAULTS);
   const [recordId, setRecordId] = useState<string | null>(null);

@@ -1,6 +1,6 @@
 'use client';
+import { supabase } from '@/lib/supabase';
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
@@ -72,10 +72,6 @@ const INTEGRATIONS_CATALOG = [
 ];
 
 export default function IntegrationsPage() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
 
   const [integrations, setIntegrations] = useState<Record<string, any>>({});
   const [loading, setLoading]           = useState(true);
