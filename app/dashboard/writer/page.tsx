@@ -190,7 +190,7 @@ export default function WriterPage() {
     boxSizing: 'border-box',
   };
 
-  const inputStyle: React.CSSProperties = {
+  const labelStyle: React.CSSProperties = {
     fontSize: '11px', fontWeight: '600', color: '#8B949E',
     textTransform: 'uppercase', letterSpacing: '0.07em',
     display: 'block', marginBottom: '8px',
