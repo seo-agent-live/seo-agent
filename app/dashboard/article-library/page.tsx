@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,17 +14,12 @@ const scoreColor = (s: number) => s >= 80 ? '#34d399' : s >= 60 ? '#fbbf24' : '#
 const scoreBg    = (s: number) => s >= 80 ? 'rgba(52,211,153,0.12)' : s >= 60 ? 'rgba(251,191,36,0.12)' : 'rgba(248,113,113,0.12)';
 
 export default function ArticleLibraryPage() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-
-  const [articles, setArticles]   = useState<any[]>([]);
-  const [loading, setLoading]     = useState(true);
-  const [search, setSearch]       = useState('');
-  const [filter, setFilter]       = useState('all');
-  const [deleting, setDeleting]   = useState<string | null>(null);
-  const [selected, setSelected]   = useState<string[]>([]);
+  const [articles, setArticles] = useState<any[]>([]);
+  const [loading, setLoading]   = useState(true);
+  const [search, setSearch]     = useState('');
+  const [filter, setFilter]     = useState('all');
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string[]>([]);
 
   const fetchArticles = async () => {
     setLoading(true);
@@ -47,9 +42,7 @@ export default function ArticleLibraryPage() {
   };
 
   const handleDeleteSelected = async () => {
-    for (const id of selected) {
-      await supabase.from('articles').delete().eq('id', id);
-    }
+    for (const id of selected) await supabase.from('articles').delete().eq('id', id);
     setArticles(prev => prev.filter(a => !selected.includes(a.id)));
     setSelected([]);
   };
@@ -106,7 +99,6 @@ export default function ArticleLibraryPage() {
 
       <div className="lib-root">
         <div className="inner">
-
           <div style={{ marginBottom: '28px' }}>
             <h1 style={{ fontSize: '26px', fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.5px', marginBottom: '5px' }}>Article Library</h1>
             <p style={{ fontSize: '14px', color: '#475569' }}>All your generated articles in one place.</p>
@@ -196,7 +188,6 @@ export default function ArticleLibraryPage() {
               </div>
             )}
           </div>
-
         </div>
       </div>
     </>
