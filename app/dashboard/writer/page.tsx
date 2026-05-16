@@ -183,14 +183,14 @@ export default function WriterPage() {
     { pass: displayContent?.includes('FAQ') || displayContent?.includes('?'), label: 'Includes FAQ or questions' },
   ] : [];
 
-  const inputStyle = {
+  const inputStyle: React.CSSProperties = {
     width: '100%', padding: '10px 12px', background: '#0D1117',
     border: '1px solid #21262D', borderRadius: '8px', color: '#E8EDF8',
     fontSize: '13px', outline: 'none', fontFamily: 'inherit', cursor: 'pointer',
     boxSizing: 'border-box',
   };
 
-  const labelStyle = {
+  const inputStyle: React.CSSProperties = {
     fontSize: '11px', fontWeight: '600', color: '#8B949E',
     textTransform: 'uppercase', letterSpacing: '0.07em',
     display: 'block', marginBottom: '8px',
