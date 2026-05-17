@@ -101,7 +101,7 @@ function ConnectionModal({ platform, onClose, onConnect }) {
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '480px' }}>
+      <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '480px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
           <div>
             <div style={{ fontSize: '16px', fontWeight: '700', color: '#E8EDF8', marginBottom: '4px' }}>
@@ -216,7 +216,7 @@ function PublishModal({ article, platform, connection, onClose, onPublished }) {
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-      <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '520px', maxHeight: '90vh', overflowY: 'auto' }}>
+      <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '16px', padding: '28px', width: '100%', maxWidth: '520px', maxHeight: '90vh', overflowY: 'auto' }}>
 
         {status === 'success' ? (
           <div style={{ textAlign: 'center', padding: '20px 0' }}>
@@ -445,7 +445,7 @@ export default function PublishPage() {
 
       {/* Toast */}
       {notification && (
-        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 2000, background: '#161B22', border: '1px solid #21262D', borderRadius: '10px', padding: '12px 18px', fontSize: '13px', color: '#E8EDF8', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 2000, background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '10px', padding: '12px 18px', fontSize: '13px', color: '#E8EDF8', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
           ✓ {notification}
         </div>
       )}
@@ -468,7 +468,7 @@ export default function PublishPage() {
         />
       )}
 
-      <div style={{ padding: '28px', background: '#0D1117', minHeight: '100vh', fontFamily: 'Inter,-apple-system,sans-serif' }}>
+      <div style={{ padding: '28px', minHeight: '100vh', fontFamily: 'Inter,-apple-system,sans-serif' }}>
 
         {/* Header */}
         <div style={{ marginBottom: '28px' }}>
@@ -502,7 +502,7 @@ export default function PublishPage() {
 
             {/* Left: Article Selector */}
             <div>
-              <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+              <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
                 <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '14px' }}>
                   📄 Select Article
                 </div>
@@ -532,7 +532,7 @@ export default function PublishPage() {
             {/* Right: Platform Actions */}
             <div>
               {!selectedArticle ? (
-                <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '60px 40px', textAlign: 'center' }}>
+                <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '60px 40px', textAlign: 'center' }}>
                   <div style={{ fontSize: '48px', marginBottom: '16px' }}>👈</div>
                   <div style={{ fontSize: '15px', fontWeight: '600', color: '#E8EDF8', marginBottom: '8px' }}>Select an article to publish</div>
                   <div style={{ fontSize: '13px', color: '#8B949E' }}>Choose an article from the left panel to see publishing options.</div>
@@ -540,7 +540,7 @@ export default function PublishPage() {
               ) : (
                 <>
                   {/* Selected article preview */}
-                  <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px', marginBottom: '20px' }}>
+                  <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px', marginBottom: '20px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
                       <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8' }}>Selected Article</div>
                       <button onClick={() => setSelectedArticle(null)} style={{ background: 'transparent', border: 'none', color: '#8B949E', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit' }}>✕ Deselect</button>
@@ -565,7 +565,7 @@ export default function PublishPage() {
 
                       if (platform.id === 'copy') {
                         return (
-                          <div key={platform.id} style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+                          <div key={platform.id} style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                               <span style={{ fontSize: '22px' }}>{platform.icon}</span>
                               <div>
@@ -582,7 +582,7 @@ export default function PublishPage() {
 
                       if (platform.id === 'download') {
                         return (
-                          <div key={platform.id} style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+                          <div key={platform.id} style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
                               <span style={{ fontSize: '22px' }}>{platform.icon}</span>
                               <div>
@@ -602,7 +602,7 @@ export default function PublishPage() {
                       }
 
                       return (
-                        <div key={platform.id} style={{ background: '#161B22', border: `1px solid ${isConnected ? 'rgba(29,184,160,0.2)' : '#21262D'}`, borderRadius: '12px', padding: '20px' }}>
+                        <div key={platform.id} style={{ background: 'rgba(22,27,34,0.4)', border: `1px solid ${isConnected ? 'rgba(29,184,160,0.2)' : '#21262D'}`, borderRadius: '12px', padding: '20px' }}>
                           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '12px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                               <span style={{ fontSize: '22px' }}>{platform.icon}</span>
@@ -644,7 +644,7 @@ export default function PublishPage() {
 
         {/* ── PUBLISH LOG TAB ── */}
         {activeTab === 'log' && (
-          <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+          <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '16px' }}>Publish History</div>
             {publishLog.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '48px', color: '#8B949E', fontSize: '13px' }}>
@@ -683,7 +683,7 @@ export default function PublishPage() {
               const isConnected = !!connections[platform.id];
               const conn = connections[platform.id];
               return (
-                <div key={platform.id} style={{ background: '#161B22', border: `1px solid ${isConnected ? 'rgba(29,184,160,0.2)' : '#21262D'}`, borderRadius: '12px', padding: '20px' }}>
+                <div key={platform.id} style={{ background: 'rgba(22,27,34,0.4)', border: `1px solid ${isConnected ? 'rgba(29,184,160,0.2)' : '#21262D'}`, borderRadius: '12px', padding: '20px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
                     <span style={{ fontSize: '28px' }}>{platform.icon}</span>
                     <div style={{ flex: 1 }}>
