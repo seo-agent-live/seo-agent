@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
@@ -18,7 +19,7 @@ const statusStyle: Record<string, { dot: string; bg: string; color: string }> = 
 };
 
 const s = {
-  page:      { padding: '28px', background: '#0D1117', minHeight: '100vh', fontFamily: 'Inter,-apple-system,sans-serif' },
+  page:      { padding: '28px', minHeight: '100vh', fontFamily: 'Inter,-apple-system,sans-serif' },
   topbar:    { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '28px' },
   greeting:  { fontSize: '22px', fontWeight: '700', color: '#E8EDF8', letterSpacing: '-0.3px' },
   sub:       { fontSize: '13px', color: '#4A5568', marginTop: '4px' },
