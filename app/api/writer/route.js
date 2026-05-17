@@ -3,6 +3,14 @@ import { NextResponse } from 'next/server';
 export async function POST(req) {
   const { keyword, tone, length } = await req.json();
 
+  // ✅ Check API key exists before even calling Groq
+  if (!process.env.GROQ_API_KEY) {
+    return NextResponse.json(
+      { error: 'GROQ_API_KEY is not set in environment variables' },
+      { status: 500 }
+    );
+  }
+
   const wordTarget = length === 'short' ? '500-800' : length === 'medium' ? '1000-1500' : '2000-2500';
 
   const prompt = `Write a ${wordTarget} word SEO-optimized blog article about "${keyword}".
@@ -34,7 +42,7 @@ Return ONLY the article content, no extra commentary.`;
       }),
     });
 
-    // ✅ NEW: catch Groq HTTP errors
+    // ✅ Catch Groq HTTP errors (401, 429, 500 etc)
     if (!groqRes.ok) {
       const errBody = await groqRes.text();
       console.error('Groq error:', groqRes.status, errBody);
@@ -46,11 +54,11 @@ Return ONLY the article content, no extra commentary.`;
 
     const groqData = await groqRes.json();
 
-    // ✅ NEW: catch empty response
+    // ✅ Catch empty response from Groq
     if (!groqData.choices?.[0]?.message?.content) {
-      console.error('Unexpected Groq response:', JSON.stringify(groqData));
+      console.error('Empty Groq response:', JSON.stringify(groqData));
       return NextResponse.json(
-        { error: 'No content returned from Groq', raw: groqData },
+        { error: 'No content returned from Groq — the model may be unavailable' },
         { status: 502 }
       );
     }
@@ -74,7 +82,11 @@ Return ONLY the article content, no extra commentary.`;
     });
 
   } catch (err) {
+    // ✅ Catch network or unexpected errors
     console.error('Writer route exception:', err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json(
+      { error: `Unexpected error: ${err.message}` },
+      { status: 500 }
+    );
   }
 }
