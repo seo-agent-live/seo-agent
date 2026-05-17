@@ -97,7 +97,7 @@ function KeywordRow({ kw, index, onTrack, tracked }: { kw: any; index: number; o
 
 function PageCard({ page, index }: { page: any; index: number }) {
   return (
-    <div style={{ padding: '16px 18px', background: '#161B22', border: '1px solid #21262D', borderRadius: '10px', marginBottom: '8px' }}>
+    <div style={{ padding: '16px 18px', background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '10px', marginBottom: '8px' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
         <span style={{ fontSize: '11px', fontWeight: '700', color: '#4F7CFF', background: 'rgba(79,124,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>
           #{index + 1}
@@ -113,7 +113,7 @@ function PageCard({ page, index }: { page: any; index: number }) {
 function GapCard({ gap, index, onGenerate }: { gap: any; index: number; onGenerate: (t: string) => void }) {
   const pc = priorityColor(gap.priority);
   return (
-    <div style={{ padding: '18px', background: '#161B22', border: '1px solid #21262D', borderRadius: '10px', marginBottom: '8px' }}>
+    <div style={{ padding: '18px', background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '10px', marginBottom: '8px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '8px', gap: '12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ fontSize: '11px', color: '#8B949E', fontWeight: '600', minWidth: '22px' }}>
@@ -264,7 +264,7 @@ export default function ResearchPage() {
 
   const currentMode = MODES.find(m => m.id === mode);
   const selectStyle: React.CSSProperties = {
-    padding: '8px 12px', background: '#161B22', border: '1px solid #21262D',
+    padding: '8px 12px', background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D',
     borderRadius: '8px', color: '#C9D1D9', fontSize: '12px',
     outline: 'none', fontFamily: 'inherit', cursor: 'pointer',
   };
@@ -278,12 +278,12 @@ export default function ResearchPage() {
       `}</style>
 
       {notification && (
-        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1000, background: '#161B22', border: '1px solid #21262D', borderRadius: '10px', padding: '12px 18px', fontSize: '13px', color: '#E8EDF8', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1000, background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '10px', padding: '12px 18px', fontSize: '13px', color: '#E8EDF8', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
           ✓ {notification}
         </div>
       )}
 
-      <div style={{ padding: '28px', background: '#0D1117', minHeight: '100vh', fontFamily: 'Inter,-apple-system,sans-serif' }}>
+      <div style={{ padding: '28px', minHeight: '100vh', fontFamily: 'Inter,-apple-system,sans-serif' }}>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '28px' }}>
@@ -298,7 +298,7 @@ export default function ResearchPage() {
 
         {/* History Panel */}
         {showHistory && (
-          <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
+          <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
             <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '14px' }}>Recent Searches</div>
             {searchHistory.length === 0 ? (
               <div style={{ fontSize: '13px', color: '#8B949E', textAlign: 'center', padding: '16px 0' }}>No searches yet.</div>
@@ -316,7 +316,7 @@ export default function ResearchPage() {
         )}
 
         {/* Mode Tabs */}
-        <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', background: '#161B22', border: '1px solid #21262D', borderRadius: '10px', padding: '5px', width: 'fit-content' }}>
+        <div style={{ display: 'flex', gap: '6px', marginBottom: '20px', background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '10px', padding: '5px', width: 'fit-content' }}>
           {MODES.map(m => (
             <button key={m.id} onClick={() => handleModeSwitch(m.id)} style={{ padding: '8px 18px', borderRadius: '7px', border: 'none', background: mode === m.id ? 'rgba(79,124,255,0.15)' : 'transparent', color: mode === m.id ? '#4F7CFF' : '#8B949E', fontSize: '13px', fontWeight: mode === m.id ? '600' : '400', cursor: 'pointer', fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: '6px', transition: 'all 0.15s' }}>
               {m.icon} {m.label}
@@ -332,7 +332,7 @@ export default function ResearchPage() {
             onChange={e => setQuery(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSearch(query)}
             placeholder={currentMode?.placeholder}
-            style={{ flex: 1, padding: '11px 16px', background: '#161B22', border: '1px solid #21262D', borderRadius: '10px', color: '#E8EDF8', fontSize: '14px', outline: 'none', fontFamily: 'inherit' }}
+            style={{ flex: 1, padding: '11px 16px', background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '10px', color: '#E8EDF8', fontSize: '14px', outline: 'none', fontFamily: 'inherit' }}
           />
           <button onClick={() => handleSearch(query)} disabled={loading || !query.trim()} style={{ padding: '11px 24px', background: loading || !query.trim() ? 'rgba(79,124,255,0.3)' : '#4F7CFF', border: 'none', borderRadius: '10px', color: '#fff', fontSize: '14px', fontWeight: '600', cursor: loading || !query.trim() ? 'not-allowed' : 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' }}>
             {loading ? `Searching${loadingDots}` : 'Search →'}
@@ -448,7 +448,7 @@ export default function ResearchPage() {
                 {results.stats && (
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '10px', marginBottom: '16px' }}>
                     {Object.entries(results.stats).map(([key, val]) => (
-                      <div key={key} style={{ padding: '14px', background: '#161B22', border: '1px solid #21262D', borderRadius: '10px', textAlign: 'center' }}>
+                      <div key={key} style={{ padding: '14px', background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '10px', textAlign: 'center' }}>
                         <div style={{ fontSize: '20px', fontWeight: '700', color: '#4F7CFF' }}>{String(val)}</div>
                         <div style={{ fontSize: '11px', color: '#8B949E', marginTop: '2px', textTransform: 'capitalize' }}>{key}</div>
                       </div>
@@ -489,7 +489,7 @@ export default function ResearchPage() {
                     const pc = priorityColor(p);
                     const count = results.gaps.filter((g: any) => g.priority === p).length;
                     return (
-                      <div key={p} style={{ padding: '12px', background: '#161B22', border: '1px solid #21262D', borderRadius: '10px', textAlign: 'center' }}>
+                      <div key={p} style={{ padding: '12px', background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '10px', textAlign: 'center' }}>
                         <div style={{ fontSize: '20px', fontWeight: '700', color: pc.color }}>{count}</div>
                         <div style={{ fontSize: '11px', color: '#8B949E', marginTop: '2px' }}>{p} Priority</div>
                       </div>
