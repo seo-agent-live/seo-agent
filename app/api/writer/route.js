@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 export async function POST(req) {
-  const { keyword, tone, length } = await req.json();
+  const { keyword, tone, length, save, userId } = await req.json();
 
   if (!process.env.GROQ_API_KEY) {
     return NextResponse.json(
@@ -117,12 +123,46 @@ FINAL CHECKLIST BEFORE RESPONDING:
     const readTime = `${Math.ceil(wordCount / 200)} min`;
     const seoScore = Math.floor(70 + Math.random() * 25);
 
+    // Generate slug from keyword
+    const slug = keyword
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
+    // Extract title from first line
+    const titleMatch = cleanContent.match(/^#\s+(.+)/m);
+    const title = titleMatch ? titleMatch[1].trim() : keyword;
+
+    // Save to Supabase if requested
+    if (save) {
+      const { error: dbError } = await supabase
+        .from('articles')
+        .insert({
+          title,
+          content: cleanContent,
+          keyword,
+          meta_description: metaDescription,
+          slug,
+          word_count: wordCount,
+          read_time: readTime,
+          seo_score: seoScore,
+          status: 'published',
+          user_id: userId || null,
+        });
+
+      if (dbError) {
+        console.error('Supabase save error:', dbError);
+      }
+    }
+
     return NextResponse.json({
       content: cleanContent,
       metaDescription,
       wordCount,
       readTime,
       seoScore,
+      slug,
+      title,
     });
 
   } catch (err) {
