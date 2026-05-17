@@ -12,7 +12,7 @@ const S = {
   muted: '#475569',
 };
 
-const card = { background: 'rgba(22,27,34,0.4)', border: `1px solid ${S.border}`, borderRadius: '12px' };
+const card = { background: 'rgba(22,27,34,0.65)', border: `1px solid ${S.border}`, borderRadius: '12px' };
 const inp  = { background: 'rgba(255,255,255,0.04)', border: `1px solid ${S.border}`, borderRadius: '8px', padding: '10px 14px', fontSize: '13px', color: S.text, outline: 'none', width: '100%' };
 const btnP = (disabled) => ({ background: disabled ? 'rgba(124,111,255,0.4)' : S.accent, border: 'none', borderRadius: '8px', padding: '10px 20px', fontSize: '13px', fontWeight: '500', color: '#fff', cursor: disabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '6px' });
 
@@ -177,7 +177,7 @@ export default function TemplatesPage() {
             {/* Templates grid */}
             {loading ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '14px' }}>
-                {[...Array(6)].map((_, i) => <div key={i} style={{ height: '130px', borderRadius: '12px', background: 'rgba(22,27,34,0.4)' }} />)}
+                {[...Array(6)].map((_, i) => <div key={i} style={{ height: '130px', borderRadius: '12px', background: 'rgba(22,27,34,0.65)' }} />)}
               </div>
             ) : filtered.length === 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '60px', textAlign: 'center' }}>

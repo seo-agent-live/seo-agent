@@ -13,7 +13,7 @@ const TEMPLATES = [
 const GOALS = ['Generate leads', 'Drive signups', 'Sell a product', 'Promote an event', 'Grow email list'];
 const TONES = ['Professional', 'Friendly', 'Bold & Direct', 'Minimalist', 'Luxury'];
 
-const card = { background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' };
+const card = { background: 'rgba(22,27,34,0.65)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' };
 const inp: React.CSSProperties  = { width: '100%', padding: '10px 12px', background: '#0D1117', border: '1px solid #21262D', borderRadius: '8px', color: '#E8EDF8', fontSize: '13px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' };
 const lbl: React.CSSProperties  = { fontSize: '11px', fontWeight: '600', color: '#8B949E', textTransform: 'uppercase', letterSpacing: '0.07em', display: 'block', marginBottom: '6px' };
 
@@ -160,7 +160,7 @@ export default function LandingPagesPage() {
       <style>{`.lp-input::placeholder{color:#30363D}.lp-input:focus{border-color:rgba(79,124,255,0.5)!important;outline:none}`}</style>
 
       {notif && (
-        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1000, background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '10px', padding: '12px 18px', fontSize: '13px', color: '#E8EDF8', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1000, background: 'rgba(22,27,34,0.65)', border: '1px solid #21262D', borderRadius: '10px', padding: '12px 18px', fontSize: '13px', color: '#E8EDF8', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
           ✓ {notif}
         </div>
       )}
