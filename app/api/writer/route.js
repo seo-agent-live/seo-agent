@@ -27,22 +27,40 @@ Return ONLY the article content, no extra commentary.`;
         'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: 'llama3-8b-8192',
+        model: 'llama-3.1-8b-instant',
         messages: [{ role: 'user', content: prompt }],
         temperature: 0.7,
         max_tokens: 4000,
       }),
     });
 
-    const groqData = await groqRes.json();
-    const content = groqData.choices?.[0]?.message?.content || '';
+    // ✅ NEW: catch Groq HTTP errors
+    if (!groqRes.ok) {
+      const errBody = await groqRes.text();
+      console.error('Groq error:', groqRes.status, errBody);
+      return NextResponse.json(
+        { error: `Groq API error ${groqRes.status}: ${errBody}` },
+        { status: 502 }
+      );
+    }
 
-    // Extract meta description
+    const groqData = await groqRes.json();
+
+    // ✅ NEW: catch empty response
+    if (!groqData.choices?.[0]?.message?.content) {
+      console.error('Unexpected Groq response:', JSON.stringify(groqData));
+      return NextResponse.json(
+        { error: 'No content returned from Groq', raw: groqData },
+        { status: 502 }
+      );
+    }
+
+    const content = groqData.choices[0].message.content;
+
     const metaMatch = content.match(/META:\s*(.+?)(\n|$)/);
     const metaDescription = metaMatch ? metaMatch[1].trim() : '';
     const cleanContent = content.replace(/META:\s*.+/g, '').trim();
 
-    // Calculate stats
     const wordCount = cleanContent.split(/\s+/).length;
     const readTime = `${Math.ceil(wordCount / 200)} min`;
     const seoScore = Math.floor(70 + Math.random() * 25);
@@ -56,6 +74,7 @@ Return ONLY the article content, no extra commentary.`;
     });
 
   } catch (err) {
+    console.error('Writer route exception:', err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
