@@ -106,7 +106,7 @@ export default function SEOAnalyticsPage() {
   ];
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-[#0d0d14] text-white">
+    <div className="flex-1 flex flex-col min-h-screen text-white">
 
       {/* Top bar */}
       <header className="flex items-center justify-between px-8 py-4 border-b border-white/[0.06] shrink-0">
