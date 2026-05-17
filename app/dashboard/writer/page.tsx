@@ -1,5 +1,11 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 const TONES = [
   { value: 'professional', label: 'Professional' },
@@ -91,8 +97,27 @@ export default function WriterPage() {
   const [activeTab, setActiveTab] = useState('article');
   const [savedArticles, setSavedArticles] = useState([]);
   const [showSaved, setShowSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const editorRef = useRef(null);
+
+  // ✅ Load saved articles from Supabase on mount
+  useEffect(() => {
+    loadSavedArticles();
+  }, []);
+
+  const loadSavedArticles = async () => {
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    if (!error && data) {
+      setSavedArticles(data);
+    }
+  };
 
   const handleGenerate = async () => {
     if (!keyword.trim()) return;
@@ -101,6 +126,7 @@ export default function WriterPage() {
     setArticle(null);
     setEditMode(false);
     setActiveTab('article');
+    setSaveSuccess(false);
 
     let msgIdx = 0;
     setLoadingMsg(loadingMessages[0]);
@@ -148,22 +174,47 @@ export default function WriterPage() {
     URL.revokeObjectURL(url);
   };
 
-  const handleSave = () => {
-    const saved = {
-      id: Date.now(),
-      keyword,
-      content: editMode ? editedContent : article?.content,
-      metaDescription: article?.metaDescription,
-      metaTitle: article?.metaTitle,
-      seoScore: getSeoScore(editMode ? editedContent : article?.content, keyword),
-      wordCount: getWordCount(editMode ? editedContent : article?.content),
-      date: new Date().toLocaleDateString(),
-    };
-    setSavedArticles(prev => [saved, ...prev]);
-    try {
-      const existing = JSON.parse(localStorage.getItem('rankflow_articles') || '[]');
-      localStorage.setItem('rankflow_articles', JSON.stringify([saved, ...existing].slice(0, 20)));
-    } catch {}
+  // ✅ Save to Supabase
+  const handleSave = async () => {
+    if (!article) return;
+    setSaving(true);
+
+    const content = editMode ? editedContent : article.content;
+    const wordCount = getWordCount(content);
+    const seoScore = getSeoScore(content, keyword);
+
+    const slug = keyword
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
+
+    const titleMatch = content.match(/^#\s+(.+)/m);
+    const title = titleMatch ? titleMatch[1].trim() : keyword;
+
+    const { error: dbError } = await supabase
+      .from('articles')
+      .insert({
+        title,
+        content,
+        keyword,
+        meta_description: article.metaDescription || '',
+        slug,
+        word_count: wordCount,
+        read_time: getReadTime(content),
+        seo_score: seoScore,
+        status: 'published',
+      });
+
+    if (dbError) {
+      console.error('Save error:', dbError);
+      setError('Failed to save article. Please try again.');
+    } else {
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+      loadSavedArticles(); // ✅ Refresh the saved list
+    }
+
+    setSaving(false);
   };
 
   const displayContent = editMode ? editedContent : article?.content;
@@ -217,6 +268,13 @@ export default function WriterPage() {
         </button>
       </div>
 
+      {/* Save Success Banner */}
+      {saveSuccess && (
+        <div style={{ padding: '12px 20px', background: 'rgba(29,184,160,0.1)', border: '1px solid rgba(29,184,160,0.3)', borderRadius: '10px', color: '#1DB8A0', fontSize: '13px', marginBottom: '16px' }}>
+          ✅ Article saved successfully! It will persist after refresh.
+        </div>
+      )}
+
       {/* Saved Articles Panel */}
       {showSaved && (
         <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
@@ -226,11 +284,26 @@ export default function WriterPage() {
           ) : savedArticles.map(a => (
             <div key={a.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 0', borderBottom: '1px solid #21262D' }}>
               <div style={{ flex: 1 }}>
-                <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '2px' }}>{a.keyword}</div>
-                <div style={{ fontSize: '11px', color: '#8B949E' }}>{a.wordCount} words · SEO {a.seoScore} · {a.date}</div>
+                <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '2px' }}>{a.keyword || a.title}</div>
+                <div style={{ fontSize: '11px', color: '#8B949E' }}>
+                  {a.word_count} words · SEO {a.seo_score} · {new Date(a.created_at).toLocaleDateString()}
+                </div>
               </div>
+              
+                href={`/blog/${a.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(29,184,160,0.3)', background: 'rgba(29,184,160,0.1)', color: '#1DB8A0', cursor: 'pointer', textDecoration: 'none' }}
+              >
+                View
+              </a>
               <button
-                onClick={() => { setArticle(a); setEditedContent(a.content); setShowSaved(false); setKeyword(a.keyword); }}
+                onClick={() => {
+                  setArticle({ content: a.content, metaDescription: a.meta_description, metaTitle: a.title });
+                  setEditedContent(a.content);
+                  setShowSaved(false);
+                  setKeyword(a.keyword || a.title);
+                }}
                 style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(79,124,255,0.3)', background: 'rgba(79,124,255,0.1)', color: '#4F7CFF', cursor: 'pointer', fontFamily: 'inherit' }}
               >
                 Load
@@ -349,14 +422,12 @@ export default function WriterPage() {
 
         {/* RIGHT: Output */}
         <div>
-          {/* Error */}
           {error && (
             <div style={{ padding: '16px 20px', background: 'rgba(226,75,74,0.1)', border: '1px solid rgba(226,75,74,0.3)', borderRadius: '10px', color: '#E24B4A', fontSize: '13px', marginBottom: '16px' }}>
               ⚠️ {error}
             </div>
           )}
 
-          {/* Loading */}
           {loading && (
             <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '60px 40px', textAlign: 'center' }}>
               <div style={{ fontSize: '40px', marginBottom: '16px' }}>✍️</div>
@@ -368,7 +439,6 @@ export default function WriterPage() {
             </div>
           )}
 
-          {/* Empty State */}
           {!loading && !article && !error && (
             <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '60px 40px', textAlign: 'center' }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>📝</div>
@@ -379,10 +449,8 @@ export default function WriterPage() {
             </div>
           )}
 
-          {/* Article Output */}
           {article && !loading && (
             <div>
-              {/* Stats + Actions Bar */}
               <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '16px 20px', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
                 <div style={{ display: 'flex', gap: '24px' }}>
                   {[
@@ -401,7 +469,7 @@ export default function WriterPage() {
                     { label: editMode ? '✓ Editing' : '✏️ Edit', onClick: () => setEditMode(!editMode), active: editMode },
                     { label: copied ? '✓ Copied' : '📋 Copy', onClick: handleCopy, active: copied },
                     { label: '⬇️ Download', onClick: handleDownload, active: false },
-                    { label: '💾 Save', onClick: handleSave, primary: true },
+                    { label: saving ? '💾 Saving...' : saveSuccess ? '✅ Saved!' : '💾 Save', onClick: handleSave, primary: true },
                   ].map(btn => (
                     <button key={btn.label} onClick={btn.onClick} style={{
                       padding: '7px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '600',
@@ -414,7 +482,6 @@ export default function WriterPage() {
                 </div>
               </div>
 
-              {/* Tabs */}
               <div style={{ display: 'flex', gap: '4px', marginBottom: '14px' }}>
                 {[
                   { key: 'article', label: '📄 Article' },
@@ -431,7 +498,6 @@ export default function WriterPage() {
                 ))}
               </div>
 
-              {/* Article Tab */}
               {activeTab === 'article' && (
                 <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', overflow: 'hidden' }}>
                   {editMode ? (
@@ -451,7 +517,6 @@ export default function WriterPage() {
                 </div>
               )}
 
-              {/* Meta Tab */}
               {activeTab === 'meta' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
@@ -470,14 +535,15 @@ export default function WriterPage() {
                     <div style={{ fontSize: '11px', fontWeight: '700', color: '#8B949E', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '14px' }}>Google Preview</div>
                     <div style={{ background: '#0D1117', borderRadius: '8px', padding: '16px' }}>
                       <div style={{ fontSize: '18px', color: '#4F7CFF', marginBottom: '4px' }}>{article.metaTitle || keyword}</div>
-                      <div style={{ fontSize: '12px', color: '#1DB8A0', marginBottom: '6px' }}>https://yoursite.com/blog/{keyword.replace(/\s+/g, '-').toLowerCase()}</div>
+                      <div style={{ fontSize: '12px', color: '#1DB8A0', marginBottom: '6px' }}>
+                        https://yoursite.com/blog/{keyword.replace(/\s+/g, '-').toLowerCase()}
+                      </div>
                       <div style={{ fontSize: '13px', color: '#8B949E', lineHeight: '1.5' }}>{article.metaDescription || ''}</div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* SEO Tab */}
               {activeTab === 'seo' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px', display: 'flex', alignItems: 'center', gap: '20px' }}>
