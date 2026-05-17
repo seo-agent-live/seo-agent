@@ -7,7 +7,7 @@ const ARTICLES_KEY = 'rankflow_articles';
 const STATUSES = ['Active', 'Paused', 'Completed'];
 const COLORS   = ['#4F7CFF', '#1DB8A0', '#F59E0B', '#E24B4A', '#A78BFA', '#D35486'];
 
-const card: React.CSSProperties = { background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' };
+const card: React.CSSProperties = { background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' };
 const inp: React.CSSProperties = { width: '100%', padding: '10px 12px', background: '#0D1117', border: '1px solid #21262D', borderRadius: '8px', color: '#E8EDF8', fontSize: '13px', outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' };
 const lbl: React.CSSProperties = { fontSize: '11px', fontWeight: '600', color: '#8B949E', textTransform: 'uppercase', letterSpacing: '0.07em', display: 'block', marginBottom: '6px' };
 
@@ -147,7 +147,7 @@ export default function ProjectsPage() {
       <style>{`.pr-input::placeholder{color:#30363D}.pr-input:focus{border-color:rgba(79,124,255,0.5)!important;outline:none}`}</style>
 
       {notif && (
-        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 2000, background: '#161B22', border: '1px solid #21262D', borderRadius: '10px', padding: '12px 18px', fontSize: '13px', color: '#E8EDF8', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 2000, background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '10px', padding: '12px 18px', fontSize: '13px', color: '#E8EDF8', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}>
           ✓ {notif}
         </div>
       )}
@@ -231,7 +231,7 @@ export default function ProjectsPage() {
         </Modal>
       )}
 
-      <div style={{ padding: '28px', background: '#0D1117', minHeight: '100vh', fontFamily: 'Inter,-apple-system,sans-serif' }}>
+      <div style={{ padding: '28px', minHeight: '100vh', fontFamily: 'Inter,-apple-system,sans-serif' }}>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '28px' }}>
