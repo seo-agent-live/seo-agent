@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 export async function POST(req) {
   const { keyword, tone, length } = await req.json();
 
-  // ✅ Check API key exists before even calling Groq
   if (!process.env.GROQ_API_KEY) {
     return NextResponse.json(
       { error: 'GROQ_API_KEY is not set in environment variables' },
@@ -12,51 +11,67 @@ export async function POST(req) {
   }
 
   const wordTarget = length === 'short' ? '500-800' : length === 'medium' ? '1000-1500' : '2000-2500';
+  const minWords = length === 'short' ? 500 : length === 'medium' ? 1000 : 2000;
 
-  const prompt = `Write a ${wordTarget} word SEO-optimized blog article about "${keyword}".
+  const prompt = `You are an expert SEO content writer. Write a blog article about "${keyword}".
 
-STRICT REQUIREMENTS - you MUST follow all of these:
-1. Write EXACTLY ${wordTarget} words minimum - this is critical
-2. Start with a single H1 title using markdown: # Title Here
-3. Use multiple H2 subheadings throughout using markdown: ## Subheading Here
-4. Use H3 subheadings where appropriate: ### Subheading Here
-5. Tone: ${tone}
-6. Naturally include the keyword "${keyword}" at least 5 times
-7. Include a proper introduction and conclusion
-8. Include a FAQ section with at least 3 questions and answers under ## Frequently Asked Questions
-9. At the very end, on its own line, add a meta description prefixed EXACTLY like this:
-META: Your meta description here (must be 120-160 characters)
+MOST IMPORTANT RULES - READ CAREFULLY:
+1. WORD COUNT: You MUST write at least ${minWords} words. This is non-negotiable. Write long, detailed paragraphs.
+2. KEYWORD: You MUST use the exact phrase "${keyword}" at least 6 times naturally throughout the article.
+3. META DESCRIPTION: Must be EXACTLY between 120-155 characters. Count every character carefully before writing it.
+4. TONE: Write in a ${tone} tone throughout.
 
-Structure to follow:
-# [Compelling Title with keyword]
+FOLLOW THIS EXACT STRUCTURE AND WRITE LOTS OF CONTENT IN EACH SECTION:
 
-[Introduction paragraph - 2-3 sentences]
+# [Compelling title containing "${keyword}"]
 
-## [First Main Section]
-[Content...]
+[Introduction - write 4-5 sentences mentioning "${keyword}" and what the article covers]
 
-## [Second Main Section]
-[Content...]
+## What is ${keyword}?
+[Write 250-300 words explaining this topic in detail. Mention "${keyword}" naturally.]
 
-## [Third Main Section]
-[Content...]
+## Why ${keyword} Matters in 2024
+[Write 250-300 words on why this topic is important. Include specific reasons and examples.]
+
+## Step-by-Step Guide to ${keyword}
+[Write 300-400 words with detailed steps. Mention "${keyword}" at least once here.]
+
+### Step 1: [Name]
+[Write 80-100 words]
+
+### Step 2: [Name]
+[Write 80-100 words]
+
+### Step 3: [Name]
+[Write 80-100 words]
+
+## Best Practices for ${keyword}
+[Write 250-300 words covering tips and best practices. Mention "${keyword}" naturally.]
+
+## Common Mistakes to Avoid
+[Write 200-250 words on mistakes people make related to "${keyword}"]
 
 ## Frequently Asked Questions
-**Q: [Question 1]**
-A: [Answer 1]
 
-**Q: [Question 2]**
-A: [Answer 2]
+**Q: What is the best way to approach ${keyword}?**
+A: [Write 3-4 sentences with a detailed answer]
 
-**Q: [Question 3]**
-A: [Answer 3]
+**Q: How long does ${keyword} take to show results?**
+A: [Write 3-4 sentences with a detailed answer]
+
+**Q: Is ${keyword} suitable for beginners?**
+A: [Write 3-4 sentences with a detailed answer]
 
 ## Conclusion
-[Concluding paragraph]
+[Write 4-5 sentences summarising the article and mentioning "${keyword}" one final time]
 
-META: [120-160 character meta description containing the keyword]
+META: [Your meta description here - must be between 120 and 155 characters including spaces, must contain "${keyword}"]
 
-Return ONLY the article content, no extra commentary or explanations.`;
+FINAL CHECKLIST BEFORE RESPONDING:
+- Did you write at least ${minWords} words? If not, go back and expand each section.
+- Did you use "${keyword}" at least 6 times? If not, add it to more sections.
+- Is your META line between 120-155 characters? Count it carefully.
+- Only return the article content, nothing else.`;
 
   try {
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -73,7 +88,6 @@ Return ONLY the article content, no extra commentary or explanations.`;
       }),
     });
 
-    // ✅ Catch Groq HTTP errors (401, 429, 500 etc)
     if (!groqRes.ok) {
       const errBody = await groqRes.text();
       console.error('Groq error:', groqRes.status, errBody);
@@ -85,7 +99,6 @@ Return ONLY the article content, no extra commentary or explanations.`;
 
     const groqData = await groqRes.json();
 
-    // ✅ Catch empty response from Groq
     if (!groqData.choices?.[0]?.message?.content) {
       console.error('Empty Groq response:', JSON.stringify(groqData));
       return NextResponse.json(
@@ -113,7 +126,6 @@ Return ONLY the article content, no extra commentary or explanations.`;
     });
 
   } catch (err) {
-    // ✅ Catch network or unexpected errors
     console.error('Writer route exception:', err);
     return NextResponse.json(
       { error: `Unexpected error: ${err.message}` },
