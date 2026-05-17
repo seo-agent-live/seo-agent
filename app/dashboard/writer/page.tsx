@@ -290,13 +290,14 @@ export default function WriterPage() {
                 </div>
               </div>
               
-                href={`/blog/${a.slug}`}
-                target="_blank"
-                rel="noreferrer"
-                style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(29,184,160,0.3)', background: 'rgba(29,184,160,0.1)', color: '#1DB8A0', cursor: 'pointer', textDecoration: 'none' }}
-              >
-                View
-              </a>
+              href={`/blog/${a.slug}`}
+              target="_blank"
+              rel="noreferrer"
+              style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(29,184,160,0.3)', background: 'rgba(29,184,160,0.1)', color: '#1DB8A0', cursor: 'pointer', textDecoration: 'none' }}
+              onClick={(e) => e.stopPropagation()}
+          >
+            View
+          </a>
               <button
                 onClick={() => {
                   setArticle({ content: a.content, metaDescription: a.meta_description, metaTitle: a.title });
