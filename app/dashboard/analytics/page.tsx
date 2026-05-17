@@ -129,7 +129,7 @@ export default function SEOAnalyticsPage() {
         <div className="grid grid-cols-4 gap-4">
           {stats.map((s) => (
             <div key={s.label}
-              className="bg-white/[0.03] border border-white/[0.07] rounded-xl p-5 hover:border-white/[0.12] transition-colors">
+              className="bg-[rgba(22,27,34,0.65)] border border-white/[0.07] rounded-xl p-5 hover:border-white/[0.12] transition-colors">
               <p className="text-xs font-medium text-white/40 mb-3">{s.label}</p>
               {loading ? (
                 <div className="h-8 w-16 rounded bg-white/[0.06] animate-pulse mb-2" />
@@ -202,7 +202,7 @@ export default function SEOAnalyticsPage() {
         </div>
 
         {/* Recent Articles */}
-        <div className="bg-white/[0.03] border border-white/[0.07] rounded-xl overflow-hidden">
+        <div className="bg-[rgba(22,27,34,0.65)] border border-white/[0.07] rounded-xl overflow-hidden">
           <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
             <h2 className="text-sm font-semibold text-white/80">Recent Articles</h2>
             <Link href="/dashboard/library"
