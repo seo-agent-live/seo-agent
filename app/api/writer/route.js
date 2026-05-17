@@ -15,17 +15,48 @@ export async function POST(req) {
 
   const prompt = `Write a ${wordTarget} word SEO-optimized blog article about "${keyword}".
 
-Tone: ${tone}
-Requirements:
-- Include a compelling H1 title
-- Use H2 and H3 subheadings throughout
-- Naturally include the keyword "${keyword}" multiple times
-- Include an introduction, main sections, and conclusion
-- Write in a ${tone} tone
-- Make it engaging and informative
-- Include a meta description at the very end prefixed with "META:"
+STRICT REQUIREMENTS - you MUST follow all of these:
+1. Write EXACTLY ${wordTarget} words minimum - this is critical
+2. Start with a single H1 title using markdown: # Title Here
+3. Use multiple H2 subheadings throughout using markdown: ## Subheading Here
+4. Use H3 subheadings where appropriate: ### Subheading Here
+5. Tone: ${tone}
+6. Naturally include the keyword "${keyword}" at least 5 times
+7. Include a proper introduction and conclusion
+8. Include a FAQ section with at least 3 questions and answers under ## Frequently Asked Questions
+9. At the very end, on its own line, add a meta description prefixed EXACTLY like this:
+META: Your meta description here (must be 120-160 characters)
 
-Return ONLY the article content, no extra commentary.`;
+Structure to follow:
+# [Compelling Title with keyword]
+
+[Introduction paragraph - 2-3 sentences]
+
+## [First Main Section]
+[Content...]
+
+## [Second Main Section]
+[Content...]
+
+## [Third Main Section]
+[Content...]
+
+## Frequently Asked Questions
+**Q: [Question 1]**
+A: [Answer 1]
+
+**Q: [Question 2]**
+A: [Answer 2]
+
+**Q: [Question 3]**
+A: [Answer 3]
+
+## Conclusion
+[Concluding paragraph]
+
+META: [120-160 character meta description containing the keyword]
+
+Return ONLY the article content, no extra commentary or explanations.`;
 
   try {
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
