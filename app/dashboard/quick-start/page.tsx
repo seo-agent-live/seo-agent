@@ -195,7 +195,7 @@ export default function QuickStartPage() {
 
           {/* Progress Bar */}
           <div style={{
-            background: '#161B22', border: '1px solid #21262D',
+            background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D',
             borderRadius: '12px', padding: '20px', marginBottom: '16px',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
@@ -255,7 +255,7 @@ export default function QuickStartPage() {
 
                 {/* Card */}
                 <div style={{
-                  background: '#161B22',
+                  background: 'rgba(22,27,34,0.4)',
                   border: `1px solid ${isOpen ? step.border : '#21262D'}`,
                   borderRadius: '12px', flex: 1, overflow: 'hidden',
                   transition: 'border-color 0.2s',
@@ -368,7 +368,7 @@ export default function QuickStartPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
           {/* Setup Summary */}
-          <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+          <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '16px' }}>Setup Summary</div>
             {steps.map(step => {
               const isDone = completed.includes(step.num);
@@ -396,7 +396,7 @@ export default function QuickStartPage() {
           </div>
 
           {/* Learning Resources */}
-          <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+          <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '16px' }}>📚 Learning Resources</div>
             {resources.map((r, i) => (
               <div key={i} style={{
@@ -427,7 +427,7 @@ export default function QuickStartPage() {
 
           {/* Need Help */}
           <div style={{
-            background: '#161B22', border: '1px solid #21262D',
+            background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D',
             borderRadius: '12px', padding: '20px', textAlign: 'center',
           }}>
             <div style={{ fontSize: '24px', marginBottom: '10px' }}>💬</div>
