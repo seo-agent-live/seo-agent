@@ -245,7 +245,7 @@ export default function WriterPage() {
   };
 
   return (
-    <div style={{ padding: '28px', background: '#0D1117', minHeight: '100vh', fontFamily: 'Inter,-apple-system,sans-serif' }}>
+    <div style={{ padding: '28px', minHeight: '100vh', fontFamily: 'Inter,-apple-system,sans-serif' }}>
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '28px' }}>
@@ -270,7 +270,7 @@ export default function WriterPage() {
 
       {/* Saved Articles Panel */}
       {showSaved && (
-        <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
+        <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px', marginBottom: '24px' }}>
           <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '14px' }}>Saved Articles</div>
           {savedArticles.length === 0 ? (
             <div style={{ fontSize: '13px', color: '#8B949E', textAlign: 'center', padding: '20px 0' }}>No saved articles yet.</div>
@@ -309,7 +309,7 @@ export default function WriterPage() {
         {/* LEFT */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
 
-          <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+          <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '14px' }}>Target Keyword</div>
             <input
               value={keyword}
@@ -321,7 +321,7 @@ export default function WriterPage() {
             <div style={{ fontSize: '11px', color: '#8B949E', marginTop: '8px' }}>Press Enter or click Generate</div>
           </div>
 
-          <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+          <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '16px' }}>Settings</div>
 
             <div style={{ marginBottom: '14px' }}>
@@ -363,7 +363,7 @@ export default function WriterPage() {
             </div>
           </div>
 
-          <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+          <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '14px' }}>Include Sections</div>
             {[
               { label: 'Meta Description', val: includeMetaDesc, set: setIncludeMetaDesc },
@@ -379,7 +379,7 @@ export default function WriterPage() {
             ))}
           </div>
 
-          <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+          <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
             <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '10px' }}>Additional Instructions</div>
             <textarea
               value={additionalInstructions}
@@ -415,7 +415,7 @@ export default function WriterPage() {
           )}
 
           {loading && (
-            <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '60px 40px', textAlign: 'center' }}>
+            <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '60px 40px', textAlign: 'center' }}>
               <div style={{ fontSize: '15px', fontWeight: '600', color: '#E8EDF8', marginBottom: '8px' }}>{loadingMsg}</div>
               <div style={{ fontSize: '12px', color: '#8B949E', marginBottom: '24px' }}>Long articles may take up to 30 seconds.</div>
               <div style={{ background: '#21262D', borderRadius: '999px', height: '4px', overflow: 'hidden', maxWidth: '300px', margin: '0 auto' }}>
@@ -425,7 +425,7 @@ export default function WriterPage() {
           )}
 
           {!loading && !article && !error && (
-            <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '60px 40px', textAlign: 'center' }}>
+            <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '60px 40px', textAlign: 'center' }}>
               <div style={{ fontSize: '48px', marginBottom: '16px' }}>📝</div>
               <div style={{ fontSize: '15px', fontWeight: '600', color: '#E8EDF8', marginBottom: '8px' }}>Ready to write</div>
               <div style={{ fontSize: '13px', color: '#8B949E', maxWidth: '320px', margin: '0 auto', lineHeight: '1.6' }}>
@@ -436,7 +436,7 @@ export default function WriterPage() {
 
           {article && !loading && (
             <div>
-              <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '16px 20px', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '16px 20px', marginBottom: '14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
                 <div style={{ display: 'flex', gap: '24px' }}>
                   {[
                     { label: 'Words', value: wordCount, color: '#4F7CFF' },
@@ -482,7 +482,7 @@ export default function WriterPage() {
               </div>
 
               {activeTab === 'article' && (
-                <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', overflow: 'hidden' }}>
+                <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', overflow: 'hidden' }}>
                   {editMode ? (
                     <textarea
                       ref={editorRef}
@@ -502,19 +502,19 @@ export default function WriterPage() {
 
               {activeTab === 'meta' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+                  <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
                     <div style={{ fontSize: '11px', fontWeight: '700', color: '#4F7CFF', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '10px' }}>Meta Title</div>
                     <div style={{ fontSize: '14px', color: '#E8EDF8', marginBottom: '8px', lineHeight: '1.5' }}>{article.metaTitle || keyword}</div>
                     <div style={{ fontSize: '11px', color: '#8B949E' }}>{(article.metaTitle || keyword).length} characters (ideal: 50-60)</div>
                   </div>
-                  <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+                  <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
                     <div style={{ fontSize: '11px', fontWeight: '700', color: '#1DB8A0', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '10px' }}>Meta Description</div>
                     <div style={{ fontSize: '14px', color: '#C9D1D9', lineHeight: '1.6', marginBottom: '8px' }}>{article.metaDescription || 'No meta description generated.'}</div>
                     <div style={{ fontSize: '11px', color: article.metaDescription?.length >= 120 && article.metaDescription?.length <= 160 ? '#1DB8A0' : '#F59E0B' }}>
                       {article.metaDescription?.length || 0} characters (ideal: 120-160)
                     </div>
                   </div>
-                  <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+                  <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
                     <div style={{ fontSize: '11px', fontWeight: '700', color: '#8B949E', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '14px' }}>Google Preview</div>
                     <div style={{ background: '#0D1117', borderRadius: '8px', padding: '16px' }}>
                       <div style={{ fontSize: '18px', color: '#4F7CFF', marginBottom: '4px' }}>{article.metaTitle || keyword}</div>
@@ -529,7 +529,7 @@ export default function WriterPage() {
 
               {activeTab === 'seo' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px', display: 'flex', alignItems: 'center', gap: '20px' }}>
+                  <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px', display: 'flex', alignItems: 'center', gap: '20px' }}>
                     <div style={{ position: 'relative', width: '80px', height: '80px', flexShrink: 0 }}>
                       <svg width="80" height="80" viewBox="0 0 80 80" style={{ transform: 'rotate(-90deg)' }}>
                         <circle cx="40" cy="40" r="32" fill="none" stroke="#21262D" strokeWidth="7" />
@@ -547,7 +547,7 @@ export default function WriterPage() {
                       </div>
                     </div>
                   </div>
-                  <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
+                  <div style={{ background: 'rgba(22,27,34,0.4)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
                     <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '14px' }}>SEO Checklist</div>
                     {seoTips.map((tip, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 0', borderBottom: i < seoTips.length - 1 ? '1px solid #21262D' : 'none' }}>
