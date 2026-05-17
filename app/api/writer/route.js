@@ -19,107 +19,125 @@ export async function POST(req) {
   const wordTarget = length === 'short' ? '500-800' : length === 'medium' ? '1000-1500' : '2000-2500';
   const minWords = length === 'short' ? 500 : length === 'medium' ? 1000 : 2000;
 
-  const prompt = `You are an expert SEO content writer. Write a blog article about "${keyword}".
+  // Separate prompt just for the article
+  const articlePrompt = `You are an expert SEO content writer. Write a blog article about "${keyword}".
 
-MOST IMPORTANT RULES - READ CAREFULLY:
-1. WORD COUNT: You MUST write at least ${minWords} words. This is non-negotiable. Write long, detailed paragraphs.
-2. KEYWORD: You MUST use the exact phrase "${keyword}" at least 6 times naturally throughout the article.
-3. META DESCRIPTION: Must be EXACTLY between 120-155 characters. Count every character carefully before writing it.
-4. TONE: Write in a ${tone} tone throughout.
+WORD COUNT: You MUST write at least ${minWords} words. Write long detailed paragraphs in every section.
+TONE: ${tone}
+KEYWORD: Use "${keyword}" naturally at least 6 times.
 
-FOLLOW THIS EXACT STRUCTURE AND WRITE LOTS OF CONTENT IN EACH SECTION:
+FOLLOW THIS EXACT STRUCTURE:
 
 # [Compelling title containing "${keyword}"]
 
-[Introduction - write 4-5 sentences mentioning "${keyword}" and what the article covers]
+[Introduction - 4-5 sentences mentioning "${keyword}"]
 
 ## What is ${keyword}?
-[Write 250-300 words explaining this topic in detail. Mention "${keyword}" naturally.]
+[Write 250-300 words here]
 
-## Why ${keyword} Matters in 2024
-[Write 250-300 words on why this topic is important. Include specific reasons and examples.]
+## Why ${keyword} Matters
+[Write 250-300 words here]
 
 ## Step-by-Step Guide to ${keyword}
-[Write 300-400 words with detailed steps. Mention "${keyword}" at least once here.]
 
 ### Step 1: [Name]
-[Write 80-100 words]
+[Write 100-150 words]
 
 ### Step 2: [Name]
-[Write 80-100 words]
+[Write 100-150 words]
 
 ### Step 3: [Name]
-[Write 80-100 words]
+[Write 100-150 words]
+
+### Step 4: [Name]
+[Write 100-150 words]
 
 ## Best Practices for ${keyword}
-[Write 250-300 words covering tips and best practices. Mention "${keyword}" naturally.]
+[Write 250-300 words here]
 
-## Common Mistakes to Avoid
-[Write 200-250 words on mistakes people make related to "${keyword}"]
+## Common Mistakes to Avoid with ${keyword}
+[Write 200-250 words here]
 
 ## Frequently Asked Questions
 
 **Q: What is the best way to approach ${keyword}?**
-A: [Write 3-4 sentences with a detailed answer]
+A: [3-4 sentence answer]
 
 **Q: How long does ${keyword} take to show results?**
-A: [Write 3-4 sentences with a detailed answer]
+A: [3-4 sentence answer]
 
 **Q: Is ${keyword} suitable for beginners?**
-A: [Write 3-4 sentences with a detailed answer]
+A: [3-4 sentence answer]
 
 ## Conclusion
-[Write 4-5 sentences summarising the article and mentioning "${keyword}" one final time]
+[4-5 sentences mentioning "${keyword}"]
 
-META: [Your meta description here - must be between 120 and 155 characters including spaces, must contain "${keyword}"]
+Return ONLY the article. No META line. No extra commentary.`;
 
-FINAL CHECKLIST BEFORE RESPONDING:
-- Did you write at least ${minWords} words? If not, go back and expand each section.
-- Did you use "${keyword}" at least 6 times? If not, add it to more sections.
-- Is your META line between 120-155 characters? Count it carefully.
-- Only return the article content, nothing else.`;
+  // Separate prompt just for meta description
+  const metaPrompt = `Write a meta description for an article about "${keyword}".
+
+Rules:
+- Must be between 130 and 155 characters long (count carefully)
+- Must include the keyword "${keyword}"
+- Must be compelling and encourage clicks
+- Return ONLY the meta description text, nothing else, no labels, no quotes`;
 
   try {
-    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: 'llama-3.1-8b-instant',
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.7,
-        max_tokens: 4000,
+    // Call Groq twice - once for article, once for meta
+    const [articleRes, metaRes] = await Promise.all([
+      fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-8b-instant',
+          messages: [{ role: 'user', content: articlePrompt }],
+          temperature: 0.7,
+          max_tokens: 4000,
+        }),
       }),
-    });
+      fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: 'llama-3.1-8b-instant',
+          messages: [{ role: 'user', content: metaPrompt }],
+          temperature: 0.7,
+          max_tokens: 200,
+        }),
+      }),
+    ]);
 
-    if (!groqRes.ok) {
-      const errBody = await groqRes.text();
-      console.error('Groq error:', groqRes.status, errBody);
+    if (!articleRes.ok) {
+      const errBody = await articleRes.text();
+      console.error('Groq article error:', articleRes.status, errBody);
       return NextResponse.json(
-        { error: `Groq API error ${groqRes.status}: ${errBody}` },
+        { error: `Groq API error ${articleRes.status}: ${errBody}` },
         { status: 502 }
       );
     }
 
-    const groqData = await groqRes.json();
+    const articleData = await articleRes.json();
+    const metaData = await metaRes.json();
 
-    if (!groqData.choices?.[0]?.message?.content) {
-      console.error('Empty Groq response:', JSON.stringify(groqData));
+    if (!articleData.choices?.[0]?.message?.content) {
+      console.error('Empty Groq response:', JSON.stringify(articleData));
       return NextResponse.json(
-        { error: 'No content returned from Groq — the model may be unavailable' },
+        { error: 'No content returned from Groq' },
         { status: 502 }
       );
     }
 
-    const content = groqData.choices[0].message.content;
+    const content = articleData.choices[0].message.content.trim();
+    const metaDescription = metaData.choices?.[0]?.message?.content?.trim() || '';
 
-    const metaMatch = content.match(/META:\s*(.+?)(\n|$)/);
-    const metaDescription = metaMatch ? metaMatch[1].trim() : '';
-    const cleanContent = content.replace(/META:\s*.+/g, '').trim();
-
-    const wordCount = cleanContent.split(/\s+/).length;
+    const wordCount = content.split(/\s+/).length;
     const readTime = `${Math.ceil(wordCount / 200)} min`;
     const seoScore = Math.floor(70 + Math.random() * 25);
 
@@ -130,7 +148,7 @@ FINAL CHECKLIST BEFORE RESPONDING:
       .replace(/(^-|-$)/g, '');
 
     // Extract title from first line
-    const titleMatch = cleanContent.match(/^#\s+(.+)/m);
+    const titleMatch = content.match(/^#\s+(.+)/m);
     const title = titleMatch ? titleMatch[1].trim() : keyword;
 
     // Save to Supabase if requested
@@ -139,7 +157,7 @@ FINAL CHECKLIST BEFORE RESPONDING:
         .from('articles')
         .insert({
           title,
-          content: cleanContent,
+          content,
           keyword,
           meta_description: metaDescription,
           slug,
@@ -156,7 +174,7 @@ FINAL CHECKLIST BEFORE RESPONDING:
     }
 
     return NextResponse.json({
-      content: cleanContent,
+      content,
       metaDescription,
       wordCount,
       readTime,
