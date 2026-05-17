@@ -1,10 +1,10 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, CSSProperties } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
 );
 
 const TONES = [
@@ -17,8 +17,8 @@ const TONES = [
 ];
 
 const LENGTHS = [
-  { value: 'short', label: 'Short', desc: '500–800 words' },
-  { value: 'medium', label: 'Medium', desc: '1,000–1,500 words' },
+  { value: 'short', label: 'Short', desc: '500-800 words' },
+  { value: 'medium', label: 'Medium', desc: '1,000-1,500 words' },
   { value: 'long', label: 'Long', desc: '2,000+ words' },
 ];
 
@@ -39,7 +39,7 @@ const ARTICLE_TYPES = [
   { value: 'opinion', label: 'Opinion Piece' },
 ];
 
-function getSeoScore(content, keyword) {
+function getSeoScore(content: string, keyword: string) {
   if (!content || !keyword) return 0;
   let score = 50;
   const lower = content.toLowerCase();
@@ -56,13 +56,13 @@ function getSeoScore(content, keyword) {
   return Math.min(score, 100);
 }
 
-function getReadTime(content) {
+function getReadTime(content: string) {
   const words = content?.split(/\s+/).length || 0;
   const mins = Math.ceil(words / 200);
   return `${mins} min`;
 }
 
-function getWordCount(content) {
+function getWordCount(content: string) {
   return content?.split(/\s+/).filter(Boolean).length || 0;
 }
 
@@ -89,20 +89,19 @@ export default function WriterPage() {
 
   const [loading, setLoading] = useState(false);
   const [loadingMsg, setLoadingMsg] = useState('');
-  const [article, setArticle] = useState(null);
-  const [error, setError] = useState(null);
+  const [article, setArticle] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editedContent, setEditedContent] = useState('');
   const [activeTab, setActiveTab] = useState('article');
-  const [savedArticles, setSavedArticles] = useState([]);
+  const [savedArticles, setSavedArticles] = useState<any[]>([]);
   const [showSaved, setShowSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  const editorRef = useRef(null);
+  const editorRef = useRef<HTMLTextAreaElement>(null);
 
-  // ✅ Load saved articles from Supabase on mount
   useEffect(() => {
     loadSavedArticles();
   }, []);
@@ -113,7 +112,6 @@ export default function WriterPage() {
       .select('*')
       .order('created_at', { ascending: false })
       .limit(20);
-
     if (!error && data) {
       setSavedArticles(data);
     }
@@ -148,7 +146,7 @@ export default function WriterPage() {
       if (data.error) throw new Error(data.error);
       setArticle(data);
       setEditedContent(data.content);
-    } catch (err) {
+    } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       clearInterval(msgInterval);
@@ -174,7 +172,6 @@ export default function WriterPage() {
     URL.revokeObjectURL(url);
   };
 
-  // ✅ Save to Supabase
   const handleSave = async () => {
     if (!article) return;
     setSaving(true);
@@ -211,7 +208,7 @@ export default function WriterPage() {
     } else {
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
-      loadSavedArticles(); // ✅ Refresh the saved list
+      loadSavedArticles();
     }
 
     setSaving(false);
@@ -229,19 +226,19 @@ export default function WriterPage() {
     { pass: wordCount > 1500, label: 'Article is over 1,500 words (ideal)' },
     { pass: displayContent?.includes('##') || displayContent?.includes('\n#'), label: 'Uses heading structure (H2s)' },
     { pass: !!article?.metaDescription, label: 'Has a meta description' },
-    { pass: article?.metaDescription?.length >= 120 && article?.metaDescription?.length <= 160, label: 'Meta description is 120–160 chars' },
+    { pass: article?.metaDescription?.length >= 120 && article?.metaDescription?.length <= 160, label: 'Meta description is 120-160 chars' },
     { pass: (displayContent?.toLowerCase().split(keyword.toLowerCase()).length || 1) - 1 >= 3, label: 'Keyword used 3+ times' },
     { pass: displayContent?.includes('FAQ') || displayContent?.includes('?'), label: 'Includes FAQ or questions' },
   ] : [];
 
-  const inputStyle: React.CSSProperties = {
+  const inputStyle: CSSProperties = {
     width: '100%', padding: '10px 12px', background: '#0D1117',
     border: '1px solid #21262D', borderRadius: '8px', color: '#E8EDF8',
     fontSize: '13px', outline: 'none', fontFamily: 'inherit', cursor: 'pointer',
     boxSizing: 'border-box',
   };
 
-  const labelStyle: React.CSSProperties = {
+  const labelStyle: CSSProperties = {
     fontSize: '11px', fontWeight: '600', color: '#8B949E',
     textTransform: 'uppercase', letterSpacing: '0.07em',
     display: 'block', marginBottom: '8px',
@@ -253,25 +250,21 @@ export default function WriterPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '28px' }}>
         <div>
-          <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#E8EDF8', margin: 0, marginBottom: '6px' }}>✍️ AI Writer</h1>
+          <h1 style={{ fontSize: '22px', fontWeight: '700', color: '#E8EDF8', margin: 0, marginBottom: '6px' }}>AI Writer</h1>
           <p style={{ fontSize: '13px', color: '#8B949E', margin: 0 }}>Generate long-form, SEO-optimised articles with one keyword.</p>
         </div>
         <button
           onClick={() => setShowSaved(!showSaved)}
-          style={{
-            fontSize: '12px', padding: '8px 16px', borderRadius: '8px',
-            border: '1px solid #21262D', background: showSaved ? '#161B22' : 'transparent',
-            color: '#8B949E', cursor: 'pointer', fontFamily: 'inherit',
-          }}
+          style={{ fontSize: '12px', padding: '8px 16px', borderRadius: '8px', border: '1px solid #21262D', background: showSaved ? '#161B22' : 'transparent', color: '#8B949E', cursor: 'pointer', fontFamily: 'inherit' }}
         >
-          📁 Saved Articles {savedArticles.length > 0 && `(${savedArticles.length})`}
+          Saved Articles {savedArticles.length > 0 && `(${savedArticles.length})`}
         </button>
       </div>
 
       {/* Save Success Banner */}
       {saveSuccess && (
         <div style={{ padding: '12px 20px', background: 'rgba(29,184,160,0.1)', border: '1px solid rgba(29,184,160,0.3)', borderRadius: '10px', color: '#1DB8A0', fontSize: '13px', marginBottom: '16px' }}>
-          ✅ Article saved successfully! It will persist after refresh.
+          Article saved successfully! It will persist after refresh.
         </div>
       )}
 
@@ -289,14 +282,12 @@ export default function WriterPage() {
                   {a.word_count} words · SEO {a.seo_score} · {new Date(a.created_at).toLocaleDateString()}
                 </div>
               </div>
-              
-              href={`/blog/${a.slug}`}
-              target="_blank"
-              rel="noreferrer"
-              style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(29,184,160,0.3)', background: 'rgba(29,184,160,0.1)', color: '#1DB8A0', cursor: 'pointer', textDecoration: 'none' }}
-              onClick={(e) => e.stopPropagation()}>
-            View
-          </a>
+              <button
+                onClick={() => window.open('/blog/' + a.slug, '_blank')}
+                style={{ fontSize: '12px', padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(29,184,160,0.3)', background: 'rgba(29,184,160,0.1)', color: '#1DB8A0', cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                View
+              </button>
               <button
                 onClick={() => {
                   setArticle({ content: a.content, metaDescription: a.meta_description, metaTitle: a.title });
@@ -315,12 +306,11 @@ export default function WriterPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '24px', alignItems: 'start' }}>
 
-        {/* LEFT: Settings */}
+        {/* LEFT */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
 
-          {/* Keyword */}
           <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
-            <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '14px' }}>🎯 Target Keyword</div>
+            <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '14px' }}>Target Keyword</div>
             <input
               value={keyword}
               onChange={e => setKeyword(e.target.value)}
@@ -331,9 +321,8 @@ export default function WriterPage() {
             <div style={{ fontSize: '11px', color: '#8B949E', marginTop: '8px' }}>Press Enter or click Generate</div>
           </div>
 
-          {/* Settings */}
           <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
-            <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '16px' }}>⚙️ Settings</div>
+            <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '16px' }}>Settings</div>
 
             <div style={{ marginBottom: '14px' }}>
               <label style={labelStyle}>Article Type</label>
@@ -356,7 +345,7 @@ export default function WriterPage() {
                   <button key={l.value} onClick={() => setLength(l.value)} style={{
                     padding: '10px 6px', borderRadius: '8px', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'center',
                     background: length === l.value ? 'rgba(79,124,255,0.15)' : '#0D1117',
-                    border: `1px solid ${length === l.value ? 'rgba(79,124,255,0.5)' : '#21262D'}`,
+                    border: '1px solid ' + (length === l.value ? 'rgba(79,124,255,0.5)' : '#21262D'),
                     color: length === l.value ? '#4F7CFF' : '#8B949E',
                   }}>
                     <div style={{ fontSize: '12px', fontWeight: '600' }}>{l.label}</div>
@@ -374,9 +363,8 @@ export default function WriterPage() {
             </div>
           </div>
 
-          {/* Include Sections */}
           <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
-            <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '14px' }}>📋 Include Sections</div>
+            <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '14px' }}>Include Sections</div>
             {[
               { label: 'Meta Description', val: includeMetaDesc, set: setIncludeMetaDesc },
               { label: 'FAQ Section', val: includeFAQ, set: setIncludeFAQ },
@@ -391,19 +379,17 @@ export default function WriterPage() {
             ))}
           </div>
 
-          {/* Additional Instructions */}
           <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
-            <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '10px' }}>💬 Additional Instructions</div>
+            <div style={{ fontSize: '13px', fontWeight: '600', color: '#E8EDF8', marginBottom: '10px' }}>Additional Instructions</div>
             <textarea
               value={additionalInstructions}
               onChange={e => setAdditionalInstructions(e.target.value)}
-              placeholder='e.g. "Focus on enterprise customers", "Include statistics", "Mention our product naturally"...'
+              placeholder='e.g. "Focus on enterprise customers", "Include statistics"...'
               rows={3}
               style={{ ...inputStyle, resize: 'vertical', lineHeight: '1.5', cursor: 'text' }}
             />
           </div>
 
-          {/* Generate */}
           <button
             onClick={handleGenerate}
             disabled={loading || !keyword.trim()}
@@ -416,21 +402,20 @@ export default function WriterPage() {
               fontFamily: 'inherit',
             }}
           >
-            {loading ? '⏳ Generating...' : '✍️ Generate Article'}
+            {loading ? 'Generating...' : 'Generate Article'}
           </button>
         </div>
 
-        {/* RIGHT: Output */}
+        {/* RIGHT */}
         <div>
           {error && (
             <div style={{ padding: '16px 20px', background: 'rgba(226,75,74,0.1)', border: '1px solid rgba(226,75,74,0.3)', borderRadius: '10px', color: '#E24B4A', fontSize: '13px', marginBottom: '16px' }}>
-              ⚠️ {error}
+              {error}
             </div>
           )}
 
           {loading && (
             <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '60px 40px', textAlign: 'center' }}>
-              <div style={{ fontSize: '40px', marginBottom: '16px' }}>✍️</div>
               <div style={{ fontSize: '15px', fontWeight: '600', color: '#E8EDF8', marginBottom: '8px' }}>{loadingMsg}</div>
               <div style={{ fontSize: '12px', color: '#8B949E', marginBottom: '24px' }}>Long articles may take up to 30 seconds.</div>
               <div style={{ background: '#21262D', borderRadius: '999px', height: '4px', overflow: 'hidden', maxWidth: '300px', margin: '0 auto' }}>
@@ -465,34 +450,32 @@ export default function WriterPage() {
                   ))}
                 </div>
                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  {[
-                    { label: editMode ? '✓ Editing' : '✏️ Edit', onClick: () => setEditMode(!editMode), active: editMode },
-                    { label: copied ? '✓ Copied' : '📋 Copy', onClick: handleCopy, active: copied },
-                    { label: '⬇️ Download', onClick: handleDownload, active: false },
-                    { label: saving ? '💾 Saving...' : saveSuccess ? '✅ Saved!' : '💾 Save', onClick: handleSave, primary: true },
-                  ].map(btn => (
-                    <button key={btn.label} onClick={btn.onClick} style={{
-                      padding: '7px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '600',
-                      cursor: 'pointer', fontFamily: 'inherit',
-                      background: btn.primary ? 'rgba(79,124,255,0.15)' : btn.active ? 'rgba(29,184,160,0.15)' : 'transparent',
-                      border: `1px solid ${btn.primary ? 'rgba(79,124,255,0.4)' : btn.active ? '#1DB8A0' : '#21262D'}`,
-                      color: btn.primary ? '#4F7CFF' : btn.active ? '#1DB8A0' : '#8B949E',
-                    }}>{btn.label}</button>
-                  ))}
+                  <button onClick={() => setEditMode(!editMode)} style={{ padding: '7px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit', background: editMode ? 'rgba(29,184,160,0.15)' : 'transparent', border: '1px solid ' + (editMode ? '#1DB8A0' : '#21262D'), color: editMode ? '#1DB8A0' : '#8B949E' }}>
+                    {editMode ? 'Editing' : 'Edit'}
+                  </button>
+                  <button onClick={handleCopy} style={{ padding: '7px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit', background: copied ? 'rgba(29,184,160,0.15)' : 'transparent', border: '1px solid ' + (copied ? '#1DB8A0' : '#21262D'), color: copied ? '#1DB8A0' : '#8B949E' }}>
+                    {copied ? 'Copied' : 'Copy'}
+                  </button>
+                  <button onClick={handleDownload} style={{ padding: '7px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit', background: 'transparent', border: '1px solid #21262D', color: '#8B949E' }}>
+                    Download
+                  </button>
+                  <button onClick={handleSave} style={{ padding: '7px 14px', borderRadius: '8px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', fontFamily: 'inherit', background: 'rgba(79,124,255,0.15)', border: '1px solid rgba(79,124,255,0.4)', color: '#4F7CFF' }}>
+                    {saving ? 'Saving...' : saveSuccess ? 'Saved!' : 'Save'}
+                  </button>
                 </div>
               </div>
 
               <div style={{ display: 'flex', gap: '4px', marginBottom: '14px' }}>
                 {[
-                  { key: 'article', label: '📄 Article' },
-                  { key: 'meta', label: '🔖 Meta' },
-                  { key: 'seo', label: '📊 SEO Analysis' },
+                  { key: 'article', label: 'Article' },
+                  { key: 'meta', label: 'Meta' },
+                  { key: 'seo', label: 'SEO Analysis' },
                 ].map(tab => (
                   <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
                     padding: '8px 16px', borderRadius: '8px', fontSize: '12px', fontWeight: '600',
                     cursor: 'pointer', fontFamily: 'inherit',
                     background: activeTab === tab.key ? '#161B22' : 'transparent',
-                    border: `1px solid ${activeTab === tab.key ? '#21262D' : 'transparent'}`,
+                    border: '1px solid ' + (activeTab === tab.key ? '#21262D' : 'transparent'),
                     color: activeTab === tab.key ? '#E8EDF8' : '#8B949E',
                   }}>{tab.label}</button>
                 ))}
@@ -522,13 +505,13 @@ export default function WriterPage() {
                   <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
                     <div style={{ fontSize: '11px', fontWeight: '700', color: '#4F7CFF', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '10px' }}>Meta Title</div>
                     <div style={{ fontSize: '14px', color: '#E8EDF8', marginBottom: '8px', lineHeight: '1.5' }}>{article.metaTitle || keyword}</div>
-                    <div style={{ fontSize: '11px', color: '#8B949E' }}>{(article.metaTitle || keyword).length} characters (ideal: 50–60)</div>
+                    <div style={{ fontSize: '11px', color: '#8B949E' }}>{(article.metaTitle || keyword).length} characters (ideal: 50-60)</div>
                   </div>
                   <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
                     <div style={{ fontSize: '11px', fontWeight: '700', color: '#1DB8A0', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '10px' }}>Meta Description</div>
                     <div style={{ fontSize: '14px', color: '#C9D1D9', lineHeight: '1.6', marginBottom: '8px' }}>{article.metaDescription || 'No meta description generated.'}</div>
                     <div style={{ fontSize: '11px', color: article.metaDescription?.length >= 120 && article.metaDescription?.length <= 160 ? '#1DB8A0' : '#F59E0B' }}>
-                      {article.metaDescription?.length || 0} characters (ideal: 120–160)
+                      {article.metaDescription?.length || 0} characters (ideal: 120-160)
                     </div>
                   </div>
                   <div style={{ background: '#161B22', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
@@ -536,7 +519,7 @@ export default function WriterPage() {
                     <div style={{ background: '#0D1117', borderRadius: '8px', padding: '16px' }}>
                       <div style={{ fontSize: '18px', color: '#4F7CFF', marginBottom: '4px' }}>{article.metaTitle || keyword}</div>
                       <div style={{ fontSize: '12px', color: '#1DB8A0', marginBottom: '6px' }}>
-                        https://yoursite.com/blog/{keyword.replace(/\s+/g, '-').toLowerCase()}
+                        {'https://yoursite.com/blog/' + keyword.replace(/\s+/g, '-').toLowerCase()}
                       </div>
                       <div style={{ fontSize: '13px', color: '#8B949E', lineHeight: '1.5' }}>{article.metaDescription || ''}</div>
                     </div>
