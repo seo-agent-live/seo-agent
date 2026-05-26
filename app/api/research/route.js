@@ -73,14 +73,19 @@ export async function POST(req) {
 
     if (mode === 'competitors') {
       let analysis = '';
+      let analysisObject = null;
+
       if (typeof parsed === 'string') {
         analysis = parsed;
       } else if (Array.isArray(parsed)) {
-        analysis = parsed[0]?.analysis || JSON.stringify(parsed);
+        analysisObject = parsed[0] || parsed;
+        analysis = parsed[0]?.analysis || JSON.stringify(parsed, null, 2);
       } else {
-        analysis = parsed?.analysis || JSON.stringify(parsed);
+        analysisObject = parsed;
+        analysis = parsed?.analysis || JSON.stringify(parsed, null, 2);
       }
-      return NextResponse.json({ analysis, topPages });
+
+      return NextResponse.json({ analysis, analysisObject, topPages });
     }
 
     if (mode === 'gaps') {

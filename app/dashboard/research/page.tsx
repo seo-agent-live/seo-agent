@@ -121,6 +121,35 @@ function PageCard({ page, index }: { page: any; index: number }) {
   );
 }
 
+function formatLabel(key: string) {
+  return key.replace(/_|-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function renderValue(value: any): any {
+  if (typeof value === 'string') return <p style={{ margin: 0 }}>{value}</p>;
+  if (typeof value === 'number' || typeof value === 'boolean') return <p style={{ margin: 0 }}>{String(value)}</p>;
+  if (Array.isArray(value)) {
+    return (
+      <ul style={{ margin: '6px 0 0 16px', padding: 0, listStyleType: 'disc', color: '#C9D1D9' }}>
+        {value.map((item, index) => <li key={index} style={{ marginBottom: '4px' }}>{renderValue(item)}</li>)}
+      </ul>
+    );
+  }
+  if (typeof value === 'object' && value !== null) {
+    return (
+      <div style={{ display: 'grid', gap: '8px', marginTop: '6px' }}>
+        {Object.entries(value).map(([childKey, childValue]) => (
+          <div key={childKey}>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: '#E8EDF8', marginBottom: '4px' }}>{formatLabel(childKey)}</div>
+            <div style={{ color: '#C9D1D9' }}>{renderValue(childValue)}</div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return <p style={{ margin: 0 }}>{String(value)}</p>;
+}
+
 function GapCard({ gap, index, onGenerate }: { gap: any; index: number; onGenerate: (t: string) => void }) {
   const pc = priorityColor(gap.priority);
   return (
@@ -463,7 +492,18 @@ export default function ResearchPage() {
                   🏆 Competitor breakdown for <span style={{ color: '#4F7CFF' }}>{query}</span>
                 </div>
                 <div style={{ padding: '20px', background: 'rgba(79,124,255,0.06)', border: '1px solid rgba(79,124,255,0.15)', borderRadius: '12px', marginBottom: '16px' }}>
-                  <p style={{ fontSize: '14px', color: '#C9D1D9', lineHeight: '1.8', margin: 0 }}>{results.analysis}</p>
+                  {results.analysisObject && typeof results.analysisObject === 'object' && !Array.isArray(results.analysisObject) ? (
+                    <div style={{ display: 'grid', gap: '16px' }}>
+                      {Object.entries(results.analysisObject).map(([section, value]) => (
+                        <div key={section}>
+                          <div style={{ fontSize: '13px', fontWeight: '700', color: '#E8EDF8', marginBottom: '8px' }}>{formatLabel(section)}</div>
+                          <div style={{ color: '#C9D1D9', fontSize: '14px', lineHeight: '1.8' }}>{renderValue(value)}</div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p style={{ fontSize: '14px', color: '#C9D1D9', lineHeight: '1.8', margin: 0 }}>{results.analysis}</p>
+                  )}
                 </div>
 
                 {results.stats && (
