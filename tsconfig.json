@@ -23,6 +23,6 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "app/page.jsx"  ],
+, "app/page.jsx", "app/dashboard/writer/page.jsx"  ],
   "exclude": ["node_modules"]
 }

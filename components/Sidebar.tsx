@@ -7,30 +7,30 @@ import { useUser } from '@clerk/nextjs';
 const nav = [
   { section: 'Overview', items: [
     { label: 'Dashboard', href: '/dashboard', icon: '⊞' },
-    { label: 'Quick Start', href: '/dashboard/quick-start', icon: '★' },
+    { label: 'Quick Start', href: '/dashboard/quick-start', icon: '✦' },
   ]},
   { section: 'Create', items: [
-    { label: 'AI Writer', href: '/dashboard/writer', icon: '✍', badge: 'New', badgeColor: '#4F7CFF' },
-    { label: 'Research', href: '/dashboard/research', icon: '🔍' },
-    { label: 'Templates', href: '/dashboard/templates', icon: '📄' },
+    { label: 'AI Writer', href: '/dashboard/writer', icon: '✏', badge: 'New', badgeColor: '#4F7CFF' },
+    { label: 'Research', href: '/dashboard/research', icon: '◎' },
+    { label: 'Templates', href: '/dashboard/templates', icon: '▤' },
     { label: 'Bulk Generate', href: '/dashboard/bulk', icon: '⚡', badge: 'Pro', badgeColor: '#1DB8A0' },
   ]},
   { section: 'Analyze', items: [
-    { label: 'SEO Analytics', href: '/dashboard/analytics', icon: '📈' },
-    { label: 'Keyword Tracker', href: '/dashboard/keywords', icon: '🎯' },
-    { label: 'Competitors', href: '/dashboard/competitors', icon: '📊', badge: 'Pro', badgeColor: '#1DB8A0' },
-    { label: 'Clusters', href: '/dashboard/clusters', icon: '🕸' },
+    { label: 'SEO Analytics', href: '/dashboard/analytics', icon: '↗' },
+    { label: 'Keyword Tracker', href: '/dashboard/keywords', icon: '◉' },
+    { label: 'Competitors', href: '/dashboard/competitors', icon: '≋', badge: 'Pro', badgeColor: '#1DB8A0' },
+    { label: 'Clusters', href: '/dashboard/clusters', icon: '✦' },
   ]},
   { section: 'Site', items: [
-    { label: 'Site Audit', href: '/dashboard/site-audit', icon: '🌐' },
-    { label: 'Publish', href: '/dashboard/publish', icon: '🚀' },
-    { label: 'Landing Pages', href: '/dashboard/landing-pages', icon: '📱', badge: 'Pro', badgeColor: '#1DB8A0' },
+    { label: 'Site Audit', href: '/dashboard/site-audit', icon: '○' },
+    { label: 'Publish', href: '/dashboard/publish', icon: '↑' },
+    { label: 'Landing Pages', href: '/dashboard/landing-pages', icon: '▭', badge: 'Pro', badgeColor: '#1DB8A0' },
   ]},
   { section: 'Workspace', items: [
-    { label: 'Projects', href: '/dashboard/projects', icon: '📁' },
-    { label: 'Article Library', href: '/dashboard/article-library', icon: '📚' },
-    { label: 'Integrations', href: '/dashboard/integrations', icon: '🔌' },
-    { label: 'Settings', href: '/dashboard/settings', icon: '⚙️' },
+    { label: 'Projects', href: '/dashboard/projects', icon: '▣' },
+    { label: 'Article Library', href: '/dashboard/article-library', icon: '≡' },
+    { label: 'Integrations', href: '/dashboard/integrations', icon: '⊕' },
+    { label: 'Settings', href: '/dashboard/settings', icon: '◈' },
   ]},
 ];
 
