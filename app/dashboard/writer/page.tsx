@@ -237,7 +237,6 @@ export default function WriterPage() {
   };
 
   const displayContent = editMode ? editedContent : article?.content;
-  const formattedArticleHtml = article && !editMode ? parseMarkdownToHtml(article.content) : '';
   const seoScore = article ? getSeoScore(displayContent, keyword) : 0;
   const wordCount = getWordCount(displayContent);
   const readTime = getReadTime(displayContent);
