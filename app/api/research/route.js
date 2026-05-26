@@ -22,6 +22,7 @@ export async function POST(req) {
       title: r.title,
       domain: r.link?.split('/')[2] || '',
       snippet: r.snippet,
+      link: r.link || '',
     }));
 
     // Build prompt for GROQ

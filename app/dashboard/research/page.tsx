@@ -96,15 +96,26 @@ function KeywordRow({ kw, index, onTrack, tracked }: { kw: any; index: number; o
 }
 
 function PageCard({ page, index }: { page: any; index: number }) {
+  const url = page.link || (page.domain ? `https://${page.domain}` : '#');
+
   return (
-    <div style={{ padding: '16px 18px', background: 'rgba(22,27,34,0.65)', border: '1px solid #21262D', borderRadius: '10px', marginBottom: '8px' }}>
+    <div
+      onClick={() => url !== '#' && window.open(url, '_blank', 'noopener')}
+      style={{
+        padding: '16px 18px', background: 'rgba(22,27,34,0.65)', border: '1px solid #21262D', borderRadius: '10px', marginBottom: '8px', cursor: url !== '#' ? 'pointer' : 'default',
+      }}
+    >
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
         <span style={{ fontSize: '11px', fontWeight: '700', color: '#4F7CFF', background: 'rgba(79,124,255,0.1)', padding: '2px 8px', borderRadius: '4px' }}>
           #{index + 1}
         </span>
-        <span style={{ fontSize: '12px', color: '#8B949E' }}>{page.domain}</span>
+        <a href={url} target="_blank" rel="noreferrer" style={{ fontSize: '12px', color: '#8B949E', textDecoration: 'none' }}>
+          {page.domain || url}
+        </a>
       </div>
-      <div style={{ fontSize: '14px', color: '#E8EDF8', fontWeight: '500', marginBottom: '6px' }}>{page.title}</div>
+      <a href={url} target="_blank" rel="noreferrer" style={{ fontSize: '14px', color: '#E8EDF8', fontWeight: '500', marginBottom: '6px', display: 'block', textDecoration: 'none' }}>
+        {page.title}
+      </a>
       <div style={{ fontSize: '12px', color: '#8B949E', lineHeight: '1.6' }}>{page.snippet}</div>
     </div>
   );
