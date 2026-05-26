@@ -68,6 +68,18 @@ function getWordCount(content: string) {
   return content?.split(/\s+/).filter(Boolean).length || 0;
 }
 
+const markdownComponents = {
+  h1: ({ node, ...props }: any) => <h1 style={{ fontSize: '32px', fontWeight: '800', color: '#E8EDF8', margin: '0 0 24px', letterSpacing: '-0.5px', lineHeight: '1.2', borderBottom: '1px solid #21262D', paddingBottom: '16px' }} {...props} />,
+  h2: ({ node, ...props }: any) => <h2 style={{ fontSize: '22px', fontWeight: '700', color: '#E8EDF8', margin: '40px 0 14px', letterSpacing: '-0.3px' }} {...props} />,
+  h3: ({ node, ...props }: any) => <h3 style={{ fontSize: '17px', fontWeight: '600', color: '#C9D1D9', margin: '28px 0 10px' }} {...props} />,
+  p: ({ node, ...props }: any) => <p style={{ margin: '0 0 20px', color: '#C9D1D9', lineHeight: '1.85' }} {...props} />,
+  strong: ({ node, ...props }: any) => <strong style={{ color: '#E8EDF8', fontWeight: '700' }} {...props} />,
+  em: ({ node, ...props }: any) => <em style={{ fontStyle: 'italic', color: '#C9D1D9' }} {...props} />,
+  li: ({ node, ...props }: any) => <li style={{ margin: '0 0 8px', color: '#C9D1D9', lineHeight: '1.7' }} {...props} />,
+  ul: ({ node, ...props }: any) => <ul style={{ margin: '0 0 20px', paddingLeft: '24px' }} {...props} />,
+  ol: ({ node, ...props }: any) => <ol style={{ margin: '0 0 20px', paddingLeft: '24px' }} {...props} />,
+};
+
 const loadingMessages = [
   'Researching your keyword...',
   'Analysing top-ranking content...',
@@ -513,8 +525,8 @@ export default function WriterPage() {
                       style={{ width: '100%', minHeight: '600px', padding: '28px', background: 'transparent', border: 'none', outline: 'none', color: '#C9D1D9', fontSize: '14px', lineHeight: '1.8', fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }}
                     />
                   ) : (
-                    <div style={{ padding: '28px', color: '#C9D1D9', fontSize: '14px', lineHeight: '1.8', fontFamily: 'inherit' }}>
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
+                    <div style={{ padding: '28px', color: '#C9D1D9', fontFamily: 'inherit', fontSize: '14px', lineHeight: '1.8' }}>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{displayContent || ''}</ReactMarkdown>
                     </div>
                   )}
                 </div>
