@@ -548,13 +548,20 @@ export default function WriterPage() {
                   </div>
                   <div style={{ background: 'rgba(22,27,34,0.65)', border: '1px solid #21262D', borderRadius: '12px', padding: '20px' }}>
                     <div style={{ fontSize: '11px', fontWeight: '700', color: '#8B949E', textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '14px' }}>Google Preview</div>
-                    <div style={{ background: '#0D1117', borderRadius: '8px', padding: '16px' }}>
+                    <a
+                      href={`https://www.google.com/search?q=${encodeURIComponent(article.metaTitle || keyword)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ display: 'block', background: '#0D1117', borderRadius: '8px', padding: '16px', textDecoration: 'none', cursor: 'pointer', border: '1px solid transparent', transition: 'border 0.2s' }}
+                      onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(79,124,255,0.4)'}
+                      onMouseLeave={e => e.currentTarget.style.borderColor = 'transparent'}
+                    >
                       <div style={{ fontSize: '18px', color: '#4F7CFF', marginBottom: '4px' }}>{article.metaTitle || keyword}</div>
                       <div style={{ fontSize: '12px', color: '#1DB8A0', marginBottom: '6px' }}>
                         {'https://yoursite.com/blog/' + keyword.replace(/\s+/g, '-').toLowerCase()}
                       </div>
                       <div style={{ fontSize: '13px', color: '#8B949E', lineHeight: '1.5' }}>{article.metaDescription || ''}</div>
-                    </div>
+                    </a>
                   </div>
                 </div>
               )}
@@ -600,4 +607,3 @@ export default function WriterPage() {
     </div>
   );
 }
-
