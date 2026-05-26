@@ -104,6 +104,17 @@ export default function WriterPage() {
 
   useEffect(() => {
     loadSavedArticles();
+
+    const params = new URLSearchParams(window.location.search);
+    const keywordParam = params.get('keyword')?.trim() || '';
+    const autoGenerateParam = params.get('autoGenerate') === 'true';
+
+    if (keywordParam) {
+      setKeyword(keywordParam);
+      if (autoGenerateParam) {
+        handleGenerate(keywordParam);
+      }
+    }
   }, []);
 
   const loadSavedArticles = async () => {
@@ -117,8 +128,12 @@ export default function WriterPage() {
     }
   };
 
-  const handleGenerate = async () => {
-    if (!keyword.trim()) return;
+  const handleGenerate = async (overrideKeyword?: string) => {
+    const currentKeyword = (overrideKeyword ?? keyword).trim();
+    if (!currentKeyword) return;
+    if (overrideKeyword) {
+      setKeyword(currentKeyword);
+    }
     setLoading(true);
     setError(null);
     setArticle(null);
@@ -138,7 +153,8 @@ export default function WriterPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          keyword, tone, length, language, articleType,
+          keyword: currentKeyword,
+          tone, length, language, articleType,
           additionalInstructions, includeMetaDesc, includeFAQ, includeConclusion,
         }),
       });

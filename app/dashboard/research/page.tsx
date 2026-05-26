@@ -270,7 +270,7 @@ export default function ResearchPage() {
   };
 
   const handleGenerateArticle = (topic: string) => {
-    window.location.href = `/dashboard/writer?keyword=${encodeURIComponent(topic)}`;
+    window.location.href = `/dashboard/writer?keyword=${encodeURIComponent(topic)}&autoGenerate=true`;
   };
 
   const handleExportCSV = () => {
