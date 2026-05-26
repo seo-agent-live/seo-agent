@@ -194,7 +194,11 @@ export default function ResearchPage() {
         body: JSON.stringify({ query: q, mode }),
       });
       const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || 'Search failed. Please try again.');
       if (data.error) throw new Error(data.error);
+      if ((mode === 'keywords' && !data.keywords?.length) || (mode === 'competitors' && !data.analysis) || (mode === 'gaps' && !data.gaps?.length)) {
+        throw new Error('No usable results were returned. Try again with a different query.');
+      }
       setResults(data);
 
       const entry = { query: q, mode, date: new Date().toLocaleDateString(), timestamp: Date.now() };
@@ -202,7 +206,8 @@ export default function ResearchPage() {
       setSearchHistory(updated);
       try { localStorage.setItem(HISTORY_KEY, JSON.stringify(updated)); } catch {}
     } catch (err: any) {
-      setError(err.message || 'Something went wrong. Please try again.');
+      setError(err?.message || 'Something went wrong. Please try again.');
+      setResults(null);
     } finally {
       setLoading(false);
     }
@@ -370,6 +375,11 @@ export default function ResearchPage() {
 
         {results && !loading && (
           <div>
+            {((mode === 'keywords' && !results.keywords?.length) || (mode === 'competitors' && !results.analysis) || (mode === 'gaps' && !results.gaps?.length)) && (
+              <div style={{ padding: '20px', background: 'rgba(22,27,34,0.65)', border: '1px solid #21262D', borderRadius: '12px', color: '#8B949E', marginBottom: '20px' }}>
+                No results were returned for this search. Try a different keyword or domain, or check your API keys.
+              </div>
+            )}
 
             {/* KEYWORD IDEAS */}
             {mode === 'keywords' && results.keywords && (

@@ -14,6 +14,10 @@ export async function POST(req) {
       body: JSON.stringify({ q: query, num: 10 }),
     });
     const serperData = await serperRes.json();
+    if (!serperRes.ok) {
+      const message = serperData?.error?.message || serperData?.error || serperData?.message || `Serper error ${serperRes.status}`;
+      throw new Error(message);
+    }
     const topPages = (serperData.organic || []).slice(0, 5).map(r => ({
       title: r.title,
       domain: r.link?.split('/')[2] || '',
@@ -46,13 +50,43 @@ export async function POST(req) {
       }),
     });
     const groqData = await groqRes.json();
-    const text = groqData.choices?.[0]?.message?.content || '[]';
-    const clean = text.replace(/```json|```/g, '').trim();
-    const parsed = JSON.parse(clean);
+    if (!groqRes.ok) {
+      const message = groqData?.error?.message || groqData?.error || groqData?.message || `GROQ error ${groqRes.status}`;
+      throw new Error(message);
+    }
 
-    if (mode === 'keywords') return NextResponse.json({ keywords: parsed, topPages });
-    if (mode === 'competitors') return NextResponse.json({ analysis: parsed.analysis, topPages });
-    if (mode === 'gaps') return NextResponse.json({ gaps: parsed });
+    const text = groqData.choices?.[0]?.message?.content || groqData.choices?.[0]?.text || '[]';
+    const clean = String(text).replace(/```json|```/g, '').trim();
+    let parsed;
+    try {
+      parsed = JSON.parse(clean);
+    } catch (parseError) {
+      parsed = clean;
+    }
+
+    if (mode === 'keywords') {
+      if (Array.isArray(parsed)) return NextResponse.json({ keywords: parsed, topPages });
+      if (parsed?.keywords) return NextResponse.json({ keywords: parsed.keywords, topPages });
+      throw new Error('Unable to parse keyword results from AI response.');
+    }
+
+    if (mode === 'competitors') {
+      let analysis = '';
+      if (typeof parsed === 'string') {
+        analysis = parsed;
+      } else if (Array.isArray(parsed)) {
+        analysis = parsed[0]?.analysis || JSON.stringify(parsed);
+      } else {
+        analysis = parsed?.analysis || JSON.stringify(parsed);
+      }
+      return NextResponse.json({ analysis, topPages });
+    }
+
+    if (mode === 'gaps') {
+      if (Array.isArray(parsed)) return NextResponse.json({ gaps: parsed, topPages });
+      if (parsed?.gaps) return NextResponse.json({ gaps: parsed.gaps, topPages });
+      throw new Error('Unable to parse content gap results from AI response.');
+    }
 
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
