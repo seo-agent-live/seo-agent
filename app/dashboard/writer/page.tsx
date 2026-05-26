@@ -112,7 +112,7 @@ export default function WriterPage() {
     if (keywordParam) {
       setKeyword(keywordParam);
       if (autoGenerateParam) {
-        handleGenerate(keywordParam);
+        generateArticle(keywordParam);
       }
     }
   }, []);
@@ -128,7 +128,7 @@ export default function WriterPage() {
     }
   };
 
-  const handleGenerate = async (overrideKeyword?: string) => {
+  const generateArticle = async (overrideKeyword?: string) => {
     const currentKeyword = (overrideKeyword ?? keyword).trim();
     if (!currentKeyword) return;
     if (overrideKeyword) {
@@ -168,6 +168,10 @@ export default function WriterPage() {
       clearInterval(msgInterval);
       setLoading(false);
     }
+  };
+
+  const handleGenerate = async () => {
+    await generateArticle();
   };
 
   const handleCopy = () => {
