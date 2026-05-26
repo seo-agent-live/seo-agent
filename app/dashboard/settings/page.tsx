@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,6 +58,7 @@ export default function SettingsPage() {
   const [loading, setLoading]   = useState(true);
   const [saving, setSaving]     = useState(false);
   const [toast, setToast]       = useState<{ msg: string; ok: boolean } | null>(null);
+  const router = useRouter();
 
   const showToast = (msg: string, ok = true) => {
     setToast({ msg, ok });
@@ -106,6 +108,11 @@ export default function SettingsPage() {
     setSaving(false);
   };
 
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.push('/');
+  };
+
   const textInput = (section: string, key: string, placeholder = '', type = 'text') => (
     <input
       type={type}
@@ -143,6 +150,8 @@ export default function SettingsPage() {
         .save-btn { padding: 10px 28px; background: #7c6fff; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; }
         .save-btn:hover:not(:disabled) { background: #6d5ff0; }
         .save-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        .signout-btn { padding: 8px 18px; background: transparent; border: 1px solid rgba(248,113,113,0.3); border-radius: 10px; color: #f87171; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+        .signout-btn:hover { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.5); }
         .toast { position: fixed; bottom: 28px; right: 28px; z-index: 100; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; font-family: 'Inter', sans-serif; pointer-events: none; animation: fadeUp 0.25s ease; }
         @keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:1} }
         .skeleton { background: rgba(255,255,255,0.06); border-radius: 8px; animation: shimmer 1.5s ease infinite; }
@@ -153,9 +162,14 @@ export default function SettingsPage() {
       <div className="set-root">
         <div className="inner">
 
-          <div style={{ marginBottom: '28px' }}>
-            <h1 style={{ fontSize: '26px', fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.5px', marginBottom: '5px' }}>Settings</h1>
-            <p style={{ fontSize: '14px', color: '#475569' }}>Manage your account preferences and defaults.</p>
+          <div style={{ marginBottom: '28px', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+            <div>
+              <h1 style={{ fontSize: '26px', fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.5px', marginBottom: '5px' }}>Settings</h1>
+              <p style={{ fontSize: '14px', color: '#475569' }}>Manage your account preferences and defaults.</p>
+            </div>
+            <button className="signout-btn" onClick={handleSignOut}>
+              Sign Out
+            </button>
           </div>
 
           <div style={{ display: 'flex', gap: '4px', marginBottom: '16px', background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '10px', padding: '4px', width: 'fit-content' }}>
