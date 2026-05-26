@@ -53,7 +53,7 @@ export default function BulkGeneratePage() {
         .result-row { animation: slideIn 0.2s ease; }
       `}</style>
 
-      <div style={{ color: '#e2e8f0', fontFamily: "'Inter', sans-serif", maxWidth: '960px' }}>
+      <div style={{ color: '#e2e8f0', fontFamily: "'Geist', sans-serif", maxWidth: '960px' }}>
 
         {/* Header */}
         <div style={{ marginBottom: '26px' }}>
@@ -214,3 +214,4 @@ export default function BulkGeneratePage() {
     </>
   );
 } 
+

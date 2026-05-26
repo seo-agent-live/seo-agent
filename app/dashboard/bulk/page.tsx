@@ -29,7 +29,7 @@ export default function BulkGeneratePage() {
     setLoading(false);
   };
   return (
-    <div style={{ color: '#fff', fontFamily: 'Inter, sans-serif', maxWidth: '900px' }}>
+    <div style={{ color: '#fff', fontFamily: 'Geist, sans-serif', maxWidth: '900px' }}>
       <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px' }}>Bulk Generate</h1>
       <p style={{ color: '#64748b', marginBottom: '32px' }}>Generate multiple SEO articles at once.</p>
       <div style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', borderRadius: '16px', padding: '28px', marginBottom: '24px' }}>
@@ -58,3 +58,4 @@ export default function BulkGeneratePage() {
     </div>
   );
 }
+

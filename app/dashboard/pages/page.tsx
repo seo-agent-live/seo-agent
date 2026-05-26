@@ -115,7 +115,7 @@ export default function LandingPagesPage() {
   };
 
   return (
-    <div style={{ color: '#fff', fontFamily: 'Inter, sans-serif', maxWidth: '900px' }}>
+    <div style={{ color: '#fff', fontFamily: 'Geist, sans-serif', maxWidth: '900px' }}>
       <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px', background: 'linear-gradient(135deg, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
         Landing Pages
       </h1>
@@ -232,7 +232,7 @@ export default function LandingPagesPage() {
               {/* Copy preview */}
               <div style={{ padding: '20px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px' }}>
                 <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#e2e8f0', marginBottom: '12px' }}>Copy Text</h3>
-                <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#94a3b8', margin: 0, lineHeight: '1.8' }}>{preview.copy}</pre>
+                <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'Geist, sans-serif', fontSize: '13px', color: '#94a3b8', margin: 0, lineHeight: '1.8' }}>{preview.copy}</pre>
               </div>
             </div>
           )}
@@ -268,3 +268,4 @@ export default function LandingPagesPage() {
     </div>
   );
 }
+

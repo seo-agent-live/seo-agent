@@ -39,7 +39,7 @@ export default function PaymentsPage() {
   }
 
   return (
-    <div style={{ color: '#e2e8f0', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ color: '#e2e8f0', fontFamily: 'Geist, sans-serif' }}>
       <h1 style={{ fontSize: '28px', fontWeight: 700, color: '#fff', margin: '0 0 8px' }}>Payments</h1>
       <p style={{ color: '#94a3b8', margin: '0 0 32px' }}>Manage your billing and subscription.</p>
 
@@ -171,3 +171,4 @@ export default function PaymentsPage() {
     </div>
   )
 }
+

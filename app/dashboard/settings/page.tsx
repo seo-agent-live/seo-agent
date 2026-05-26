@@ -126,7 +126,7 @@ export default function SettingsPage() {
       value={(settings as any)[section][key] ?? ''}
       onChange={e => update(section, key, e.target.value)}
       placeholder={placeholder}
-      style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '9px', padding: '9px 13px', color: '#f1f5f9', fontSize: '13px', fontFamily: 'Inter, sans-serif', outline: 'none', width: '220px', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+      style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '9px', padding: '9px 13px', color: '#f1f5f9', fontSize: '13px', fontFamily: 'Geist, sans-serif', outline: 'none', width: '220px', transition: 'border-color 0.15s, box-shadow 0.15s' }}
       onFocus={e => { e.target.style.borderColor = 'rgba(124,111,255,0.5)'; e.target.style.boxShadow = '0 0 0 3px rgba(124,111,255,0.08)'; }}
       onBlur={e  => { e.target.style.borderColor = 'rgba(255,255,255,0.08)'; e.target.style.boxShadow = 'none'; }}
     />
@@ -136,7 +136,7 @@ export default function SettingsPage() {
     <select
       value={(settings as any)[section][key] ?? ''}
       onChange={e => update(section, key, e.target.value)}
-      style={{ background: '#13151c', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '9px', padding: '9px 13px', color: '#f1f5f9', fontSize: '13px', fontFamily: 'Inter, sans-serif', outline: 'none', width: '220px', cursor: 'pointer' }}
+      style={{ background: '#13151c', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '9px', padding: '9px 13px', color: '#f1f5f9', fontSize: '13px', fontFamily: 'Geist, sans-serif', outline: 'none', width: '220px', cursor: 'pointer' }}
     >
       {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
     </select>
@@ -145,21 +145,21 @@ export default function SettingsPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.cdnfonts.com/css/geist');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        .set-root { min-height: 100vh; background: #0d0f14; color: #e2e8f0; font-family: 'Inter', sans-serif; padding: 32px 32px 64px; position: relative; }
+        .set-root { min-height: 100vh; background: #0d0f14; color: #e2e8f0; font-family: 'Geist', sans-serif; padding: 32px 32px 64px; position: relative; }
         .set-root::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(rgba(124,111,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,111,255,0.03) 1px, transparent 1px); background-size: 40px 40px; }
         .inner { position: relative; z-index: 1; max-width: 760px; }
         .glass { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 24px; }
-        .tab-btn { padding: 8px 18px; border-radius: 8px; border: none; background: transparent; color: #475569; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+        .tab-btn { padding: 8px 18px; border-radius: 8px; border: none; background: transparent; color: #475569; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: all 0.15s; }
         .tab-btn.active { background: rgba(124,111,255,0.15); color: #a78bfa; }
         .tab-btn:hover:not(.active) { color: #94a3b8; background: rgba(255,255,255,0.04); }
-        .save-btn { padding: 10px 28px; background: #7c6fff; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; }
+        .save-btn { padding: 10px 28px; background: #7c6fff; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: background 0.15s; }
         .save-btn:hover:not(:disabled) { background: #6d5ff0; }
         .save-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-        .signout-btn { padding: 8px 18px; background: transparent; border: 1px solid rgba(248,113,113,0.3); border-radius: 10px; color: #f87171; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+        .signout-btn { padding: 8px 18px; background: transparent; border: 1px solid rgba(248,113,113,0.3); border-radius: 10px; color: #f87171; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: all 0.15s; }
         .signout-btn:hover { background: rgba(248,113,113,0.08); border-color: rgba(248,113,113,0.5); }
-        .toast { position: fixed; bottom: 28px; right: 28px; z-index: 100; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; font-family: 'Inter', sans-serif; pointer-events: none; animation: fadeUp 0.25s ease; }
+        .toast { position: fixed; bottom: 28px; right: 28px; z-index: 100; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; font-family: 'Geist', sans-serif; pointer-events: none; animation: fadeUp 0.25s ease; }
         @keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:1} }
         .skeleton { background: rgba(255,255,255,0.06); border-radius: 8px; animation: shimmer 1.5s ease infinite; }
         @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
@@ -298,3 +298,4 @@ export default function SettingsPage() {
     </>
   );
 }
+

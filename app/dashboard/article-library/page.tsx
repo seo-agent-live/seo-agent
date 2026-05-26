@@ -70,25 +70,25 @@ export default function ArticleLibraryPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.cdnfonts.com/css/geist');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        .lib-root { min-height: 100vh; background: #0d0f14; color: #e2e8f0; font-family: 'Inter', sans-serif; padding: 32px 32px 64px; position: relative; }
+        .lib-root { min-height: 100vh; background: #0d0f14; color: #e2e8f0; font-family: 'Geist', sans-serif; padding: 32px 32px 64px; position: relative; }
         .lib-root::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(rgba(124,111,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,111,255,0.03) 1px, transparent 1px); background-size: 40px 40px; }
         .inner { position: relative; z-index: 1; max-width: 1000px; }
         .glass { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 22px; }
-        .search-input { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 14px; color: #f1f5f9; font-size: 13px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.15s, box-shadow 0.15s; width: 240px; }
+        .search-input { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 14px; color: #f1f5f9; font-size: 13px; font-family: 'Geist', sans-serif; outline: none; transition: border-color 0.15s, box-shadow 0.15s; width: 240px; }
         .search-input:focus { border-color: rgba(124,111,255,0.5); box-shadow: 0 0 0 3px rgba(124,111,255,0.08); }
         .search-input::placeholder { color: #334155; }
-        .filter-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.07); background: transparent; color: #475569; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+        .filter-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.07); background: transparent; color: #475569; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: all 0.15s; }
         .filter-btn.active { background: rgba(124,111,255,0.15); border-color: rgba(124,111,255,0.3); color: #a78bfa; }
         .filter-btn:hover:not(.active) { background: rgba(255,255,255,0.04); color: #94a3b8; }
         .article-row { display: grid; grid-template-columns: 32px 1fr 70px 100px 110px 80px; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 9px; background: rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.04); transition: background 0.15s, border-color 0.15s; }
         .article-row:hover { background: rgba(124,111,255,0.05); border-color: rgba(124,111,255,0.12); }
-        .del-btn { padding: 5px 10px; border-radius: 6px; border: 1px solid rgba(248,113,113,0.2); background: rgba(248,113,113,0.08); color: #f87171; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+        .del-btn { padding: 5px 10px; border-radius: 6px; border: 1px solid rgba(248,113,113,0.2); background: rgba(248,113,113,0.08); color: #f87171; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: all 0.15s; }
         .del-btn:hover { background: rgba(248,113,113,0.18); }
         .del-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .status-select { background: transparent; border: none; font-size: 11px; font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; outline: none; padding: 3px 8px; border-radius: 5px; }
-        .bulk-del-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(248,113,113,0.2); background: rgba(248,113,113,0.08); color: #f87171; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+        .status-select { background: transparent; border: none; font-size: 11px; font-weight: 700; cursor: pointer; font-family: 'Geist', sans-serif; outline: none; padding: 3px 8px; border-radius: 5px; }
+        .bulk-del-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(248,113,113,0.2); background: rgba(248,113,113,0.08); color: #f87171; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: all 0.15s; }
         .bulk-del-btn:hover { background: rgba(248,113,113,0.18); }
         .checkbox { width: 16px; height: 16px; accent-color: #7c6fff; cursor: pointer; }
         @keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:1} }

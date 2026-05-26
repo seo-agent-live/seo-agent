@@ -51,15 +51,15 @@ export default function ClustersPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.cdnfonts.com/css/geist');
         * { box-sizing: border-box; }
-        .clusters-page { background: #0d0f14; min-height: 100vh; color: #e2e8f0; font-family: 'Inter', sans-serif; padding: 32px 32px 60px; position: relative; }
+        .clusters-page { background: #0d0f14; min-height: 100vh; color: #e2e8f0; font-family: 'Geist', sans-serif; padding: 32px 32px 60px; position: relative; }
         .clusters-page::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(124,111,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,111,255,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
         .inner { position: relative; z-index: 1; max-width: 1100px; }
-        .topic-input { flex: 1; padding: 12px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #f1f5f9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+        .topic-input { flex: 1; padding: 12px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #f1f5f9; font-size: 14px; font-family: 'Geist', sans-serif; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
         .topic-input:focus { border-color: rgba(124,111,255,0.5); box-shadow: 0 0 0 3px rgba(124,111,255,0.08); }
         .topic-input::placeholder { color: #334155; }
-        .gen-btn { padding: 12px 22px; background: #7c6fff; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; white-space: nowrap; }
+        .gen-btn { padding: 12px 22px; background: #7c6fff; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: background 0.15s; white-space: nowrap; }
         .gen-btn:hover:not(:disabled) { background: #6d5ff0; }
         .gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .cluster-card { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 20px; transition: border-color 0.2s, background 0.2s; }

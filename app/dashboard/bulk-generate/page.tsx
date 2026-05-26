@@ -62,15 +62,15 @@ export default function BulkGeneratePage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.cdnfonts.com/css/geist');
         * { box-sizing: border-box; }
-        .bulk-page { min-height: 100vh; color: #e2e8f0; font-family: 'Inter', sans-serif; padding: 32px 32px 60px; position: relative; }
+        .bulk-page { min-height: 100vh; color: #e2e8f0; font-family: 'Geist', sans-serif; padding: 32px 32px 60px; position: relative; }
         
         .inner { position: relative; z-index: 1; max-width: 960px; }
-        .bulk-textarea { width: 100%; padding: 12px 14px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; color: #f1f5f9; font-size: 13px; font-family: 'Inter', sans-serif; resize: none; line-height: 1.7; transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
+        .bulk-textarea { width: 100%; padding: 12px 14px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; color: #f1f5f9; font-size: 13px; font-family: 'Geist', sans-serif; resize: none; line-height: 1.7; transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
         .bulk-textarea:focus { border-color: rgba(124,111,255,0.5); box-shadow: 0 0 0 3px rgba(124,111,255,0.08); }
         .bulk-textarea::placeholder { color: #334155; }
-        .bulk-btn { padding: 11px; background: #7c6fff; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; width: 100%; }
+        .bulk-btn { padding: 11px; background: #7c6fff; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: background 0.15s; width: 100%; }
         .bulk-btn:hover:not(:disabled) { background: #6d5ff0; }
         .bulk-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .glass { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }

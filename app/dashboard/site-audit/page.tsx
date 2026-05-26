@@ -121,17 +121,17 @@ export default function SiteAuditPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.cdnfonts.com/css/geist');
         * { box-sizing: border-box; }
-        .audit-page { background: #0d0f14; min-height: 100vh; color: #e2e8f0; font-family: 'Inter', sans-serif; padding: 32px 32px 60px; }
+        .audit-page { background: #0d0f14; min-height: 100vh; color: #e2e8f0; font-family: 'Geist', sans-serif; padding: 32px 32px 60px; }
         .audit-page::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(124,111,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,111,255,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
         .audit-content { position: relative; z-index: 1; max-width: 1000px; }
         .stat-card { background: rgba(255,255,255,0.028); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 20px 22px; transition: border-color 0.2s, background 0.2s; }
         .stat-card:hover { background: rgba(255,255,255,0.042); border-color: rgba(124,111,255,0.2); }
-        .url-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 13px 16px; color: #f1f5f9; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+        .url-input { flex: 1; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 13px 16px; color: #f1f5f9; font-size: 14px; font-family: 'Geist', sans-serif; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
         .url-input:focus { border-color: rgba(124,111,255,0.5); box-shadow: 0 0 0 3px rgba(124,111,255,0.08); }
         .url-input::placeholder { color: #334155; }
-        .analyze-btn { padding: 13px 26px; background: #7c6fff; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; white-space: nowrap; }
+        .analyze-btn { padding: 13px 26px; background: #7c6fff; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: background 0.15s; white-space: nowrap; }
         .analyze-btn:hover:not(:disabled) { background: #6d5ff0; }
         .analyze-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .glass-card { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 22px; }

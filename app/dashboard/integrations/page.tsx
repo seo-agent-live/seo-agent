@@ -151,30 +151,30 @@ export default function IntegrationsPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.cdnfonts.com/css/geist');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        .int-root { min-height: 100vh; background: #0d0f14; color: #e2e8f0; font-family: 'Inter', sans-serif; padding: 32px 32px 64px; position: relative; }
+        .int-root { min-height: 100vh; background: #0d0f14; color: #e2e8f0; font-family: 'Geist', sans-serif; padding: 32px 32px 64px; position: relative; }
         .int-root::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(rgba(124,111,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,111,255,0.03) 1px, transparent 1px); background-size: 40px 40px; }
         .inner { position: relative; z-index: 1; max-width: 1000px; }
         .int-card { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 20px 22px; display: flex; align-items: center; gap: 16px; transition: border-color 0.2s, background 0.2s; }
         .int-card:hover { background: rgba(255,255,255,0.038); border-color: rgba(124,111,255,0.18); }
         .int-card.connected { border-color: rgba(52,211,153,0.2); }
-        .connect-btn { padding: 8px 18px; border-radius: 8px; border: 1px solid rgba(124,111,255,0.3); background: rgba(124,111,255,0.12); color: #a78bfa; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
+        .connect-btn { padding: 8px 18px; border-radius: 8px; border: 1px solid rgba(124,111,255,0.3); background: rgba(124,111,255,0.12); color: #a78bfa; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: all 0.15s; white-space: nowrap; }
         .connect-btn:hover { background: rgba(124,111,255,0.22); }
-        .disconnect-btn { padding: 8px 18px; border-radius: 8px; border: 1px solid rgba(248,113,113,0.2); background: rgba(248,113,113,0.08); color: #f87171; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
+        .disconnect-btn { padding: 8px 18px; border-radius: 8px; border: 1px solid rgba(248,113,113,0.2); background: rgba(248,113,113,0.08); color: #f87171; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: all 0.15s; white-space: nowrap; }
         .disconnect-btn:hover { background: rgba(248,113,113,0.18); }
         .disconnect-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .modal { background: #13151c; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 28px; width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 18px; }
-        .modal-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 11px 14px; color: #f1f5f9; font-size: 13px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+        .modal-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 11px 14px; color: #f1f5f9; font-size: 13px; font-family: 'Geist', sans-serif; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
         .modal-input:focus { border-color: rgba(124,111,255,0.5); box-shadow: 0 0 0 3px rgba(124,111,255,0.08); }
         .modal-input::placeholder { color: #334155; }
-        .save-btn { padding: 11px; background: #7c6fff; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; }
+        .save-btn { padding: 11px; background: #7c6fff; border: none; border-radius: 10px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: background 0.15s; }
         .save-btn:hover:not(:disabled) { background: #6d5ff0; }
         .save-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-        .cancel-btn { padding: 11px; background: transparent; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #475569; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+        .cancel-btn { padding: 11px; background: transparent; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #475569; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: all 0.15s; }
         .cancel-btn:hover { background: rgba(255,255,255,0.04); color: #94a3b8; }
-        .toast { position: fixed; bottom: 28px; right: 28px; z-index: 100; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; font-family: 'Inter', sans-serif; pointer-events: none; animation: fadeUp 0.25s ease; }
+        .toast { position: fixed; bottom: 28px; right: 28px; z-index: 100; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; font-family: 'Geist', sans-serif; pointer-events: none; animation: fadeUp 0.25s ease; }
         @keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:1} }
         .skeleton { background: rgba(255,255,255,0.06); border-radius: 8px; animation: shimmer 1.5s ease infinite; }
         @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }

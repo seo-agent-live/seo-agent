@@ -106,7 +106,7 @@ export default function LibraryPage() {
   };
 
   return (
-    <div style={{ color: '#fff', fontFamily: 'Inter, sans-serif', maxWidth: '900px' }}>
+    <div style={{ color: '#fff', fontFamily: 'Geist, sans-serif', maxWidth: '900px' }}>
       <h1 style={{ fontSize: '28px', fontWeight: 700, marginBottom: '8px', background: 'linear-gradient(135deg, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
         Article Library
       </h1>
@@ -225,7 +225,7 @@ export default function LibraryPage() {
 
               {/* Content */}
               <div style={{ padding: '24px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px' }}>
-                <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#cbd5e1', margin: 0, lineHeight: '1.8' }}>
+                <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'Geist, sans-serif', fontSize: '14px', color: '#cbd5e1', margin: 0, lineHeight: '1.8' }}>
                   {selected.content}
                 </pre>
               </div>
@@ -247,7 +247,7 @@ export default function LibraryPage() {
               </div>
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ color: '#94a3b8', fontSize: '13px', display: 'block', marginBottom: '8px', fontWeight: 600 }}>Content</label>
-                <textarea value={editContent.content} onChange={e => setEditContent(p => ({ ...p, content: e.target.value }))} rows={16} style={{ width: '100%', padding: '16px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '14px', outline: 'none', fontFamily: 'Inter, sans-serif', resize: 'vertical', lineHeight: '1.8', boxSizing: 'border-box' }} />
+                <textarea value={editContent.content} onChange={e => setEditContent(p => ({ ...p, content: e.target.value }))} rows={16} style={{ width: '100%', padding: '16px', backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#fff', fontSize: '14px', outline: 'none', fontFamily: 'Geist, sans-serif', resize: 'vertical', lineHeight: '1.8', boxSizing: 'border-box' }} />
               </div>
               <div style={{ display: 'flex', gap: '8px' }}>
                 <button onClick={handleSaveEdit} disabled={loading} style={{ padding: '12px 24px', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', borderRadius: '8px', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
@@ -264,3 +264,4 @@ export default function LibraryPage() {
     </div>
   );
 }
+

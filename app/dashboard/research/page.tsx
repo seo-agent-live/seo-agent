@@ -328,7 +328,7 @@ export default function ResearchPage() {
         </div>
       )}
 
-      <div style={{ padding: '28px', minHeight: '100vh', fontFamily: 'Inter,-apple-system,sans-serif' }}>
+      <div style={{ padding: '28px', minHeight: '100vh', fontFamily: 'Geist, sans-serif' }}>
 
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '28px' }}>
@@ -572,3 +572,4 @@ export default function ResearchPage() {
     </>
   );
 }
+

@@ -468,7 +468,7 @@ export default function PublishPage() {
         />
       )}
 
-      <div style={{ padding: '28px', minHeight: '100vh', fontFamily: 'Inter,-apple-system,sans-serif' }}>
+      <div style={{ padding: '28px', minHeight: '100vh', fontFamily: 'Geist, sans-serif' }}>
 
         {/* Header */}
         <div style={{ marginBottom: '28px' }}>
@@ -727,3 +727,4 @@ export default function PublishPage() {
     </>
   );
 }
+

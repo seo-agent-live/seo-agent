@@ -24,7 +24,7 @@ export default function SiteAuditPage() {
   };
 
   return (
-    <div style={{ padding: '28px', background: '#161F35', minHeight: '100vh', fontFamily: 'Inter,-apple-system,sans-serif' }}>
+    <div style={{ padding: '28px', background: '#161F35', minHeight: '100vh', fontFamily: 'Geist, sans-serif' }}>
       <div style={{ marginBottom: '24px' }}>
         <h1 style={{ fontSize: '20px', fontWeight: '700', color: '#E8EDF8', marginBottom: '4px' }}>Site Audit</h1>
         <p style={{ fontSize: '13px', color: '#7B8DB0' }}>Scan your website for SEO issues and get actionable recommendations.</p>
@@ -63,3 +63,4 @@ export default function SiteAuditPage() {
     </div>
   );
 }
+

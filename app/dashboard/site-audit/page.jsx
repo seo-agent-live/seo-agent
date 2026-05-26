@@ -122,14 +122,14 @@ export default function SiteAuditPage() {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.cdnfonts.com/css/geist');
         * { box-sizing: border-box; }
 
         .audit-page {
           background: #0d0f14;
           min-height: 100vh;
           color: #e2e8f0;
-          font-family: 'Inter', sans-serif;
+          font-family: 'Geist', sans-serif;
           padding: 32px 32px 60px;
         }
 
@@ -168,7 +168,7 @@ export default function SiteAuditPage() {
           padding: 13px 16px;
           color: #f1f5f9;
           font-size: 14px;
-          font-family: 'Inter', sans-serif;
+          font-family: 'Geist', sans-serif;
           outline: none;
           transition: border-color 0.15s, box-shadow 0.15s;
         }
@@ -187,7 +187,7 @@ export default function SiteAuditPage() {
           font-size: 14px;
           font-weight: 600;
           cursor: pointer;
-          font-family: 'Inter', sans-serif;
+          font-family: 'Geist', sans-serif;
           transition: background 0.15s, transform 0.1s;
           white-space: nowrap;
           display: flex;
@@ -264,7 +264,7 @@ export default function SiteAuditPage() {
           background: none;
           border: none;
           cursor: pointer;
-          font-family: 'Inter', sans-serif;
+          font-family: 'Geist', sans-serif;
           display: flex;
           align-items: center;
           gap: 4px;

@@ -27,7 +27,7 @@ export default function UsersPage() {
   const agencyUsers = users.filter(u => u.plan === 'Agency').length
 
   return (
-    <div style={{ color: "#fff", fontFamily: "Inter, sans-serif" }}>
+    <div style={{ color: "#fff", fontFamily: "Geist, sans-serif" }}>
       <h1 style={{ fontSize: "28px", fontWeight: 700, marginBottom: "8px", background: "linear-gradient(135deg, #fff, #94a3b8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Users</h1>
       <p style={{ color: "#64748b", marginBottom: "32px", fontSize: "15px" }}>Manage your SEOAgent user base</p>
 
@@ -100,3 +100,4 @@ export default function UsersPage() {
     </div>
   )
 }
+
