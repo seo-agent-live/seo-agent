@@ -72,8 +72,8 @@ export default function KeywordsPage() {
         .add-btn { padding: 11px 22px; background: #7c6fff; border: none; border-radius: 10px; color: #fff; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: background 0.15s; white-space: nowrap; }
         .add-btn:hover:not(:disabled) { background: #6d5ff0; }
         .add-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        .glass { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 20px; }
-        .kw-row { display: grid; grid-template-columns: 1fr 140px 100px 80px; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 9px; background: rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+        .glass { background: rgba(22,27,34,0.65); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 20px; }
+        .kw-row { display: grid; grid-template-columns: 1fr 140px 100px 80px; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 9px; background: rgba(22,27,34,0.65); border: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
         .kw-row:hover { background: rgba(124,111,255,0.05); border-color: rgba(124,111,255,0.12); }
         .del-btn { padding: 5px 10px; border-radius: 6px; border: 1px solid rgba(248,113,113,0.2); background: rgba(248,113,113,0.08); color: #f87171; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: all 0.15s; }
         .del-btn:hover { background: rgba(248,113,113,0.18); }
