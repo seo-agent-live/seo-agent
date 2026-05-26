@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { useClerk } from '@clerk/nextjs';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
@@ -59,6 +60,7 @@ export default function SettingsPage() {
   const [saving, setSaving]     = useState(false);
   const [toast, setToast]       = useState<{ msg: string; ok: boolean } | null>(null);
   const router = useRouter();
+  const { signOut } = useClerk();
 
   const showToast = (msg: string, ok = true) => {
     setToast({ msg, ok });
@@ -109,8 +111,13 @@ export default function SettingsPage() {
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push('/');
+    try {
+      await signOut();
+      router.push('/');
+    } catch (error) {
+      console.error('Sign out error:', error);
+      showToast('Unable to sign out. Please try again.', false);
+    }
   };
 
   const textInput = (section: string, key: string, placeholder = '', type = 'text') => (
