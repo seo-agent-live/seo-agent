@@ -20,7 +20,17 @@ export default function KeywordsPage() {
       .from('cluster_keywords')
       .select('id, keyword, intent, created_at, cluster_id')
       .order('created_at', { ascending: false });
-    setKeywords(data ?? []);
+
+    // Also load keywords tracked from Research page
+    const localKws = JSON.parse(localStorage.getItem('rankflow_tracked_kws') || '[]');
+    const localMapped = localKws.map((kw: string, i: number) => ({
+      id: 'local_' + i,
+      keyword: kw,
+      intent: 'informational',
+      created_at: new Date().toISOString(),
+    }));
+
+    setKeywords([...(data ?? []), ...localMapped]);
     setLoading(false);
   };
 
@@ -63,7 +73,7 @@ export default function KeywordsPage() {
       <style>{`
         @import url('https://fonts.cdnfonts.com/css/geist');
         * { box-sizing: border-box; }
-        .kw-page { background: #0d0f14; min-height: 100vh; color: #e2e8f0; font-family: 'Geist', sans-serif; padding: 32px 32px 60px; position: relative; }
+        .kw-page { min-height: 100vh; color: #e2e8f0; font-family: 'Geist', sans-serif; padding: 32px 32px 60px; position: relative; }
         .kw-page::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(124,111,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,111,255,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
         .inner { position: relative; z-index: 1; max-width: 1000px; }
         .kw-input { flex: 1; padding: 11px 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; color: #f1f5f9; font-size: 13px; font-family: 'Geist', sans-serif; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
