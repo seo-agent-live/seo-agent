@@ -7,7 +7,29 @@ const supabase = createClient(
 );
 
 export async function POST(req) {
-  const { keyword, tone, length, save, userId } = await req.json();
+  const {
+    keyword,
+    tone,
+    length,
+    language,
+    articleType,
+    additionalInstructions,
+    includeMetaDesc,
+    includeFAQ,
+    includeConclusion,
+    save,
+    userId,
+  } = await req.json();
+
+  const languageMap = {
+    english: 'English',
+    spanish: 'Spanish',
+    french: 'French',
+    german: 'German',
+    portuguese: 'Portuguese',
+  };
+
+  const languageLabel = languageMap[language] || 'English';
 
   if (!process.env.GROQ_API_KEY) {
     return NextResponse.json(
@@ -20,10 +42,12 @@ export async function POST(req) {
   const minWords = length === 'short' ? 500 : length === 'medium' ? 1000 : 2000;
 
   // Separate prompt just for the article
-  const articlePrompt = `You are an expert SEO content writer. Write a blog article about "${keyword}".
+  const articlePrompt = `You are an expert SEO content writer. Write a blog article in ${languageLabel} about "${keyword}".
 
 WORD COUNT: You MUST write at least ${minWords} words. Write long detailed paragraphs in every section.
 TONE: ${tone}
+LANGUAGE: ${languageLabel}
+ARTICLE TYPE: ${articleType}
 KEYWORD: Use "${keyword}" naturally at least 6 times.
 
 FOLLOW THIS EXACT STRUCTURE:
@@ -75,7 +99,7 @@ A: [3-4 sentence answer]
 Return ONLY the article. No META line. No extra commentary.`;
 
   // Separate prompt just for meta description
-  const metaPrompt = `Write a meta description for an article about "${keyword}".
+  const metaPrompt = `Write a meta description in ${languageLabel} for an article about "${keyword}".
 
 Rules:
 - Must be between 130 and 155 characters long (count carefully)
