@@ -1,5 +1,7 @@
 'use client';
 import { useState, useRef, useEffect, CSSProperties } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -235,6 +237,7 @@ export default function WriterPage() {
   };
 
   const displayContent = editMode ? editedContent : article?.content;
+  const formattedArticleHtml = article && !editMode ? parseMarkdownToHtml(article.content) : '';
   const seoScore = article ? getSeoScore(displayContent, keyword) : 0;
   const wordCount = getWordCount(displayContent);
   const readTime = getReadTime(displayContent);
@@ -511,10 +514,8 @@ export default function WriterPage() {
                       style={{ width: '100%', minHeight: '600px', padding: '28px', background: 'transparent', border: 'none', outline: 'none', color: '#C9D1D9', fontSize: '14px', lineHeight: '1.8', fontFamily: 'inherit', resize: 'vertical', boxSizing: 'border-box' }}
                     />
                   ) : (
-                    <div style={{ padding: '28px' }}>
-                      <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'inherit', fontSize: '14px', color: '#C9D1D9', margin: 0, lineHeight: '1.8' }}>
-                        {article.content}
-                      </pre>
+                    <div style={{ padding: '28px', color: '#C9D1D9', fontSize: '14px', lineHeight: '1.8', fontFamily: 'inherit' }}>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>{article.content}</ReactMarkdown>
                     </div>
                   )}
                 </div>
