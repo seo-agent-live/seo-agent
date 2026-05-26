@@ -38,7 +38,7 @@ async function groqTopicInsights(topic, serpResults, competitors) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'llama3-70b-8192',
+      model: 'llama-3.3-70b-versatile',
       max_tokens: 700,
       temperature: 0.7,
       messages: [
