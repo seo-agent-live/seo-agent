@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { FileText, Loader2, Sparkles, Clock, ChevronRight, Search } from 'lucide-react';
 
 const S = {
@@ -15,6 +17,20 @@ const S = {
 const card = { background: 'rgba(22,27,34,0.65)', border: `1px solid ${S.border}`, borderRadius: '12px' };
 const inp  = { background: 'rgba(255,255,255,0.04)', border: `1px solid ${S.border}`, borderRadius: '8px', padding: '10px 14px', fontSize: '13px', color: S.text, outline: 'none', width: '100%' };
 const btnP = (disabled) => ({ background: disabled ? 'rgba(124,111,255,0.4)' : S.accent, border: 'none', borderRadius: '8px', padding: '10px 20px', fontSize: '13px', fontWeight: '500', color: '#fff', cursor: disabled ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '6px' });
+
+const markdownComponents = {
+  h1: ({ node, ...props }: any) => <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#E8EDF8', margin: '0 0 20px', letterSpacing: '-0.5px', lineHeight: '1.2', borderBottom: '1px solid #21262D', paddingBottom: '14px' }} {...props} />,
+  h2: ({ node, ...props }: any) => <h2 style={{ fontSize: '20px', fontWeight: '700', color: '#E8EDF8', margin: '36px 0 12px', letterSpacing: '-0.3px' }} {...props} />,
+  h3: ({ node, ...props }: any) => <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#C9D1D9', margin: '24px 0 8px' }} {...props} />,
+  p: ({ node, ...props }: any) => <p style={{ margin: '0 0 18px', color: '#C9D1D9', lineHeight: '1.85', fontSize: '14px' }} {...props} />,
+  strong: ({ node, ...props }: any) => <strong style={{ color: '#E8EDF8', fontWeight: '700' }} {...props} />,
+  em: ({ node, ...props }: any) => <em style={{ fontStyle: 'italic', color: '#C9D1D9' }} {...props} />,
+  li: ({ node, ...props }: any) => <li style={{ margin: '0 0 8px', color: '#C9D1D9', lineHeight: '1.7', fontSize: '14px' }} {...props} />,
+  ul: ({ node, ...props }: any) => <ul style={{ margin: '0 0 18px', paddingLeft: '24px' }} {...props} />,
+  ol: ({ node, ...props }: any) => <ol style={{ margin: '0 0 18px', paddingLeft: '24px' }} {...props} />,
+  a: ({ node, ...props }: any) => <a style={{ color: '#7c6fff', textDecoration: 'underline' }} {...props} />,
+  hr: ({ node, ...props }: any) => <hr style={{ border: 'none', borderTop: '1px solid #21262D', margin: '24px 0' }} {...props} />,
+};
 
 const CATEGORIES = ['All', 'Blog Post', 'Landing Page', 'Product Review', 'How-To Guide', 'Listicle', 'Case Study', 'Email'];
 
@@ -94,7 +110,6 @@ export default function TemplatesPage() {
 
         {error && <div style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', fontSize: '12px', padding: '10px 14px', borderRadius: '8px' }}>{error}</div>}
 
-        {/* If a template is selected, show generator */}
         {selected ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -147,15 +162,16 @@ export default function TemplatesPage() {
                     </button>
                   </div>
                 </div>
-                <div style={{ padding: '20px', maxHeight: '400px', overflowY: 'auto' }}>
-                  <pre style={{ fontSize: '13px', color: S.text, lineHeight: '1.7', whiteSpace: 'pre-wrap', margin: 0, fontFamily: 'inherit' }}>{result}</pre>
+                <div style={{ padding: '28px', maxHeight: '600px', overflowY: 'auto' }}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                    {result}
+                  </ReactMarkdown>
                 </div>
               </div>
             )}
           </div>
         ) : (
           <>
-            {/* Search + filter */}
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
               <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.04)', border: `1px solid ${S.border}`, borderRadius: '8px', padding: '8px 12px' }}>
                 <Search size={13} color={S.muted} />
@@ -164,7 +180,6 @@ export default function TemplatesPage() {
               </div>
             </div>
 
-            {/* Categories */}
             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
               {CATEGORIES.map(cat => (
                 <button key={cat} onClick={() => setCategory(cat)}
@@ -174,7 +189,6 @@ export default function TemplatesPage() {
               ))}
             </div>
 
-            {/* Templates grid */}
             {loading ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '14px' }}>
                 {[...Array(6)].map((_, i) => <div key={i} style={{ height: '130px', borderRadius: '12px', background: 'rgba(22,27,34,0.65)' }} />)}
