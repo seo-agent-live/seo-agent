@@ -75,16 +75,25 @@ export default function TemplatesPage() {
   }
 
   async function saveToLibrary() {
-    if (!result) return;
-    try {
-      await fetch('/api/articles', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: topic, content: result, status: 'Draft' }),
-      });
-      router.push('/dashboard/library');
-    } catch { setError('Failed to save article.'); }
-  }
+  if (!result) return;
+  try {
+    const res = await fetch('/api/library/list', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: topic,
+        content: result,
+        status: 'Published',
+        keyword: topic,
+        word_count: result.split(/\s+/).length,
+        slug: topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
+      }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    router.push('/dashboard/library');
+  } catch (e) { setError('Failed to save article: ' + e.message); }
+}
 
   const filtered = templates.filter(t => {
     const matchSearch = t.name?.toLowerCase().includes(search.toLowerCase()) || t.description?.toLowerCase().includes(search.toLowerCase());
