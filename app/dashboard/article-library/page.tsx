@@ -50,9 +50,18 @@ export default function ArticleLibraryPage() {
 
   const handleDelete = async (id: string) => {
     setDeleting(id);
-    await supabase.from('articles').delete().eq('id', id);
-    setArticles(prev => prev.filter(a => a.id !== id));
-    setSelected(prev => prev.filter(s => s !== id));
+    try {
+      await fetch('/api/library/list/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      setArticles(prev => prev.filter(a => a.id !== id));
+      setSelected(prev => prev.filter(s => s !== id));
+      if (openArticle?.id === id) setOpenArticle(null);
+    } catch (err) {
+      console.error('Delete failed:', err);
+    }
     setDeleting(null);
     await fetchArticles();
   };
