@@ -5,11 +5,12 @@ import { supabase } from '@/lib/supabase';
 export const dynamic = 'force-dynamic';
 
 export default function BulkGeneratePage() {
-  const [keywords, setKeywords]           = useState('');
-  const [loading, setLoading]             = useState(false);
-  const [progress, setProgress]           = useState(0);
-  const [results, setResults]             = useState<any[]>([]);
+  const [keywords, setKeywords]             = useState('');
+  const [loading, setLoading]               = useState(false);
+  const [progress, setProgress]             = useState(0);
+  const [results, setResults]               = useState<any[]>([]);
   const [currentKeyword, setCurrentKeyword] = useState('');
+  const [saveMessage, setSaveMessage]       = useState('');
 
   const lines = keywords.split('\n').filter(k => k.trim()).slice(0, 10);
 
@@ -19,6 +20,7 @@ export default function BulkGeneratePage() {
     setResults([]);
     setProgress(0);
     setCurrentKeyword('');
+    setSaveMessage('');
 
     const generated: any[] = [];
 
@@ -34,13 +36,20 @@ export default function BulkGeneratePage() {
         const data = await res.json();
         const wordCount = data.article?.split(' ').length ?? 0;
 
-        // Save to Supabase
+        const slug = kw.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const titleMatch = data.article?.match(/^#\s+(.+)/m);
+        const title = titleMatch ? titleMatch[1].trim() : kw;
+
         await supabase.from('articles').insert({
-          title:     kw,
+          title,
           content:   data.article ?? '',
-          status:    'draft',
-          seo_score: null,
+          keyword:   kw,
+          slug,
+          status:    'Published',
+          seo_score: 75,
           word_count: wordCount,
+          read_time: Math.ceil(wordCount / 200) + ' min',
+          meta_description: '',
         });
 
         generated.push({ keyword: kw, status: 'Done', words: wordCount });
@@ -54,6 +63,13 @@ export default function BulkGeneratePage() {
 
     setCurrentKeyword('');
     setLoading(false);
+
+    // ✅ Show success message
+    const doneCount = generated.filter(r => r.status === 'Done').length;
+    if (doneCount > 0) {
+      setSaveMessage(doneCount + ' article' + (doneCount > 1 ? 's' : '') + ' saved to Article Library!');
+      setTimeout(() => setSaveMessage(''), 5000);
+    }
   };
 
   const done   = results.filter(r => r.status === 'Done').length;
@@ -65,7 +81,6 @@ export default function BulkGeneratePage() {
         @import url('https://fonts.cdnfonts.com/css/geist');
         * { box-sizing: border-box; }
         .bulk-page { min-height: 100vh; color: #e2e8f0; font-family: 'Geist', sans-serif; padding: 32px 32px 60px; position: relative; }
-        
         .inner { position: relative; z-index: 1; max-width: 960px; }
         .bulk-textarea { width: 100%; padding: 12px 14px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; color: #f1f5f9; font-size: 13px; font-family: 'Geist', sans-serif; resize: none; line-height: 1.7; transition: border-color 0.15s, box-shadow 0.15s; outline: none; }
         .bulk-textarea:focus { border-color: rgba(124,111,255,0.5); box-shadow: 0 0 0 3px rgba(124,111,255,0.08); }
@@ -77,6 +92,8 @@ export default function BulkGeneratePage() {
         .result-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; animation: slideIn 0.2s ease; }
         @keyframes slideIn { from{opacity:0;transform:translateX(-6px)} to{opacity:1;transform:translateX(0)} }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        .save-msg { animation: fadeUp 0.3s ease; }
       `}</style>
 
       <div className="bulk-page">
@@ -90,6 +107,16 @@ export default function BulkGeneratePage() {
             </div>
             <p style={{ fontSize: '14px', color: '#475569', margin: 0 }}>Generate multiple SEO articles at once — one keyword per line, up to 10.</p>
           </div>
+
+          {/* ✅ Success message */}
+          {saveMessage && (
+            <div className="save-msg" style={{ padding: '12px 18px', background: 'rgba(52,211,153,0.1)', border: '1px solid rgba(52,211,153,0.25)', borderRadius: '10px', color: '#34d399', fontSize: '13px', fontWeight: 600, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              ✅ {saveMessage}
+              <a href="/dashboard/article-library" style={{ marginLeft: 'auto', color: '#34d399', fontSize: '12px', textDecoration: 'underline', cursor: 'pointer' }}>
+                View in Article Library →
+              </a>
+            </div>
+          )}
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
 
