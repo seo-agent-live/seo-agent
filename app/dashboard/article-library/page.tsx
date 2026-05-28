@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export const dynamic = 'force-dynamic';
 
@@ -85,10 +87,9 @@ export default function ArticleLibraryPage() {
       <style>{`
         @import url('https://fonts.cdnfonts.com/css/geist');
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        .lib-root { min-height: 100vh; background: #0d0f14; color: #e2e8f0; font-family: 'Geist', sans-serif; padding: 32px 32px 64px; position: relative; }
-        .lib-root::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(rgba(124,111,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,111,255,0.03) 1px, transparent 1px); background-size: 40px 40px; }
+        .lib-root { min-height: 100vh; background: transparent; color: #e2e8f0; font-family: 'Geist', sans-serif; padding: 32px 32px 64px; position: relative; }
         .inner { position: relative; z-index: 1; max-width: 1000px; }
-        .glass { background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 22px; }
+        .glass { background: rgba(22,27,34,0.65); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 22px; }
         .search-input { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 14px; color: #f1f5f9; font-size: 13px; font-family: 'Geist', sans-serif; outline: none; transition: border-color 0.15s, box-shadow 0.15s; width: 240px; }
         .search-input:focus { border-color: rgba(124,111,255,0.5); box-shadow: 0 0 0 3px rgba(124,111,255,0.08); }
         .search-input::placeholder { color: #334155; }
@@ -120,7 +121,7 @@ export default function ArticleLibraryPage() {
             <div className="fade-up">
               <button className="back-btn" onClick={() => setOpenArticle(null)}>← Back to Library</button>
 
-              <div style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '28px', marginBottom: '16px' }}>
+              <div style={{ background: 'rgba(22,27,34,0.65)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '28px', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px', gap: '16px' }}>
                   <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.3px', flex: 1 }}>{openArticle.title}</h2>
                   <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
@@ -173,10 +174,19 @@ export default function ArticleLibraryPage() {
                   </button>
                 </div>
 
-                <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '24px' }}>
-                  <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'Geist, sans-serif', fontSize: '14px', color: '#cbd5e1', margin: 0, lineHeight: '1.8' }}>
-                    {openArticle.content}
-                  </pre>
+                <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '28px' }}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={{
+                    h1: ({ node, ...props }: any) => <h1 style={{ fontSize: '28px', fontWeight: '800', color: '#f1f5f9', margin: '0 0 20px', letterSpacing: '-0.5px', borderBottom: '1px solid rgba(255,255,255,0.07)', paddingBottom: '14px' }} {...props} />,
+                    h2: ({ node, ...props }: any) => <h2 style={{ fontSize: '20px', fontWeight: '700', color: '#f1f5f9', margin: '32px 0 12px' }} {...props} />,
+                    h3: ({ node, ...props }: any) => <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#cbd5e1', margin: '24px 0 8px' }} {...props} />,
+                    p: ({ node, ...props }: any) => <p style={{ margin: '0 0 16px', color: '#cbd5e1', lineHeight: '1.85', fontSize: '14px' }} {...props} />,
+                    strong: ({ node, ...props }: any) => <strong style={{ color: '#f1f5f9', fontWeight: '700' }} {...props} />,
+                    li: ({ node, ...props }: any) => <li style={{ margin: '0 0 8px', color: '#cbd5e1', lineHeight: '1.7', fontSize: '14px' }} {...props} />,
+                    ul: ({ node, ...props }: any) => <ul style={{ margin: '0 0 16px', paddingLeft: '24px' }} {...props} />,
+                    ol: ({ node, ...props }: any) => <ol style={{ margin: '0 0 16px', paddingLeft: '24px' }} {...props} />,
+                  }}>
+                    {openArticle.content || ''}
+                  </ReactMarkdown>
                 </div>
               </div>
             </div>
@@ -193,7 +203,7 @@ export default function ArticleLibraryPage() {
                   { label: 'Published',      value: counts.published, color: '#34d399' },
                   { label: 'Drafts',         value: counts.draft,     color: '#fbbf24' },
                 ].map((s, i) => (
-                  <div key={i} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 22px' }}>
+                  <div key={i} style={{ background: 'rgba(22,27,34,0.65)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 22px' }}>
                     <div style={{ fontSize: '11px', color: '#475569', marginBottom: '8px', fontWeight: 500 }}>{s.label}</div>
                     {loading
                       ? <div className="skeleton" style={{ width: '50px', height: '26px' }} />
