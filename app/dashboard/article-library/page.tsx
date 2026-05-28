@@ -20,6 +20,8 @@ export default function ArticleLibraryPage() {
   const [filter, setFilter]     = useState('all');
   const [deleting, setDeleting] = useState<string | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
+  const [openArticle, setOpenArticle] = useState<any | null>(null);
+  const [loadingArticle, setLoadingArticle] = useState(false);
 
   const fetchArticles = async () => {
     setLoading(true);
@@ -32,6 +34,17 @@ export default function ArticleLibraryPage() {
   };
 
   useEffect(() => { fetchArticles(); }, []);
+
+  const handleOpenArticle = async (id: string) => {
+    setLoadingArticle(true);
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (!error && data) setOpenArticle(data);
+    setLoadingArticle(false);
+  };
 
   const handleDelete = async (id: string) => {
     setDeleting(id);
@@ -82,7 +95,7 @@ export default function ArticleLibraryPage() {
         .filter-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.07); background: transparent; color: #475569; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: all 0.15s; }
         .filter-btn.active { background: rgba(124,111,255,0.15); border-color: rgba(124,111,255,0.3); color: #a78bfa; }
         .filter-btn:hover:not(.active) { background: rgba(255,255,255,0.04); color: #94a3b8; }
-        .article-row { display: grid; grid-template-columns: 32px 1fr 70px 100px 110px 80px; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 9px; background: rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.04); transition: background 0.15s, border-color 0.15s; }
+        .article-row { display: grid; grid-template-columns: 32px 1fr 70px 100px 110px 80px; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 9px; background: rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.04); transition: background 0.15s, border-color 0.15s; cursor: pointer; }
         .article-row:hover { background: rgba(124,111,255,0.05); border-color: rgba(124,111,255,0.12); }
         .del-btn { padding: 5px 10px; border-radius: 6px; border: 1px solid rgba(248,113,113,0.2); background: rgba(248,113,113,0.08); color: #f87171; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: all 0.15s; }
         .del-btn:hover { background: rgba(248,113,113,0.18); }
@@ -91,6 +104,8 @@ export default function ArticleLibraryPage() {
         .bulk-del-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(248,113,113,0.2); background: rgba(248,113,113,0.08); color: #f87171; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Geist', sans-serif; transition: all 0.15s; }
         .bulk-del-btn:hover { background: rgba(248,113,113,0.18); }
         .checkbox { width: 16px; height: 16px; accent-color: #7c6fff; cursor: pointer; }
+        .back-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.07); background: transparent; color: #94a3b8; font-size: 13px; cursor: pointer; font-family: 'Geist', sans-serif; margin-bottom: 24px; }
+        .back-btn:hover { background: rgba(255,255,255,0.04); }
         @keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:1} }
         .skeleton { background: rgba(255,255,255,0.06); border-radius: 6px; animation: shimmer 1.5s ease infinite; }
         @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
@@ -99,95 +114,179 @@ export default function ArticleLibraryPage() {
 
       <div className="lib-root">
         <div className="inner">
-          <div style={{ marginBottom: '28px' }}>
-            <h1 style={{ fontSize: '26px', fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.5px', marginBottom: '5px' }}>Article Library</h1>
-            <p style={{ fontSize: '14px', color: '#475569' }}>All your generated articles in one place.</p>
-          </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '20px' }}>
-            {[
-              { label: 'Total Articles', value: counts.all,       color: '#7c6fff' },
-              { label: 'Published',      value: counts.published, color: '#34d399' },
-              { label: 'Drafts',         value: counts.draft,     color: '#fbbf24' },
-            ].map((s, i) => (
-              <div key={i} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 22px' }}>
-                <div style={{ fontSize: '11px', color: '#475569', marginBottom: '8px', fontWeight: 500 }}>{s.label}</div>
-                {loading
-                  ? <div className="skeleton" style={{ width: '50px', height: '26px' }} />
-                  : <div style={{ fontSize: '26px', fontWeight: 700, color: s.color, letterSpacing: '-0.5px' }}>{s.value}</div>
-                }
-              </div>
-            ))}
-          </div>
+          {/* Article Detail View */}
+          {openArticle ? (
+            <div className="fade-up">
+              <button className="back-btn" onClick={() => setOpenArticle(null)}>← Back to Library</button>
 
-          <div className="glass" style={{ marginBottom: '12px', padding: '14px 18px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                {['all', 'published', 'draft'].map(f => (
-                  <button key={f} className={`filter-btn ${filter === f ? 'active' : ''}`} onClick={() => setFilter(f)}>
-                    {f.charAt(0).toUpperCase() + f.slice(1)} ({counts[f as keyof typeof counts] ?? 0})
+              <div style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '28px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '16px', gap: '16px' }}>
+                  <h2 style={{ fontSize: '22px', fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.3px', flex: 1 }}>{openArticle.title}</h2>
+                  <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                    <div style={{ padding: '4px 10px', borderRadius: '6px', background: scoreBg(openArticle.seo_score ?? 0), fontSize: '12px', fontWeight: 700, color: scoreColor(openArticle.seo_score ?? 0) }}>
+                      SEO {openArticle.seo_score ?? '—'}
+                    </div>
+                    <div style={{ padding: '4px 10px', borderRadius: '6px', background: STATUS_COLORS[openArticle.status?.toLowerCase() ?? 'draft']?.bg, fontSize: '12px', fontWeight: 700, color: STATUS_COLORS[openArticle.status?.toLowerCase() ?? 'draft']?.color }}>
+                      {openArticle.status}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ fontSize: '12px', color: '#475569', marginBottom: '24px' }}>
+                  {new Date(openArticle.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  {openArticle.word_count && ' · ' + openArticle.word_count + ' words'}
+                  {openArticle.read_time && ' · ' + openArticle.read_time + ' read'}
+                </div>
+
+                {openArticle.meta_description && (
+                  <div style={{ padding: '12px 16px', background: 'rgba(124,111,255,0.08)', border: '1px solid rgba(124,111,255,0.15)', borderRadius: '8px', marginBottom: '24px' }}>
+                    <div style={{ fontSize: '11px', color: '#7c6fff', fontWeight: 600, marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Meta Description</div>
+                    <div style={{ fontSize: '13px', color: '#94a3b8' }}>{openArticle.meta_description}</div>
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(openArticle.content || '')}
+                    style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.07)', background: 'transparent', color: '#94a3b8', fontSize: '12px', cursor: 'pointer', fontFamily: 'Geist, sans-serif' }}
+                  >
+                    Copy Content
                   </button>
+                  <button
+                    onClick={() => {
+                      const blob = new Blob([openArticle.content || ''], { type: 'text/plain' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = (openArticle.title || 'article').replace(/\s+/g, '-').toLowerCase() + '.txt';
+                      a.click();
+                    }}
+                    style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.07)', background: 'transparent', color: '#94a3b8', fontSize: '12px', cursor: 'pointer', fontFamily: 'Geist, sans-serif' }}
+                  >
+                    Download
+                  </button>
+                  <button
+                    onClick={() => handleDelete(openArticle.id).then(() => setOpenArticle(null))}
+                    style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(248,113,113,0.2)', background: 'rgba(248,113,113,0.08)', color: '#f87171', fontSize: '12px', cursor: 'pointer', fontFamily: 'Geist, sans-serif' }}
+                  >
+                    Delete Article
+                  </button>
+                </div>
+
+                <div style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '10px', padding: '24px' }}>
+                  <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'Geist, sans-serif', fontSize: '14px', color: '#cbd5e1', margin: 0, lineHeight: '1.8' }}>
+                    {openArticle.content}
+                  </pre>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div style={{ marginBottom: '28px' }}>
+                <h1 style={{ fontSize: '26px', fontWeight: 700, color: '#f1f5f9', letterSpacing: '-0.5px', marginBottom: '5px' }}>Article Library</h1>
+                <p style={{ fontSize: '14px', color: '#475569' }}>All your generated articles in one place.</p>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '20px' }}>
+                {[
+                  { label: 'Total Articles', value: counts.all,       color: '#7c6fff' },
+                  { label: 'Published',      value: counts.published, color: '#34d399' },
+                  { label: 'Drafts',         value: counts.draft,     color: '#fbbf24' },
+                ].map((s, i) => (
+                  <div key={i} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '18px 22px' }}>
+                    <div style={{ fontSize: '11px', color: '#475569', marginBottom: '8px', fontWeight: 500 }}>{s.label}</div>
+                    {loading
+                      ? <div className="skeleton" style={{ width: '50px', height: '26px' }} />
+                      : <div style={{ fontSize: '26px', fontWeight: 700, color: s.color, letterSpacing: '-0.5px' }}>{s.value}</div>
+                    }
+                  </div>
                 ))}
               </div>
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                {selected.length > 0 && (
-                  <button className="bulk-del-btn fade-up" onClick={handleDeleteSelected}>
-                    Delete {selected.length} selected
-                  </button>
-                )}
-                <input className="search-input" placeholder="Search articles…" value={search} onChange={e => setSearch(e.target.value)} />
-              </div>
-            </div>
-          </div>
 
-          <div className="glass" style={{ padding: '16px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '32px 1fr 70px 100px 110px 80px', gap: '12px', padding: '4px 14px', marginBottom: '8px' }}>
-              {['', 'Title', 'Score', 'Status', 'Date', ''].map((h, i) => (
-                <div key={i} style={{ fontSize: '11px', color: '#334155', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</div>
-              ))}
-            </div>
-
-            {loading ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                {[1,2,3,4,5].map(i => <div key={i} className="skeleton" style={{ height: '50px', borderRadius: '9px' }} />)}
-              </div>
-            ) : filtered.length === 0 ? (
-              <div style={{ padding: '40px', textAlign: 'center', color: '#334155', fontSize: '14px' }}>
-                {search ? `No articles matching "${search}"` : 'No articles yet. Generate some first!'}
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                {filtered.map(a => {
-                  const st = (a.status ?? 'draft').toLowerCase();
-                  const stStyle = STATUS_COLORS[st] ?? STATUS_COLORS.draft;
-                  return (
-                    <div className="article-row fade-up" key={a.id}>
-                      <input type="checkbox" className="checkbox" checked={selected.includes(a.id)} onChange={() => toggleSelect(a.id)} />
-                      <div style={{ overflow: 'hidden' }}>
-                        <div style={{ fontSize: '13px', color: '#e2e8f0', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.title}</div>
-                      </div>
-                      <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: scoreBg(a.seo_score ?? 0), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: '11px', fontWeight: 700, color: scoreColor(a.seo_score ?? 0) }}>{a.seo_score ?? '—'}</span>
-                      </div>
-                      <div style={{ background: stStyle.bg, borderRadius: '6px' }}>
-                        <select className="status-select" value={st} style={{ color: stStyle.color, background: 'transparent' }} onChange={e => handleStatusChange(a.id, e.target.value)}>
-                          <option value="draft">Draft</option>
-                          <option value="published">Published</option>
-                          <option value="failed">Failed</option>
-                        </select>
-                      </div>
-                      <div style={{ fontSize: '12px', color: '#475569' }}>
-                        {new Date(a.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </div>
-                      <button className="del-btn" disabled={deleting === a.id} onClick={() => handleDelete(a.id)}>
-                        {deleting === a.id ? '…' : 'Delete'}
+              <div className="glass" style={{ marginBottom: '12px', padding: '14px 18px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {['all', 'published', 'draft'].map(f => (
+                      <button key={f} className={'filter-btn ' + (filter === f ? 'active' : '')} onClick={() => setFilter(f)}>
+                        {f.charAt(0).toUpperCase() + f.slice(1)} ({counts[f as keyof typeof counts] ?? 0})
                       </button>
-                    </div>
-                  );
-                })}
+                    ))}
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    {selected.length > 0 && (
+                      <button className="bulk-del-btn fade-up" onClick={handleDeleteSelected}>
+                        Delete {selected.length} selected
+                      </button>
+                    )}
+                    <input className="search-input" placeholder="Search articles…" value={search} onChange={e => setSearch(e.target.value)} />
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
+
+              <div className="glass" style={{ padding: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '32px 1fr 70px 100px 110px 80px', gap: '12px', padding: '4px 14px', marginBottom: '8px' }}>
+                  {['', 'Title', 'Score', 'Status', 'Date', ''].map((h, i) => (
+                    <div key={i} style={{ fontSize: '11px', color: '#334155', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{h}</div>
+                  ))}
+                </div>
+
+                {loading ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    {[1,2,3,4,5].map(i => <div key={i} className="skeleton" style={{ height: '50px', borderRadius: '9px' }} />)}
+                  </div>
+                ) : filtered.length === 0 ? (
+                  <div style={{ padding: '40px', textAlign: 'center', color: '#334155', fontSize: '14px' }}>
+                    {search ? 'No articles matching "' + search + '"' : 'No articles yet. Generate some first!'}
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                    {filtered.map(a => {
+                      const st = (a.status ?? 'draft').toLowerCase();
+                      const stStyle = STATUS_COLORS[st] ?? STATUS_COLORS.draft;
+                      return (
+                        <div
+                          className="article-row fade-up"
+                          key={a.id}
+                          onClick={() => handleOpenArticle(a.id)}
+                        >
+                          <input
+                            type="checkbox"
+                            className="checkbox"
+                            checked={selected.includes(a.id)}
+                            onChange={() => toggleSelect(a.id)}
+                            onClick={e => e.stopPropagation()}
+                          />
+                          <div style={{ overflow: 'hidden' }}>
+                            <div style={{ fontSize: '13px', color: '#e2e8f0', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.title}</div>
+                          </div>
+                          <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: scoreBg(a.seo_score ?? 0), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <span style={{ fontSize: '11px', fontWeight: 700, color: scoreColor(a.seo_score ?? 0) }}>{a.seo_score ?? '—'}</span>
+                          </div>
+                          <div style={{ background: stStyle.bg, borderRadius: '6px' }} onClick={e => e.stopPropagation()}>
+                            <select className="status-select" value={st} style={{ color: stStyle.color, background: 'transparent' }} onChange={e => handleStatusChange(a.id, e.target.value)}>
+                              <option value="draft">Draft</option>
+                              <option value="published">Published</option>
+                              <option value="failed">Failed</option>
+                            </select>
+                          </div>
+                          <div style={{ fontSize: '12px', color: '#475569' }}>
+                            {new Date(a.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                          </div>
+                          <button
+                            className="del-btn"
+                            disabled={deleting === a.id}
+                            onClick={e => { e.stopPropagation(); handleDelete(a.id); }}
+                          >
+                            {deleting === a.id ? '…' : 'Delete'}
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>
