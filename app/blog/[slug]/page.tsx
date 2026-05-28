@@ -6,8 +6,8 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
 );
 
-export default async function BlogPost({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
 
   const { data: article, error } = await supabase
     .from('articles')
@@ -50,11 +50,13 @@ export default async function BlogPost({ params }: { params: { slug: string } })
   );
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+
   const { data: article } = await supabase
     .from('articles')
     .select('title, meta_description')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .single();
 
   return {
