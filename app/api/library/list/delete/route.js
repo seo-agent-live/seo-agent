@@ -4,7 +4,7 @@ const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.
 export async function DELETE(req) {
   const { id } = await req.json();
   try {
-    const { error } = await supabase.from('published_articles').delete().eq('id', id);
+    const { error } = await supabase.from('articles').delete().eq('id', id);
     if (error) throw error;
     return NextResponse.json({ success: true });
   } catch (err) {
