@@ -50,9 +50,16 @@ export default function KeywordsPage() {
 
   const handleDelete = async (id: string) => {
     setDeleting(id);
-    await supabase.from('cluster_keywords').delete().eq('id', id);
-    setKeywords(prev => prev.filter(k => k.id !== id));
+    if (id.startsWith('local_')) {
+      const localKws = JSON.parse(localStorage.getItem('rankflow_tracked_kws') || '[]');
+      const keyword = keywords.find(k => k.id === id)?.keyword;
+      const updated = localKws.filter((kw: string) => kw !== keyword);
+      localStorage.setItem('rankflow_tracked_kws', JSON.stringify(updated));
+    } else {
+      await supabase.from('cluster_keywords').delete().eq('id', id);
+    }
     setDeleting(null);
+    await fetchKeywords();
   };
 
   const intentColor = (intent: string) => {
