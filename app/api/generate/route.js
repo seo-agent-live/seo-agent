@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
 const SERPER_URL = "https://google.serper.dev/search";
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 export async function POST(request) {
   try {
@@ -27,10 +33,7 @@ export async function POST(request) {
         "Content-Type": "application/json",
         "X-API-KEY": process.env.SERPER_API_KEY,
       },
-      body: JSON.stringify({
-        q: keyword.trim(),
-        num: 5,
-      }),
+      body: JSON.stringify({ q: keyword.trim(), num: 5 }),
     });
 
     if (!serperResponse.ok) {
@@ -52,12 +55,7 @@ export async function POST(request) {
 Keyword: ${keyword.trim()}
 
 Top Google Results:
-${topResults
-  .map(
-    (item, index) =>
-      `${index + 1}. Title: ${item.title}\nURL: ${item.link}\nSnippet: ${item.snippet}`
-  )
-  .join("\n\n")}
+${topResults.map((item, index) => `${index + 1}. Title: ${item.title}\nURL: ${item.link}\nSnippet: ${item.snippet}`).join("\n\n")}
 
 Write a complete, high-quality SEO article based on the keyword and competitor landscape above.
 
@@ -84,8 +82,7 @@ Requirements:
         messages: [
           {
             role: "system",
-            content:
-              "You are an expert SEO content writer. Produce detailed, structured, and original content in Markdown.",
+            content: "You are an expert SEO content writer. Produce detailed, structured, and original content in Markdown.",
           },
           {
             role: "user",
@@ -111,6 +108,30 @@ Requirements:
         { error: "Groq returned an empty article." },
         { status: 502 }
       );
+    }
+
+    // ✅ Save to Supabase
+    const slug = keyword.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    const titleMatch = article.match(/^#\s+(.+)/m);
+    const title = titleMatch ? titleMatch[1].trim() : keyword.trim();
+    const wordCount = article.split(/\s+/).length;
+
+    const { error: dbError } = await supabase
+      .from('articles')
+      .insert({
+        title,
+        content: article,
+        keyword: keyword.trim(),
+        slug,
+        word_count: wordCount,
+        read_time: Math.ceil(wordCount / 200) + ' min',
+        seo_score: 75,
+        status: 'Published',
+        meta_description: '',
+      });
+
+    if (dbError) {
+      console.error('Supabase save error:', dbError);
     }
 
     return NextResponse.json({ article });
