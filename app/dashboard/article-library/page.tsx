@@ -54,6 +54,7 @@ export default function ArticleLibraryPage() {
     setArticles(prev => prev.filter(a => a.id !== id));
     setSelected(prev => prev.filter(s => s !== id));
     setDeleting(null);
+    await fetchArticles();
   };
 
   const handleDeleteSelected = async () => {
