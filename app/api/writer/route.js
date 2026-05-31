@@ -117,7 +117,7 @@ Rules:
           'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
         },
         body: JSON.stringify({
-          model: 'llama-3.1-8b-instant',
+          model: 'llama-3.3-70b-versatile',
           messages: [{ role: 'user', content: articlePrompt }],
           temperature: 0.7,
           max_tokens: 5000,
