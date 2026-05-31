@@ -122,8 +122,18 @@ export default function WriterPage() {
     const params = new URLSearchParams(window.location.search);
     const keywordParam = params.get('keyword')?.trim() || '';
     const autoGenerateParam = params.get('autoGenerate') === 'true';
+    const idParam = params.get('id')?.trim() || '';
 
-    if (keywordParam) {
+    if (idParam) {
+      // Load article by ID from Supabase
+      supabase.from('articles').select('*').eq('id', idParam).single().then(({ data }) => {
+        if (data) {
+         setKeyword(data.keyword || data.title || '');
+         setArticle({ content: data.content, metaDescription: data.meta_description, metaTitle: data.title });
+         setEditedContent(data.content);
+        }
+      });
+    } else if (keywordParam) {
       setKeyword(keywordParam);
       if (autoGenerateParam) {
         generateArticle(keywordParam);
