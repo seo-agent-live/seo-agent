@@ -234,7 +234,7 @@ export default function WriterPage() {
 
     const { error: dbError } = await supabase
       .from('articles')
-      .insert({
+      .upsert({
         title,
         content,
         keyword,
@@ -244,7 +244,7 @@ export default function WriterPage() {
         read_time: getReadTime(content),
         seo_score: seoScore,
         status: 'published',
-      });
+      }, { onConflict: 'slug' });
 
     if (dbError) {
       console.error('Save error:', dbError);
