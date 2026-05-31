@@ -120,7 +120,7 @@ Rules:
           model: 'llama-3.1-8b-instant',
           messages: [{ role: 'user', content: articlePrompt }],
           temperature: 0.7,
-          max_tokens: 6000,
+          max_tokens: 5000,
         }),
       }),
       fetch('https://api.groq.com/openai/v1/chat/completions', {
