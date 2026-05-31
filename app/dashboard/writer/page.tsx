@@ -225,16 +225,16 @@ export default function WriterPage() {
     const seoScore = getSeoScore(content, keyword);
 
     const slug = keyword
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/(^-|-$)/g, '') + '-' + Date.now();
 
     const titleMatch = content.match(/^#\s+(.+)/m);
     const title = titleMatch ? titleMatch[1].trim() : keyword;
 
     const { error: dbError } = await supabase
       .from('articles')
-      .upsert({
+      .insert({
         title,
         content,
         keyword,
