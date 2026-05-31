@@ -38,8 +38,8 @@ export async function POST(req) {
     );
   }
 
-  const wordTarget = length === 'short' ? '500-800' : length === 'medium' ? '1000-1500' : '2000-2500';
-  const minWords = length === 'short' ? 500 : length === 'medium' ? 1000 : 2000;
+  const wordTarget = length === 'short' ? '600-900' : length === 'medium' ? '1500-2000' : '2500-3000';
+  const minWords = length === 'short' ? 600 : length === 'medium' ? 1500 : 2500;
 
   // Separate prompt just for the article
   const articlePrompt = `You are an expert SEO content writer. Write a blog article in ${languageLabel} about "${keyword}".
@@ -120,7 +120,7 @@ Rules:
           model: 'llama-3.1-8b-instant',
           messages: [{ role: 'user', content: articlePrompt }],
           temperature: 0.7,
-          max_tokens: 4000,
+          max_tokens: 6000,
         }),
       }),
       fetch('https://api.groq.com/openai/v1/chat/completions', {
